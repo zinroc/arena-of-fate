@@ -111,12 +111,19 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     $scope.fightLoop = function (){
         while (!$scope.fight.stopped && !$scope.fight.paused){
-            //$scope.regen();
             $scope.initiation();
             if ($scope.initiator){
                 $scope.resolveInitiation();
             }
             $scope.checkVictory();
+
+            if($scope.fight.paused){
+
+                for (var i=0; i<$scope.sides.length; i++){
+                    $scope.regen($scope.sides[i]);
+                }
+            }
+
             $scope.fightClock++;
         }
     }
@@ -174,10 +181,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         var accuracyScore = parseInt(100*Math.random());
         var evasionScore = parseInt(100*Math.random());
-
         var speedScore = parseInt(100*Math.random());
         var reflexScore = parseInt(100*Math.random());
-
         var powerScore = parseInt(100*Math.random());
 
         if (accuracyScore < evasionScore){
@@ -197,6 +202,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         } else {
             $scope.dealDamage($scope.defender, powerScore);
         }
+
         return;
     }
 
@@ -235,6 +241,13 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     }
 
+    $scope.regen = function (side){
+        $scope.vitals[side].consciousness = parseInt(Math.min($scope.vitals[side].consciousness + 50*Math.random(), 100));
+
+        var msg = $scope.corner[side].name.toTitleCase() + " recovers to " + $scope.vitals[side].consciousness + " consciousness.";
+        $scope.record(msg);
+    }
+
     $scope.record = function(msg){
     	$scope.transcript[$scope.transIndex] = msg;
     	$scope.transIndex++;
@@ -263,6 +276,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         $scope.fightLoop();
     }
+
 
 	$scope.reset = function(){
 		$scope.selectedFighter = null;

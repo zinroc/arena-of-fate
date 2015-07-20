@@ -1,0 +1,47 @@
+#hover {
+	cursor: pointer;
+}
+
+
+#fighter_box {
+	position: relative;
+	height: 400px;
+	margin: 10px;
+	border: thick black solid;
+}
+
+#fighter_box span {
+   position: absolute;
+   bottom: 0;
+
+}
+
+#fighterArt{
+
+	position: absolute;
+
+	left: 0px;
+
+	height:75%;
+	width: 100%;
+
+}
+
+#fightButton{
+	text-align: center;
+}
+
+#transcript {
+	position: relative;
+	height: 400px;
+}
+
+#overflow {
+	overflow: scroll;
+	height: 300px;
+}
+
+#transcript span {
+	position: absolute;
+	bottom: 0;
+}

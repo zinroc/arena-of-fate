@@ -1,0 +1,69 @@
+<div ng-controller="fightPlannerController">
+<h1> Fight Planner </h1>
+	<div class="container-fluid">
+		<div class="row">
+			<div ng-if="!fight.started">
+				<h3> Available Fighters: </h3>
+				<div class="col-md-3">
+					<div  ng-repeat="fighter in fighters">
+						<span id="hover" class="glyphicon glyphicon-user" ng-click="selectFighter(fighter.id)"></span>
+						{{fighter.name.toTitleCase()}}
+
+						<p ng-if="selectedFighter===fighter.id" class="btn btn-danger" ng-click="placeInCorner(fighter.id, 'red')"> Red Corner </p>
+						<p ng-if="selectedFighter===fighter.id" class="btn btn-primary"
+						ng-click="placeInCorner(fighter.id, 'blue')"> Blue Corner </p>
+
+					</div>
+				</div>
+			</div>
+			<div ng-if="fight.started" id="transcript" class="col-md-3">
+				<h3 ng-if="victor.side && victor.side !=='tie'">{{corner[victor.side].name.toTitleCase()}} Wins!</h3>
+				<h3 ng-if="victor.side==='tie'">Tie!</h3>
+				<b> Round {{fight.round}} Transcript </b><br>
+				<div id="overflow">
+					<div ng-repeat="msg in transcript track by $index">
+						{{msg.toTitleCase()}}
+					</div>
+				</div>
+				<span><p class="btn btn-primary" ng-click="reset()" ng-if="fight.stopped"> Reset </p></span>
+				<spam><p class="btn btn-primary" ng-click="startNextRound()" ng-if="!fight.stopped && fight.paused"> Start Next Round</p></spam>
+			</div>
+
+			<div ng-repeat="side in sides">
+				<div id="fighter_box" class="col-md-3" >
+					<h4>{{corner[side].name.toTitleCase()}}</h4>
+					<img id="fighterArt" ng-if="corner[side].status==='art'"ng-src="{{ getAssetImg(corner[side].art) }}" />
+					<div ng-if="corner[side].status==='stats'">
+						<h5> Skills </h5>
+						<div ng-repeat="skill in skills">
+							{{skill.name.toTitleCase()}}: {{cSkills[side][skill.id]}}/100;
+						</div>
+					</div>
+					<div ng-if="corner[side].status==='strategy'">
+						<h5> Strategy: {{strat[side].name.toTitleCase()}} - EXP: TODO </h5>
+						Initiation Frequency: {{strat[side].initiation_frequency}}
+						<br>
+						Cardio expendature: {{strat[side].base_cardio}} and {{strat[side].initiation_cardio}} when initiating <br>
+						Difficulty: {{strat[side].difficulty}} <br>
+						Optimal Range: {{strat[side].range}} <br>
+						<h5> Strategy Provides Bonuses to: </h5>
+						<div ng-repeat="bonus in cStratBonuses[side]">
+							{{bonus.name.toTitleCase()}} - {{bonus.value}}%
+						</div>
+					</div>
+					<span ng-if="corner[side].selected">
+						<p class="btn btn-primary" ng-click="artStatus(side)">Art</p>
+						<p class="btn btn-primary" ng-click="statsStatus(side)">Stats</p>
+						<p class="btn btn-primary" ng-click="strategyStatus(side)">Strategy</p>
+					</span>
+				</div>
+			</div>
+
+		</div>
+		<div class="row">
+			<div id="fightButton">
+				<p class="btn btn-danger" ng-if="corner['blue'].selected && corner['red'].selected && !fight.started" ng-click="evaluateFight()"> Fight! </p>
+			</div>
+		</div>
+	</div>
+</div>

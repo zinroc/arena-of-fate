@@ -1,0 +1,1176 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"tran",
+				"transcript"
+			],
+			[
+				"tra",
+				"trasIndex"
+			],
+			[
+				"cons",
+				"consciousness"
+			],
+			[
+				"inita",
+				"initationScore"
+			],
+			[
+				"blue",
+				"blue"
+			],
+			[
+				"b",
+				"blue"
+			],
+			[
+				"co",
+				"corner"
+			],
+			[
+				"selected",
+				"selected"
+			],
+			[
+				"get",
+				"getHeightVal"
+			],
+			[
+				"redM",
+				"redMaxMove"
+			],
+			[
+				"blueMove",
+				"blueMoveVector"
+			],
+			[
+				"ski",
+				"skillIDs"
+			],
+			[
+				"redS",
+				"redSkills"
+			],
+			[
+				"end",
+				"redEnduranceDecay"
+			],
+			[
+				"con",
+				"consciousness"
+			],
+			[
+				"redC",
+				"redConsciousness"
+			],
+			[
+				"red",
+				"redCorner"
+			],
+			[
+				"base",
+				"base_cardio"
+			],
+			[
+				"number",
+				"numberToTextConverter"
+			],
+			[
+				"strat",
+				"strategy"
+			],
+			[
+				"blueSt",
+				"blueStratBonuses"
+			],
+			[
+				"res",
+				"response"
+			],
+			[
+				"strats",
+				"strategies"
+			],
+			[
+				"bo",
+				"border"
+			],
+			[
+				"text",
+				"text-align"
+			],
+			[
+				"fighters",
+				"fighters"
+			],
+			[
+				"fighter",
+				"fighters"
+			],
+			[
+				"print",
+				"printJSON"
+			],
+			[
+				"printJ",
+				"printJSON"
+			],
+			[
+				"team",
+				"teamFighters"
+			],
+			[
+				"tema",
+				"teamFighters"
+			],
+			[
+				"getJ",
+				"getJSONWithParams"
+			],
+			[
+				"selectedRe",
+				"selectedRegionName"
+			],
+			[
+				"sel",
+				"selectRegion"
+			],
+			[
+				"pre",
+				"prefix"
+			],
+			[
+				"secT",
+				"secTrait"
+			],
+			[
+				"secTr",
+				"secTraits"
+			],
+			[
+				"trait",
+				"traitIndex"
+			],
+			[
+				"happy_",
+				"happy_high"
+			],
+			[
+				"happy",
+				"happy_low"
+			],
+			[
+				"happ_",
+				"happy_low"
+			],
+			[
+				"_character",
+				"_character_race_"
+			],
+			[
+				"absTr",
+				"absTraitHappy"
+			],
+			[
+				"absTra",
+				"absTraitUnHappy"
+			],
+			[
+				"vial",
+				"vitalUnHappy"
+			],
+			[
+				"secTrat",
+				"secTraitUnHappy"
+			],
+			[
+				"trai",
+				"traitInfo"
+			],
+			[
+				"primary",
+				"primary_target"
+			],
+			[
+				"cardI",
+				"cardInfoActive"
+			],
+			[
+				"deckC",
+				"deckCards"
+			],
+			[
+				"idle",
+				"idle"
+			],
+			[
+				"vita",
+				"vitalUnHappy"
+			],
+			[
+				"card_a",
+				"card_absolute_trait_happy"
+			],
+			[
+				"owner",
+				"owner_id"
+			],
+			[
+				"differe",
+				"difference_score"
+			],
+			[
+				"bas",
+				"base_cost"
+			],
+			[
+				"total_",
+				"total_score"
+			],
+			[
+				"total",
+				"total_secondary_trait_score"
+			],
+			[
+				"tot",
+				"total_vital_score"
+			],
+			[
+				"we",
+				"weight_total"
+			],
+			[
+				"wei",
+				"weight_total"
+			],
+			[
+				"min",
+				"min_score"
+			],
+			[
+				"min_",
+				"min_difference_score"
+			],
+			[
+				"diff",
+				"difference_score"
+			],
+			[
+				"max_",
+				"max_difference_score"
+			],
+			[
+				"ow",
+				"owner_id"
+			],
+			[
+				"card_",
+				"char_id"
+			],
+			[
+				"compatabil",
+				"compatability_overwrite"
+			],
+			[
+				"compat",
+				"compatability"
+			],
+			[
+				"compa",
+				"compatability"
+			],
+			[
+				"comp",
+				"compatability_similarities"
+			],
+			[
+				"compata",
+				"compatability"
+			],
+			[
+				"compatability",
+				"compatability_similarities"
+			],
+			[
+				"dart_",
+				"dart_feedback_skills"
+			],
+			[
+				"upc",
+				"upcomingCollisionStats"
+			],
+			[
+				"upcomingC",
+				"upcomingCollisionIndexes"
+			],
+			[
+				"upcom",
+				"upcomingCollisionStats"
+			],
+			[
+				"upcomingColl",
+				"upcomingCollisionIndexes"
+			],
+			[
+				"i",
+				"i"
+			],
+			[
+				"tareg",
+				"targeter"
+			],
+			[
+				"prim",
+				"primTargInfo"
+			],
+			[
+				"entit",
+				"entityInfo"
+			],
+			[
+				"primary_",
+				"primary_entity"
+			],
+			[
+				"narrativeActo",
+				"narrativeActorIndexes"
+			],
+			[
+				"activeT",
+				"activeTargetSet"
+			],
+			[
+				"upcoming",
+				"upcomingCollisionIndexes"
+			],
+			[
+				"narra",
+				"narrativeLogs"
+			],
+			[
+				"narrativeAc",
+				"narrativeActorIndexes"
+			],
+			[
+				"nar",
+				"narTarg"
+			],
+			[
+				"neutral",
+				"neutral"
+			],
+			[
+				"recent",
+				"recentCollisions"
+			],
+			[
+				"narr",
+				"narrativeLogs"
+			],
+			[
+				"narrative_l",
+				"narrative_log_checks"
+			],
+			[
+				"narrativeL",
+				"narrativeLog"
+			],
+			[
+				"recentCo",
+				"recentCollision"
+			],
+			[
+				"posi",
+				"positionReq"
+			],
+			[
+				"getAll",
+				"getAllNarrativLogs"
+			],
+			[
+				"position",
+				"position"
+			],
+			[
+				"pos",
+				"postiionReq"
+			],
+			[
+				"positi",
+				"positionReqInfo"
+			],
+			[
+				"time",
+				"timestep"
+			],
+			[
+				"character_art_as",
+				"character_art_assets"
+			],
+			[
+				"char",
+				"charAssets"
+			],
+			[
+				"assem",
+				"assemblies"
+			],
+			[
+				"genetic",
+				"geneticInfo"
+			],
+			[
+				"type",
+				"typeInfo1"
+			],
+			[
+				"assembly",
+				"assembly_id"
+			],
+			[
+				"character_ass",
+				"character_art_assemblies"
+			],
+			[
+				"art_",
+				"art_id"
+			],
+			[
+				"assemb",
+				"assembly_id"
+			],
+			[
+				"resu",
+				"result_array"
+			],
+			[
+				"ar",
+				"art_id_2"
+			],
+			[
+				"art_i",
+				"art_id_1"
+			],
+			[
+				"check",
+				"checkCharacterAssemblyExists"
+			],
+			[
+				"active",
+				"activeAssets"
+			],
+			[
+				"charA",
+				"charAssets"
+			],
+			[
+				"ty",
+				"typeInfo"
+			],
+			[
+				"temp",
+				"tempArray"
+			],
+			[
+				"top_",
+				"top_position"
+			],
+			[
+				"assetI",
+				"assetInfo1"
+			],
+			[
+				"ass",
+				"assembly_id"
+			],
+			[
+				"character_art_",
+				"character_art_assemblies"
+			],
+			[
+				"resul",
+				"result"
+			],
+			[
+				"createChara",
+				"createCharacterAssembly"
+			],
+			[
+				"asse",
+				"asset_id"
+			],
+			[
+				"inve",
+				"inventory_required"
+			],
+			[
+				"iv",
+				"invOpt"
+			],
+			[
+				"invent",
+				"inventory_optional"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/js/controllers/fight_planner.js",
+			"settings":
+			{
+				"buffer_size": 9764,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/controllers/static_controller.php",
+			"settings":
+			{
+				"buffer_size": 2429,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/models/static_model.php",
+			"settings":
+			{
+				"buffer_size": 1815,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/js/services.js",
+			"settings":
+			{
+				"buffer_size": 2912,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "fight_planner.html",
+			"settings":
+			{
+				"buffer_size": 2760,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/css/fight_planner.css",
+			"settings":
+			{
+				"buffer_size": 465,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 347.0,
+		"selected_items":
+		[
+			[
+				"packa",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/controllers",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/logs",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/models",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/js/controllers",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/diagnostics",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/views"
+	],
+	"file_history":
+	[
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/controllers/character.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/models/character_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/css/fight_planner.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/controllers/static_controller.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/models/static_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/views/register.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/controllers/gameplayer.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/js/controllers/auth.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/models/auth.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/js/services.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/config/config.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/config/database.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/character.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/team.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/regions.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/writing.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/build_deck.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/build_deck.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/build_deck.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/inventory.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/writing.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/writing_panel.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/narrative.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/gameplayer.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/charsel.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/teamhq.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/charsel.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/art.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/char_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/auth.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/art_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/world.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/teamhq.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/dev.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/writing.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/narrative.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/narrative.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/map.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/deck_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/narrative_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/admin_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/admin.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/services.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/work.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/user_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/dev_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/statics.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/deck.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/static_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/world_panel.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/fast.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/narrative.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/config/database.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/node_modules/bower/node_modules/mout/object/deepEquals.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/bower_components/jquery/test/delegatetest.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/admin.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/dev_panel.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/world_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/admin_panel.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/fast_server.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/work_server.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/artist.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/work.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/views/navbar.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/fast.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/work.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/fast.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/charsel.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/auth-style.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/artist_view.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/artist_view.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/charsel-2.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/map.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/views/master.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/config/routes.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/inventory.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/login.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/node_modules/jshint/node_modules/htmlparser2/test/Events/13-long-cdata-end.json",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/bower_components/jquery/test/data/selector/html5_selector.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/bower_components/jquery/test/unit/selector.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/system/language/english/email_lang.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/sql/sql-exec.sh",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/targets.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/target_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/password_compat/version-test.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/node_modules/bower/node_modules/inquirer/node_modules/cli-color/node_modules/es5-ext/node_modules/es6-iterator/valid-iterable.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/utils.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/system/libraries/Upload.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/Titan.sublime-project",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/region_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/hex_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/inventory_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/world.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/title_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/unused_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/character_skills.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/create_action.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/attraction_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/auth.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/controllers/actions.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/action_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/trade.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/world.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/css/map.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/system/database/DB_active_rec.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/diplomacy.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/register.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/titles.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/character_titles.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/composer.json",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/node_modules/bower/templates/std/conflict-resolved.std",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/diplomacy.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/title.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/application/models/association_model.php",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/hostile_targets.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/inventory.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/character_overview.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/tiles/assets/js/tiles.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/tiles/tiles.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/create_action.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/char_overview.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/tiles/assets/css/tiles.css",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/skills.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/inventory.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/views/friendly_targets.html",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/event_log.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/friendly_targets.js",
+		"/Applications/mappstack-5.4.28-0/apache2/htdocs/zinrocfantasy/assets/js/controllers/ongoing_actions.js"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"trans",
+			"record",
+			"transcript",
+			"console.log",
+			"record",
+			"vitals",
+			"corner",
+			"dodges",
+			"record",
+			"transIndex",
+			"<---",
+			"$scope.victor",
+			"consciousness",
+			"initiates",
+			"has",
+			"initation",
+			"Math.random",
+			"int",
+			"stratBo",
+			"stratBonuses",
+			"cSkills[i",
+			"skills[sid",
+			"skills",
+			"corner.blue",
+			"figher",
+			"$strat",
+			"$strats",
+			"strategies",
+			"selected",
+			"welcome",
+			"login",
+			"username",
+			"region",
+			"regopn",
+			"region",
+			"username",
+			"team_hq",
+			"viewHq",
+			"hq",
+			"team_",
+			"login",
+			"printJSONDatabaseError",
+			"printJSONDatabaseError()",
+			"teamFighters",
+			"$scope.teamFighters",
+			"$scope.card",
+			"pointer",
+			"hover",
+			"style",
+			"button",
+			"name",
+			"viewHq",
+			"            ",
+			"reload",
+			"input",
+			"style",
+			"getJSON",
+			"$scope.cardInfoActive",
+			"TODO",
+			"getCardTempFrom",
+			"stringReplace",
+			"setTraitCheck",
+			"setNarTargEntDomCheckboxes",
+			"setTraitCheckboxes",
+			"updateAbsoluteDescriptions",
+			"setTraitCheckboxes",
+			"$scope.trait",
+			"description",
+			"existing Traits",
+			"entities",
+			"selectCard",
+			"char_id",
+			"preCalc",
+			"echo",
+			"spawnTraits",
+			"DELETE FROM character_se",
+			"charSecTraitInfo",
+			"charSecTraitInfo ",
+			"setNarTargEntDomCheck",
+			"dom",
+			"$scope.doms",
+			"setRelTraitCheckboxes",
+			"$scope.ents[i]",
+			"$scope.ents[i]['checked']",
+			"$scope.vitals",
+			"$scope.vitalMods",
+			"$scope.secTraits[i]['impact']",
+			"$scope.secTraits",
+			"secTraits",
+			"relative trait over",
+			"update target",
+			"compatability Name",
+			"Base Cost",
+			"cardInfo",
+			"ng-select",
+			"selectedCompat",
+			"updateCompatSim",
+			"similar",
+			"LoadCom",
+			"compat",
+			"$scope.compat",
+			"getCompatInfo",
+			"coma",
+			"valeu",
+			"$scope.$scope",
+			"narrative_traits",
+			"absolute_traits",
+			"Entities",
+			"toggle",
+			"upcomingCollisionIndexes",
+			"$scope.upcomingCollisionStats",
+			"upcomingCollision",
+			"setAssetAssembly",
+			"$scope.narrativeActorIndexes",
+			"success",
+			"$scope.activeTarget",
+			"$scope.recentCollisions",
+			"apply",
+			"$scope.upcomingCollisionIndexes",
+			"checkUpcomingCollision",
+			"checkUpcomingCollisions",
+			"$scope.upcomingCollisions",
+			"checkUpcomingCollisions",
+			"checkUpcoming",
+			"$scope.upcomingCollisions[id]",
+			"narrativelogs",
+			"getNarrativeActors",
+			"setAssem"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"association_type"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/js/controllers/fight_planner.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9764,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3075,
+								3075
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1249.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/controllers/static_controller.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2429,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1549,
+								1549
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 290.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/application/models/static_model.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1815,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1217,
+								1217
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 331.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/js/services.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2912,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2865,
+								2865
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 788.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "fight_planner.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2760,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1028,
+								1028
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 262.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/Applications/mappstack-5.4.28-0/apache2/htdocs/arena/assets/css/fight_planner.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 465,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								407,
+								407
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 42.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "arena.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"",
+				"application/models/char_model.php"
+			],
+			[
+				"data",
+				"application/config/database.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"",
+				"!=="
+			]
+		],
+		"width": 467.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 280.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

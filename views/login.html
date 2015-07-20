@@ -1,0 +1,26 @@
+<div ng-controller="authController">
+    <div id="formContainer">
+        <div class="row" id="top_row">
+            <div id="art" class = "col-sm-4 col-md-4"></div> 
+            <div class="col-sm-4 col-md-4" >
+                <form class="form-signin" id="sign-in">
+                    <div id="solid_white">
+                        <h2>Login to your account</h2>
+                    </div>
+
+                    <div class="error" id="email-error">{{errors.email}}</div>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Your email" required="true" tabindex="1" />
+
+                    <div class="error" id="password-error">{{errors.password}}</div>
+                    <input type="password" class="form-control" name="password" id="password" required="true"
+                        placeholder="Your password"
+                        minlength="5"
+                        title="Your password must be a minimum of 5 characters long" tabindex="2" />
+                    <button type="button" class="btn btn-large btn-primary" tabindex="3" ng-click="login($event)">Login</button>
+                </form>
+            </div>
+            <div class = "col-sm-4 col-md-4" id="art"></div> 
+        </div> <!-- top row -->
+
+    </div> <!-- /#formContainer -->
+</div>

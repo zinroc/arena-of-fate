@@ -1,0 +1,129 @@
+/*
+ * Written by Daniel Kats
+ */
+
+canvas {
+    z-index: -1;
+    position: absolute;
+}
+
+#art {
+
+}
+
+.row {
+
+}
+
+html, body, #formContainer {
+    position: left 0px;
+
+    height: 100%;
+    width: 100%;
+}
+
+#top_row {
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width:  100%;
+    height:  100%;
+
+
+    background-size: cover;
+    background-image: url(../img/135.png);
+    background-repeat: repeat;
+    background-position: center -10px;
+
+}
+
+.column {
+    border-color: black;
+}
+
+.container input {
+ 	/** display registration input on multiple lines */
+ 	display: block;
+    margin-bottom: 10px;
+}
+
+#register-btn {
+    text-align: center;
+    margin: 0 auto;
+}
+
+h4.title {
+    text-align: center;
+}
+
+/** Styling for JQuery validator plugin and validator pseudo-classes */
+.container input:focus:valid {
+	border-color: green;
+}
+
+.container input:focus:invalid {
+	border-color: red;
+}
+
+label.error, #serverMsg.error, div.error {
+	font-size: .9em;
+	color: red;
+}
+
+#serverMsg.error {
+    margin-bottom: 3px;
+}
+
+body {
+    /* light grey */
+    background-color: #f0f0f0;
+    /*background-image: linear-gradient(
+        to right,
+        #C5DAFA, #B6CDF2
+    );*/
+}
+
+div.form-signin {
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+
+    padding: 20px;
+
+    text-align: center;
+    z-index: 2;
+}
+
+form.form-signin {
+    max-width: 400px;
+    margin: 0 auto 20px auto;
+
+    padding: 20px;
+}
+
+#sign-in {
+    position: relative;
+    top: 160px;
+}
+
+.form-signin {
+    /* pretty border */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+
+#solid_white {
+        padding: 5px;
+    background-color: rgba(255, 255, 246, 0.8);
+    /* pretty border */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}

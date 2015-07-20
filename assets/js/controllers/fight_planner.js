@@ -143,11 +143,15 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 		}
     }
 
+    $scope.initIncrease = function (side){
+        return $scope.heightConversion($scope.strat[side].initiation_frequency);
+    }
+
     $scope.initiation = function (){
         //check increase fighter initiation.
         for (var i=0; i<$scope.sides.length; i++){
-            $scope.corner[$scope.sides[i]].initiationScore += parseInt(100*Math.random());
-
+            //$scope.corner[$scope.sides[i]].initiationScore += parseInt(100*Math.random());
+            $scope.corner[$scope.sides[i]].initiationScore += $scope.initIncrease($scope.sides[i]);
         }
 
         if($scope.corner['red'].initiationScore > 100 && $scope.corner['blue'].initiationScore > 100){
@@ -167,12 +171,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         } else {
             $scope.initiator = null;
         }
+
         if ($scope.initiator){
             var msg = $scope.corner[$scope.initiator].name + " initiates";
-            console.log(msg);
             $scope.record(msg);
         } else {
-            //console.log("Neither fighter initiates");
         }
     }
 
@@ -340,22 +343,44 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     		}
     	}
     	//initialize side Strat StratBonuses
-		$scope.strat[side] = $scope.strats[$scope.corner[side].strategy];
-		var j=0;
-		for (var i=0; i<$scope.skills.length; i++){
-			if (typeof($scope.stratBonuses[$scope.corner[side].strategy][$scope.skills[i].id]) !=='undefined'){
-				$scope.cStratBonuses[side][j] = {};
-				$scope.cStratBonuses[side][j].name = $scope.skills[i].name;
-				$scope.cStratBonuses[side][j].value = $scope.stratBonuses[$scope.corner[side].strategy][$scope.skills[i].id];
-				j++;
-			}
-
-			//initialize blueSkills
-			$scope.cSkills[side][$scope.skills[i].id] = $scope.fighterSkills[$scope.corner[side].id][$scope.skills[i].id];
-		}
+        $scope.initializeCornerStrategy(side);
 
 		$scope.selectedFighter = null;
 
+    }
+
+    $scope.initializeCornerStrategy = function (side){
+        $scope.strat[side] = $scope.strats[$scope.corner[side].strategy];
+        var j=0;
+        for (var i=0; i<$scope.skills.length; i++){
+            if (typeof($scope.stratBonuses[$scope.corner[side].strategy][$scope.skills[i].id]) !=='undefined'){
+                $scope.cStratBonuses[side][j] = {};
+                $scope.cStratBonuses[side][j].name = $scope.skills[i].name;
+                $scope.cStratBonuses[side][j].value = $scope.stratBonuses[$scope.corner[side].strategy][$scope.skills[i].id];
+                j++;
+            }
+
+            //initialize Skills
+            $scope.cSkills[side][$scope.skills[i].id] = $scope.fighterSkills[$scope.corner[side].id][$scope.skills[i].id];
+        }
+    }
+
+    $scope.showChangeStratInput = function (side){
+        console.log(side);
+        $scope.corner[side].changeStrat = true;
+
+    }
+
+    $scope.hideChangeStratInput = function (side){
+        console.log(side);
+        $scope.corner[side].changeStrat = false;
+
+    }
+
+    $scope.updateSelectedStrat = function(side){
+        console.log($scope.corner[side].changeStratID);
+        $scope.corner[side].strategy = $scope.corner[side].changeStratID;
+        $scope.initializeCornerStrategy(side);
     }
 
     $scope.artStatus = function (side){
@@ -373,4 +398,18 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.getAssetImg = function (art) {
         return gameAPIservice.assetPrefix() + "/img/" + art + ".png";
     }
+
+    $scope.heightConversion = function (height){
+        console.log(height);
+        var rand = parseInt(33*Math.random());
+        if (height==='low'){
+            console.log(rand);
+            return rand;
+        } else if (height ==='medium'){
+            return rand + 33;
+        } else if (height ==='high'){
+            return rand + 66;
+        }
+    }
+
 });

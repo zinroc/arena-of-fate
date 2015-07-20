@@ -50,6 +50,17 @@
 						<div ng-repeat="bonus in cStratBonuses[side]">
 							{{bonus.name.toTitleCase()}} - {{bonus.value}}%
 						</div>
+						<p class="btn btn-primary" ng-if="(!fight.started || fight.paused) && !corner[side].changeStrat" ng-click="showChangeStratInput(side)">Change Strategy</p>
+						
+						<div ng-if="corner[side].changeStrat">
+				            <select class="form-control" ng-change="updateSelectedStrat(side)" ng-model="corner[side].changeStratID">
+				            	<option value=false>---View strats---</option>
+				                <option ng-selected="strategy.id===corner[side].strategy" value="{{strategy.id}}" ng-repeat="strategy in strats">{{strategy.name.toTitleCase()}}</option>
+				            </select>
+				            
+				            <p class="btn btn-primary" ng-click="hideChangeStratInput(side)"> OK </p>
+						</div>
+
 					</div>
 					<span ng-if="corner[side].selected">
 						<p class="btn btn-primary" ng-click="artStatus(side)">Art</p>

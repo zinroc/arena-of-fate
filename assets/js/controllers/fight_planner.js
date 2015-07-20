@@ -219,7 +219,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 console.log($scope.victor.side + " Wins!");
                 $scope.fight.stopped = true;
 
-dasf
+
             }
         }
         if ($scope.fightClock > 10 && $scope.fight.round === 1){

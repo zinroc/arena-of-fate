@@ -45,3 +45,7 @@
 	position: absolute;
 	bottom: 0;
 }
+
+#distanceBar {
+	width: 400px;
+}

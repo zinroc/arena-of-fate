@@ -32,7 +32,8 @@ class Character extends CI_Controller {
     	$this->load->model('character_model');
     	$result = $this->character_model->getFighters();
     	if ($result){
-    		$this->printJSON(array("fighters"=>$result['fighters'], "fighterSkills"=>$result['fighterSkills']));
+    		$this->printJSON(array("fighters"=>$result['fighters'], "fighterSkills"=>$result['fighterSkills'], 
+                "fightersExperience"=>$result['fightersExperience']));
     	} else{
     		$this->printJSONDatabaseError();
     	}

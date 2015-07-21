@@ -1,4 +1,4 @@
-angular.module('App.controllers').controller('fightPlannerController', function ($scope, gameAPIservice) {
+angular.module('App.controllers').controller('fightPlannerController', function ($scope, gameAPIservice, $timeout) {
 	"use strict";
 
 	$scope.fighters = null;
@@ -37,6 +37,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 	$scope.fight.started = false;
 	$scope.distance = null;
 	$scope.fightClock = null;
+    $scope.fightClockMax = 30;
 	$scope.initiator = null;
 	$scope.defender = null;
 	$scope.victor = {};
@@ -45,6 +46,12 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.fight.round = null;
     $scope.fight.paused = null;
 
+    $scope.winningRounds = {};
+
+    $scope.roundWinner = null;
+
+    $scope.fumble = {};
+    $scope.predict = {};
 
 	//vitals
 	$scope.vitals = {};
@@ -53,8 +60,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 	$scope.vitals['blue'] = {};
 	$scope.vitals['blue'].consciousness = null;
 
+
 	$scope.transcript = [];
 	$scope.transIndex = 0;
+
+    $scope.experience = {};
 
 
 
@@ -69,6 +79,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         } else {
             $scope.fighters = response.fighters;
             $scope.fighterSkills = response.fighterSkills;
+            $scope.fightersExperience = response.fightersExperience;
         }
         $scope.loaded = true;
 
@@ -110,7 +121,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
 
     $scope.fightLoop = function (){
-        while (!$scope.fight.stopped && !$scope.fight.paused){
+
+        if(!$scope.fight.stopped && !$scope.fight.paused){
+            $timeout(function(){$scope.fightLoop();}, 300);
+            $scope.movement();
             $scope.initiation();
             if ($scope.initiator){
                 $scope.resolveInitiation();
@@ -128,6 +142,28 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     }
 
+    $scope.getMovement = function (side){
+        var optimalDistance = $scope.distanceConversion($scope.strat[side].range);
+        var nextMovement = (optimalDistance - $scope.distance)/2;
+        //console.log(side, optimalDistance, $scope.distance);
+        return nextMovement;
+
+    }
+
+    $scope.movement = function (){
+        for (var i=0; i<$scope.sides.length; i++){
+            $scope.corner[$scope.sides[i]].nextMovement = $scope.getMovement($scope.sides[i]);
+        }
+
+        for (var i=0; i<$scope.sides.length; i++){
+            $scope.distance += $scope.corner[$scope.sides[i]].nextMovement;
+            console.log($scope.corner[$scope.sides[i]].name.toTitleCase() + " moves " +
+                $scope.corner[$scope.sides[i]].nextMovement + " to distance " + $scope.distance);
+        }
+
+
+    }
+
     $scope.initializeFight = function (){
 
     	$scope.fight.started = true;
@@ -135,11 +171,23 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 		$scope.fightClock = 0;
         $scope.fight.round = 1;
         $scope.fight.paused = false;
+        $scope.roundWinner = [];
+        $scope.distance = 100;
+
 
 		console.log("initializing fight");
 		for (var i=0; i<$scope.sides.length; i++){
 			$scope.vitals[$scope.sides[i]].consciousness = 100;
+            $scope.vitals[$scope.sides[i]].cardio = 1000;
 			$scope.corner[$scope.sides[i]].initiationScore = 0;
+            $scope.corner[$scope.sides[i]].gassed = false;
+
+            $scope.fumble[$scope.sides[i]] = false;
+            $scope.predict[$scope.sides[i]] = false;
+
+            $scope.corner[$scope.sides[i]].nextMovement = 0;
+
+            $scope.winningRounds[$scope.sides[i]] = 0;
 		}
     }
 
@@ -147,11 +195,24 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return $scope.heightConversion($scope.strat[side].initiation_frequency);
     }
 
+    $scope.idleCardioPayment = function(side){
+        return $scope.heightConversion($scope.strat[side].base_cardio);
+    }
+
     $scope.initiation = function (){
-        //check increase fighter initiation.
+
         for (var i=0; i<$scope.sides.length; i++){
             //$scope.corner[$scope.sides[i]].initiationScore += parseInt(100*Math.random());
-            $scope.corner[$scope.sides[i]].initiationScore += $scope.initIncrease($scope.sides[i]);
+
+            if($scope.vitals[$scope.sides[i]].cardio > 0) {
+                $scope.corner[$scope.sides[i]].initiationScore += $scope.initIncrease($scope.sides[i]);
+                $scope.corner[$scope.sides[i]].gassed = false;
+
+                $scope.vitals[$scope.sides[i]].cardio -= $scope.idleCardioPayment($scope.sides[i]);
+            } else {
+                //fighter is low on cardio and vulnerable
+                $scope.corner[$scope.sides[i]].gassed = true;
+            }
         }
 
         if($scope.corner['red'].initiationScore > 100 && $scope.corner['blue'].initiationScore > 100){
@@ -177,28 +238,117 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.record(msg);
         } else {
         }
+        return;
+    }
+
+    $scope.getPowerScore = function (side){
+        var base = 100;
+
+        return parseInt(100*Math.random());
+    }
+
+    $scope.getSpeedScore = function (side){
+        var base = 100;
+
+        return parseInt(base*Math.random());
+    }
+
+    $scope.getAccuracyScore = function (side){
+        var base = 100;
+
+        if($scope.predict[side]){
+            base += 50;
+        }
+
+        return parseInt(base*Math.random());
+    }
+
+    $scope.getEvasionScore = function (side){
+        var base = 100;
+        if($scope.corner[side].gassed){
+            base -= 90;
+        }
+        return parseInt(base*Math.random());
+    }
+
+    $scope.getReflexScore = function (side){
+        var base = 100;
+        if($scope.corner[side].gassed){
+            base -= 90;
+        }
+        if($scope.predict[side]){
+            base +=50;
+        }
+
+        return parseInt(base*Math.random());
+    }
+
+    $scope.initiationCardioPayment = function(side){
+        return $scope.heightConversion($scope.strat[side].initiation_cardio);
+    }
+
+    $scope.checkAdvantage = function (initiator, defender){
+    
+        var initiatorAs = $scope.fightersExperience[$scope.corner[initiator].id][$scope.strat[initiator].id].as;
+        var initiatorAgainst = $scope.fightersExperience[$scope.corner[initiator].id][$scope.strat[initiator].id].against;
+        var defenderAs = $scope.fightersExperience[$scope.corner[defender].id][$scope.strat[defender].id].as;
+        var defenderAgainst = $scope.fightersExperience[$scope.corner[defender].id][$scope.strat[defender].id].against;
+
+        var initiatorDifficulty = $scope.heightConversion($scope.strat[initiator].difficulty);
+        var defenderDifficulty = $scope.heightConversion($scope.strat[defender].difficulty);
+
+        
+        var msg ="";
+        if (initiatorDifficulty > initiatorAs) {
+            $scope.fumble[initiator] = true;
+            msg += $scope.corner[initiator].name.toTitleCase() + " fumbles. ";
+        }
+
+        if (defenderDifficulty > defenderAs) {
+            $scope.fumble[defender] = true;
+            msg += $scope.corner[defender].name.toTitleCase() + " fumbles. ";
+        }
+
+        if (initiatorAgainst - defenderDifficulty > defenderAs){
+            $scope.predict[initiator] = true;
+            msg += $scope.corner[initiator].name.toTitleCase() + " predicts " + $scope.corner[defender].name.toTitleCase() + "'s next movement.";
+        }
+
+        if (defenderAgainst - initiatorDifficulty > initiatorAs){
+            $scope.predict[defender] = true;
+            msg += $scope.corner[defender].name.toTitleCase() + " predicts " + $scope.corner[initiator].name.toTitleCase() + "'s next movement.";
+        }
+        $scope.record(msg);
+
     }
 
     $scope.resolveInitiation = function (){
         $scope.corner[$scope.initiator].initiationScore = 0;
 
-        var accuracyScore = parseInt(100*Math.random());
-        var evasionScore = parseInt(100*Math.random());
-        var speedScore = parseInt(100*Math.random());
-        var reflexScore = parseInt(100*Math.random());
-        var powerScore = parseInt(100*Math.random());
+        $scope.checkAdvantage($scope.initiator, $scope.defender);
+
+
+        $scope.vitals[$scope.initiator].cardio -= $scope.initiationCardioPayment($scope.initiator);
+
+        var powerScore = $scope.getPowerScore($scope.initiator);
+        var speedScore = $scope.getSpeedScore($scope.initiator);
+        var accuracyScore = $scope.getAccuracyScore($scope.initiator);
+        var evasionScore = $scope.getEvasionScore($scope.defender);
+        var reflexScore = $scope.getReflexScore($scope.defender);
+
+        if($scope.corner[$scope.defender].gassed){
+            var msg = $scope.corner[$scope.defender].name.toTitleCase() + " looks gassed";
+            $scope.record(msg);
+        }
 
         if (accuracyScore < evasionScore){
             var msg = $scope.corner[$scope.defender].name.toTitleCase() + " dodges attack";
-            console.log(msg);
             $scope.record(msg);
 
         } else if (speedScore < reflexScore){
             var msg = $scope.corner[$scope.defender].name + " manages to partially counteract the attack";
-            console.log(msg)
             $scope.record(msg);
             var counter = reflexScore - speedScore;
-            //console.log(powerScore, counter);
             $scope.dealDamage($scope.defender, Math.max(powerScore-counter/2,0));
             $scope.dealDamage($scope.initiator, Math.max(counter-powerScore/2, 0));
 
@@ -226,28 +376,66 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                     }
                 }
                 console.log($scope.victor.side + " Wins!");
-                $scope.fight.stopped = true;
+                //$scope.fight.stopped = true;
 
 
             }
         }
-        if ($scope.fightClock > 10 && $scope.fight.round === 1){
-            $scope.fight.paused = true; 
-            console.log("Round 1 Ends");
-        } else if ($scope.fightClock > 20 && $scope.fight.round === 2){
-            $scope.fight.paused = true;
-            console.log("Round 2 Ends");
-        } else if ($scope.fightClock > 30){
-            $scope.victor.side = 'tie';
-            $scope.fight.stopped = true;
 
+        $scope.endRound();
+
+    }
+
+    $scope.endRound = function (){
+        if ($scope.fightClock > 10*$scope.fight.round){
+            $scope.fight.paused = true; 
+            console.log("Round" + $scope.fight.round + " Ends");
+
+            if($scope.vitals['red'].consciousness > $scope.vitals['blue'].consciousness){
+                $scope.roundWinner[$scope.fight.round] = 'red';
+                $scope.winningRounds['red']++;
+            } else if ($scope.vitals['red'].consciousness < $scope.vitals['blue'].consciousness){
+                $scope.roundWinner[$scope.fight.round] = 'blue';
+                $scope.winningRounds['blue']++;
+            } else {
+                $scope.roundWinner[$scope.fight.round] = 'tie';
+            }
+
+            if ($scope.fightClock > $scope.fightClockMax){
+                if ($scope.winningRounds['red'] > $scope.winningRounds['blue']){
+                    $scope.victor.side = 'red';
+                } else if ($scope.winningRounds['red'] < $scope.winningRounds['blue']){
+                    $scope.victor.side = 'blue';
+                } else {
+                    $scope.victor.side = 'tie';
+                }
+                $scope.fight.stopped = true;
+            }
         }
     }
 
-    $scope.regen = function (side){
-        $scope.vitals[side].consciousness = parseInt(Math.min($scope.vitals[side].consciousness + 50*Math.random(), 100));
+    $scope.regenConsciousness = function(side){
+        var base = parseInt(50*Math.random());
+        return Math.min(base, 100-$scope.vitals[side].consciousness);
+    }
 
-        var msg = $scope.corner[side].name.toTitleCase() + " recovers to " + $scope.vitals[side].consciousness + " consciousness.";
+    $scope.regenCardio = function(side){
+        var base = parseInt(1000*Math.random());
+
+        return Math.min(base, 1000-$scope.vitals[side].cardio);
+    }
+
+    $scope.regen = function (side){
+
+        //regenerate consciousness
+        var consciousnessRegen = $scope.regenConsciousness(side);
+        $scope.vitals[side].consciousness += consciousnessRegen;
+        //regenerate cardio
+        var cardioRegen = $scope.regenCardio(side);
+        $scope.vitals[side].cardio += cardioRegen;
+
+        var msg = $scope.corner[side].name.toTitleCase() + " recovers " + consciousnessRegen + " consciousness " +
+        " and " + cardioRegen + " cardio at the end of round " + $scope.fight.round + ".";
         $scope.record(msg);
     }
 
@@ -266,7 +454,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 	    	$scope.vitals[target].consciousness -= damage;
 	    	var msg = $scope.corner[target].name + " takes " + damage + " damage and has " 
 	    		+ $scope.vitals[target].consciousness + " consciousness remaining";
-	    	console.log(msg);
 	    	$scope.record(msg);
 	    	return;
     	}
@@ -339,6 +526,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     			$scope.corner[side].selected = true;
     			$scope.corner[side].status = 'art';
 
+                $scope.experience[side] = $scope.fightersExperience[$scope.fighters[i].id];
+
     			break;
     		}
     	}
@@ -363,22 +552,20 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             //initialize Skills
             $scope.cSkills[side][$scope.skills[i].id] = $scope.fighterSkills[$scope.corner[side].id][$scope.skills[i].id];
         }
+
     }
 
     $scope.showChangeStratInput = function (side){
-        console.log(side);
         $scope.corner[side].changeStrat = true;
 
     }
 
     $scope.hideChangeStratInput = function (side){
-        console.log(side);
         $scope.corner[side].changeStrat = false;
 
     }
 
     $scope.updateSelectedStrat = function(side){
-        console.log($scope.corner[side].changeStratID);
         $scope.corner[side].strategy = $scope.corner[side].changeStratID;
         $scope.initializeCornerStrategy(side);
     }
@@ -400,15 +587,24 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     }
 
     $scope.heightConversion = function (height){
-        console.log(height);
         var rand = parseInt(33*Math.random());
         if (height==='low'){
-            console.log(rand);
             return rand;
         } else if (height ==='medium'){
             return rand + 33;
         } else if (height ==='high'){
             return rand + 66;
+        }
+    }
+
+    $scope.distanceConversion = function (distance){
+        var rand = parseInt(33*Math.random());
+        if(distance==='close'){
+            return rand;
+        } else if (distance==='medium'){
+            return rand+33;
+        } else if (distance ==='far'){
+            return rand+66;
         }
     }
 

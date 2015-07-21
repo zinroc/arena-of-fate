@@ -16,15 +16,21 @@
 					</div>
 				</div>
 			</div>
+			<h3 ng-if="fight.started">Fight Started!</h3>
+			<div id="distanceBar">
+				<input type="range" ng-model="distance" min="0" max="100"> {{distance}}
+			</div>
+
 			<div ng-if="fight.started" id="transcript" class="col-md-3">
-				<h3 ng-if="victor.side && victor.side !=='tie'">{{corner[victor.side].name.toTitleCase()}} Wins!</h3>
-				<h3 ng-if="victor.side==='tie'">Tie!</h3>
+				<h3 ng-if="victor.side && victor.side !=='tie' && fight.stopped">{{corner[victor.side].name.toTitleCase()}} Wins!</h3>
+				<h3 ng-if="victor.side==='tie' && fight.stopped">Tie!</h3>
+				<b>{{winningRounds['red']}} - {{winningRounds['blue']}}</b> <br>
 				<b> Round {{fight.round}} Transcript </b><br>
 				<div id="overflow">
 					<div ng-repeat="msg in transcript track by $index">
 						{{msg.toTitleCase()}}
 					</div>
-				</div>
+				</div><br>
 				<span><p class="btn btn-primary" ng-click="reset()" ng-if="fight.stopped"> Reset </p></span>
 				<spam><p class="btn btn-primary" ng-click="startNextRound()" ng-if="!fight.stopped && fight.paused"> Start Next Round</p></spam>
 			</div>
@@ -40,7 +46,7 @@
 						</div>
 					</div>
 					<div ng-if="corner[side].status==='strategy'">
-						<h5> Strategy: {{strat[side].name.toTitleCase()}} - EXP: TODO </h5>
+						<h5> {{strat[side].name.toTitleCase()}} - EXP: {{experience[side][strat[side].id].as}} </h5>
 						Initiation Frequency: {{strat[side].initiation_frequency}}
 						<br>
 						Cardio expendature: {{strat[side].base_cardio}} and {{strat[side].initiation_cardio}} when initiating <br>

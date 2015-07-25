@@ -493,32 +493,71 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         if (speedScore < reflexScore){
             var msg = $scope.corner[$scope.defender].name + " manages to react";
             $scope.record(msg);
-
             $scope.corner[$scope.defender].blocked = true;
 
         }
 
         if ($scope.corner[$scope.defender].dodged && $scope.corner[$scope.defender].blocked){
-            if(!$scope.corner[$scope.defender].gassed){
-                var counter = reflexScore - speedScore;
-                $scope.dealDamage($scope.initiator, Math.max(counter-powerScore/2, 0));
-            }
-
-            $scope.resetTempCombatMods();
+            $scope.evaluateCounter($scope.defender, reflexScore, speedScore);
         } else if ($scope.corner[$scope.defender].dodged){
-            //nothing
+            $scope.evaluateDodge($scope.defender);
         } else if ($scope.corner[$scope.defender].blocked){
-            var counter = reflexScore - speedScore;
-            if(powerScore - counter/2 < 0){
-                var msg= $scope.corner[$scope.defender].name.toTitleCase() + " fully blocks the attack";
-                $scope.record(msg);
-            }
-            $scope.dealDamage($scope.defender, Math.max(powerScore-counter/2,0));
+            $scope.evaluateBlock($scope.defender, reflexScore, speedScore, powerScore);
+
         } else {
             $scope.dealDamage($scope.defender, powerScore);
         }
+        $scope.resetTempCombatMods();
 
         return;
+    }
+
+    $scope.evaluateBlock = function (blocker, reflex, speed, power){
+        var windowSize = null;
+        if(reflex - speed < 33){
+            windowSize = 0.33;
+        } else if (reflex - speed < 66) {
+            windowSize = 0.66;
+        } else {
+            windowSize = 1;
+        }
+        var blockScore = parseInt($scope.getPowerScore($scope.blocker)*windowSize);
+        if (blockScore > power){
+            var msg= $scope.corner[$scope.defender].name.toTitleCase() + " fully blocks the attack";
+            $scope.record(msg);
+        } else {
+            var msg = $scope.corner[blocker].name.toTitleCase() + " blocks " + (power-blockScore) + " damage.";
+            $scope.record(msg);
+            $scope.dealDamage($scope.defender, power-blockScore);
+        }
+
+        $scope.evaluateCounter(blocker, reflex, speed);
+
+    }
+
+    $scope.evaluateDodge = function (dodger){
+        return;
+    }
+
+    $scope.evaluateCounter = function(counterer, reflex, speed){
+        
+        if(!$scope.corner[counterer].gassed){
+            var windowSize = null;
+            if(reflex - speed < 33){
+                windowSize = 0.33;
+            } else if (reflex - speed < 66) {
+                windowSize = 0.66;
+            } else {
+                windowSize = 1;
+            }
+
+            var powerScore = $scope.getPowerScore($scope.counterer);
+            var counterDMG = parseInt(powerScore*windowSize);
+            
+
+            $scope.dealDamage($scope.initiator, counterDMG);
+            $scope.vitals[counterer].cardio -= parseInt($scope.idleCardioPayment(counterer)/2);
+        }
     }
 
     $scope.resetTempCombatMods = function (){

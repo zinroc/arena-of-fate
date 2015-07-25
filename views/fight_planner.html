@@ -9,7 +9,7 @@
 						<span id="hover" class="glyphicon glyphicon-user" ng-click="selectFighter(fighter.id)"></span>
 						{{fighter.name.toTitleCase()}}
 
-						<p ng-if="selectedFighter===fighter.id" class="btn btn-danger" ng-click="placeInCorner(fighter.id, 'red')"> Red Corner </p>
+						<p ng-if="selectedFighter===fighter.id" class="btn btn-danger" ng-click="placeInCorner(fighter.id, 'red')">Red Corner </p>
 						<p ng-if="selectedFighter===fighter.id" class="btn btn-primary"
 						ng-click="placeInCorner(fighter.id, 'blue')"> Blue Corner </p>
 
@@ -17,9 +17,7 @@
 				</div>
 			</div>
 			<h3 ng-if="fight.started">Fight Started!</h3>
-			<div id="distanceBar">
-				<input type="range" ng-model="distance" min="0" max="100"> {{distance}}
-			</div>
+
 
 			<div ng-if="fight.started" id="transcript" class="col-md-3">
 				<h3 ng-if="victor.side && victor.side !=='tie' && fight.stopped">{{corner[victor.side].name.toTitleCase()}} Wins!</h3>
@@ -28,7 +26,7 @@
 				<b> Round {{fight.round}} Transcript </b><br>
 				<div id="overflow">
 					<div ng-repeat="msg in transcript track by $index">
-						{{msg.toTitleCase()}}
+						<t ng-if="msg">{{$index}} - {{msg.toTitleCase()}} </t>
 					</div>
 				</div><br>
 				<span><p class="btn btn-primary" ng-click="reset()" ng-if="fight.stopped"> Reset </p></span>
@@ -68,7 +66,7 @@
 						</div>
 
 					</div>
-					<span ng-if="corner[side].selected">
+					<span ng-if="corner[side].selected && !fight.started">
 						<p class="btn btn-primary" ng-click="artStatus(side)">Art</p>
 						<p class="btn btn-primary" ng-click="statsStatus(side)">Stats</p>
 						<p class="btn btn-primary" ng-click="strategyStatus(side)">Strategy</p>

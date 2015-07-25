@@ -36,7 +36,21 @@
 			<div ng-repeat="side in sides">
 				<div id="fighter_box" class="col-md-3" >
 					<h4>{{corner[side].name.toTitleCase()}}</h4>
-					<img id="fighterArt" ng-if="corner[side].status==='art'"ng-src="{{ getAssetImg(corner[side].art) }}" />
+					<img id="fighterArt" ng-if="corner[side].status==='art' && !fight.started" ng-src="{{ getAssetImg(corner[side].art) }}" />
+					<div ng-if="corner[side].status==='art' && fight.started">
+						<img id="fighterArtStarted" ng-src="{{ getAssetImg(corner[side].art) }}" />
+						<div id="fightBars" ng-repeat="bar in fightBars">
+							{{bar.toTitleCase()}} {{getBarValue(bar, side)}} {{barValue[bar].side}}
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{getBarPercent(bar, side)}}%;">
+								{{getBarValue(bar, side)}}
+								</div>
+							</div>
+						</div>
+						<div id="fightRange" style="color: {{getRangeColor(side)}};">
+							{{getRangeWord()}} Range
+						</div>
+					</div>
 					<div ng-if="corner[side].status==='stats'">
 						<h5> Skills </h5>
 						<div ng-repeat="skill in skills">
@@ -66,7 +80,7 @@
 						</div>
 
 					</div>
-					<span ng-if="corner[side].selected && !fight.started">
+					<span ng-if="corner[side].selected && (!fight.started || fight.paused)">
 						<p class="btn btn-primary" ng-click="artStatus(side)">Art</p>
 						<p class="btn btn-primary" ng-click="statsStatus(side)">Stats</p>
 						<p class="btn btn-primary" ng-click="strategyStatus(side)">Strategy</p>

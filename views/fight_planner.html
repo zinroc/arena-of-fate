@@ -54,7 +54,7 @@
 					<div ng-if="corner[side].status==='stats'">
 						<h5> Skills </h5>
 						<div ng-repeat="skill in skills">
-							{{skill.name.toTitleCase()}}: {{cSkills[side][skill.id]}}/100;
+							{{skill.name.toTitleCase()}}: {{cSkills[side][skill.name]}}/100;
 						</div>
 					</div>
 					<div ng-if="corner[side].status==='strategy'">

@@ -799,7 +799,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     }
 
     $scope.getAssetImg = function (art) {
-        return gameAPIservice.assetPrefix() + "/img/" + art + ".png";
+        return gameAPIservice.assetPrefix() + "/img2/" + art + ".png";
     }
 
     $scope.heightConversion = function (height){

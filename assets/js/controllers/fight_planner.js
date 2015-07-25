@@ -19,7 +19,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 	$scope.strat = {};
 	$scope.strat['red'] = {};
 	$scope.cStratBonuses = {};
-	$scope.cStratBonuses['red'] = {};
+	$scope.cStratBonuses['red'] = [];
 	$scope.cSkills = {};
 	$scope.cSkills['red'] = {};
 
@@ -29,7 +29,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 	$scope.corner['blue'].status = null;
 
 	$scope.strat['blue'] = {};
-	$scope.cStratBonuses['blue'] = {};
+	$scope.cStratBonuses['blue'] = [];
 	$scope.cSkills['blue'] = {};
 
 	//fight parameters
@@ -441,8 +441,29 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     }
 
+    $scope.getIndexOf = function(array, object, target){
+        var result = false;
+        for(var i=0; i<array.length; i++){
+            if(array[i][object]===target){
+                result = i;
+            }
+        }
+
+        return result;
+    }
+
     $scope.getSkill = function (side, skill){
-        return parseInt($scope.cSkills[side][skill]);
+        var base  = parseInt($scope.cSkills[side][skill]);
+        var index = $scope.getIndexOf($scope.cStratBonuses[side], 'name', skill);
+
+
+        if ((index || index===0) && !$scope.corner[side].dazed){
+            var bonusMod = parseInt($scope.cStratBonuses[side][index].value);
+            bonusMod = 1+(bonusMod/100);
+        } else {
+            var bonusMod = 1;
+        }
+        return parseInt(bonusMod*base);
     }
 
     $scope.getPowerScore = function (side){
@@ -829,7 +850,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     	if (damage===0){
     		return;
     	} else {
-	    	
             //check if target vulnerable
             var vulnerableMod = $scope.checkVulnerable(target);
             var chinMod = (150-$scope.getSkill(target, 'chin'))/100;
@@ -845,9 +865,19 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.vitals[target].facing -= facingDMG;
             $scope.vitals[target].bloodied += bloodiedDMG;
 
-            if (consciousnessDMG + facingDMG > 0){
-    	    	var msg = $scope.corner[target].name + " takes " + consciousnessDMG + " consciousness damage, loses " + facingDMG + 
-                " facing and " + bloodiedDMG + " bloodied damage";
+            if (consciousnessDMG + facingDMG + bloodiedDMG > 0){
+    	    	
+                var msg = $scope.corner[target].name + " takes ";
+                if(consciousnessDMG){
+                    msg += consciousnessDMG + " consciousness ";
+                }
+                if (facingDMG){
+                    msg += facingDMG + " facing ";
+                }
+                if (bloodiedDMG){
+                    msg += bloodiedDMG + " bloodied ";
+                }
+                msg += " damage ";
 
                 $scope.record(msg);
             }
@@ -941,7 +971,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     		//strategies
     		$scope.strat[otherSide] = {};
-    		$scope.cStratBonuses[otherSide] = {};
+    		$scope.cStratBonuses[otherSide] = [];
 
     		//skills
     		$scope.cSkills[otherSide] = {};

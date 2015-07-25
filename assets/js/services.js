@@ -70,6 +70,10 @@ angular.module('App.services', []).factory('gameAPIservice', function($http) {
 		});
 	};
 
+	gameAPI.setCharacterSkills = function(){
+		return this.getJSON('character', 'setSkills');
+	}
+
     gameAPI.authenticateUser = function (email, password) {
         return this.getJSONWithParams("gameplayer", "authenticateUser", {"email": email, "password": password});
     };

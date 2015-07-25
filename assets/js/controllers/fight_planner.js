@@ -717,7 +717,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     	//remove fighter from wrong corner
     	if (side ==='red'){
     		var otherSide = 'blue';
-    	} else {
+    	} else if (side==='blue'){
     		var otherSide = 'red';
     	}
     	if(id === $scope.corner[otherSide].id){
@@ -738,9 +738,19 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     	//initiatize side
     	for (var i=0; i<$scope.fighters.length; i++){
     		if ($scope.fighters[i].id ===id){
-    			$scope.corner[side] = $scope.fighters[i];
+                if($scope.corner[side].status){
+                    var tempStatus = $scope.corner[side].status;
+                } else {
+                    var tempStatus = 'art';
+                }
+                $scope.corner[side] = $scope.fighters[i];
+
     			$scope.corner[side].selected = true;
-    			$scope.corner[side].status = 'art';
+                console.log($scope.corner[side].status);
+
+    			$scope.corner[side].status = tempStatus;
+
+                console.log($scope.corner[side].status);
 
                 $scope.experience[side] = $scope.fightersExperience[$scope.fighters[i].id];
 
@@ -749,7 +759,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     	}
     	//initialize side Strat StratBonuses
         $scope.initializeCornerStrategy(side);
-
 		$scope.selectedFighter = null;
 
     }

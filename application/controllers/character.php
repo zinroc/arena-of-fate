@@ -28,6 +28,12 @@ class Character extends CI_Controller {
         }
     }
 
+    public function setSkills (){
+        $this->load->model('character_model');
+        $result = $this->character_model->setSkills();
+        $this->printJSONSuccess('hi');
+    }
+
     public function getFighters (){
     	$this->load->model('character_model');
     	$result = $this->character_model->getFighters();

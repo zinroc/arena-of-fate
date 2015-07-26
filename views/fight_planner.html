@@ -40,11 +40,12 @@
 					<div ng-if="corner[side].status==='art' && fight.started">
 						<img id="fighterArtStarted" ng-src="{{ getAssetImg(corner[side].art) }}" />
 						<div id="fightBars" ng-repeat="bar in fightBars">
-							{{bar.toTitleCase()}} {{getBarValue(bar, side)}} {{barValue[bar].side}}
 							<div class="progress">
-								<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{getBarPercent(bar, side)}}%;">
-								{{getBarValue(bar, side)}}
+
+								<div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{getBarPercent(bar, side)}}%;">
+								<span style="color: black; position: absolute; text-align: left;"> {{bar.toTitleCase()}}</span>
 								</div>
+
 							</div>
 						</div>
 						<div id="fightRange" style="color: {{getRangeColor(side)}};">

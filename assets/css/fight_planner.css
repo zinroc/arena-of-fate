@@ -10,6 +10,11 @@
 	border: thick black solid;
 }
 
+#modifierBox {
+	position: relative;
+	margin: 5px;
+}
+
 #fighter_box span {
    position: absolute;
    bottom: 0;
@@ -35,7 +40,7 @@
 }
 
 #allSkillBars {
-	
+
 	overflow: scroll;
 	height: 300px;
 }

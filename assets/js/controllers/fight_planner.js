@@ -56,6 +56,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.fumble = {};
     $scope.predict = {};
 
+    $scope.modifiers = ['initiator', 'defender','gassed', 'pinned', 'dazed', 'dodged', 'blocked', 'quit', 'unconscious', 'fumble', 'predict'];
+
 	//vitals
 	$scope.vitals = {};
 	$scope.vitals['red'] = {};
@@ -119,6 +121,24 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     });
 
+    $scope.getModifierValue = function (side, modifier){
+        //console.log(side, modifier);
+        if(modifier==='initiator'){
+            if($scope.initiator ===side){
+                return true;
+            }
+        } else if (modifier==='defender'){
+            if($scope.defender ===side){
+                return true;
+            }
+        } else if (modifier ==='fumble'){
+            return $scope.fumble[side];
+        } else if (modifier === 'predict'){
+            return $scope.predict[side];
+        } else {
+            return $scope.corner[side][modifier];
+        }
+    }
 
     $scope.getBarValue = function (bar, side){
                 
@@ -208,7 +228,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.fightLoop = function (){
 
         if(!$scope.fight.stopped && !$scope.fight.paused){
-            $timeout(function(){$scope.fightLoop();}, 300);
+
+            $scope.resetTempCombatMods();
             $scope.movement();
             $scope.initiation();
             if ($scope.initiator){
@@ -229,6 +250,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.setBarValues();
 
             $scope.fightClock++;
+            $timeout(function(){$scope.fightLoop();}, 1500);
         }
     }
 
@@ -292,7 +314,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.sides[i]].pinned = false; // facing
             $scope.corner[$scope.sides[i]].dazed = false;
             $scope.corner[$scope.sides[i]].quit = false;
-            
+            $scope.corner[$scope.sides[i]].unconscious = false;
 
             $scope.corner[$scope.sides[i]].dodged = false; //evasion vs accuracy
             $scope.corner[$scope.sides[i]].blocked = false; // reflex vs speed
@@ -319,7 +341,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     }
 
     $scope.idleCardioPayment = function(side){
-        return $scope.heightConversion($scope.strat[side].base_cardio);
+        return parseInt($scope.heightConversion($scope.strat[side].base_cardio)/2);
     }
 
     $scope.updateStatuses = function(side){
@@ -618,7 +640,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         } else {
             $scope.dealDamage($scope.defender, powerScore);
         }
-        $scope.resetTempCombatMods();
+
 
         return;
     }
@@ -675,7 +697,12 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         for(var i=0; i<$scope.sides.length; i++){
             $scope.corner[$scope.sides[i]].dodged = false;
             $scope.corner[$scope.sides[i]].blocked = false;
+
+            $scope.fumble[$scope.sides[i]] = false;
+            $scope.predict[$scope.sides[i]] = false;
         }
+        $scope.initiator = null;
+        $scope.defender = null;
     }
 
     $scope.otherSide = function(side){
@@ -691,6 +718,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         for(var i=0; i<$scope.sides.length; i++){
             var otherSide = $scope.otherSide($scope.sides[i]);
             if ($scope.vitals[$scope.sides[i]].consciousness < 0){
+
+                $scope.corner[$scope.sides[i]].unconscious = true;
+
                 var msg=$scope.corner[$scope.sides[i]].name.toTitleCase() + " is knocked unconscious! " 
                 + $scope.corner[otherSide].name.toTitleCase() + " is victorious!";
 
@@ -699,6 +729,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 } else {
                     msg = "Both fighters are knocked unconscious! This is a tie!";
                     $scope.victor.side = 'tie';
+
+                    $scope.corner[otherSide].unconscious = true;
                 }
                 $scope.record(msg);
                 $scope.fight.stopped = true;
@@ -949,6 +981,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 			$scope.corner[$scope.sides[i]].selected = false;
 			$scope.corner[$scope.sides[i]].status = null;
             $scope.corner[$scope.sides[i]].quit = false;
+            $scope.corner[$scope.sides[i]].unconscious = false;
 			$scope.victor = {};
 			$scope.victor.side = null;
 		}
@@ -1013,6 +1046,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     			$scope.corner[side].selected = true;
 
     			$scope.corner[side].status = tempStatus;
+
+                $scope.show[side].skills = false;
 
 
                 $scope.experience[side] = $scope.fightersExperience[$scope.fighters[i].id];

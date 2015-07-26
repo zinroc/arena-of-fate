@@ -51,6 +51,12 @@
 						<div id="fightRange" style="color: {{getRangeColor(side)}};">
 							{{getRangeWord()}} Range
 						</div>
+						<div id="modifierBox">
+							<h4>Status Effects</h4>
+							<t ng-repeat="modifier in modifiers" ng-if="getModifierValue(side, modifier)">
+								{{modifier}}
+							</t>
+						</div>
 					</div>
 					<div ng-if="corner[side].status==='stats'">
 						<h5><t ng-if="!show[side].skills"> Noteworthy</t> Skills </h5>

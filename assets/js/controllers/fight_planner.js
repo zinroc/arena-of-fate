@@ -15,6 +15,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 	$scope.corner['red'].name = 'empty';
 	$scope.corner['red'].selected = false;
 	$scope.corner['red'].status = null;
+    $scope.show = {}
+    $scope.show['red'] = {};
 
 	$scope.strat = {};
 	$scope.strat['red'] = {};
@@ -27,6 +29,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 	$scope.corner['blue'].name = 'empty';
 	$scope.corner['blue'].selected = false;
 	$scope.corner['blue'].status = null;
+    $scope.show['blue'] = {};
 
 	$scope.strat['blue'] = {};
 	$scope.cStratBonuses['blue'] = [];
@@ -846,6 +849,17 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     }
 
+    $scope.getSkillColor = function (value){
+        console.log(value);
+        if(value < 20){
+            return 'progress-bar-danger';
+        } else if (value > 80){
+            return 'progress-bar-success';
+        } else {
+            return 'progress-bar-info';
+        }
+    }
+
     $scope.dealDamage = function(target, damage){
     	if (damage===0){
     		return;
@@ -950,7 +964,15 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 		$scope.transcript = [];
 	}
 
+    $scope.showAllSkills = function (side){
+        $scope.show[side].skills = true;
+        return;
+    }
 
+    $scope.hideAllSkills = function (side){
+        $scope.show[side].skills = false;
+        return;
+    }
 
     $scope.selectFighter = function (id){
     	$scope.selectedFighter = id;

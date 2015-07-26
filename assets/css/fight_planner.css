@@ -29,6 +29,16 @@
 	left: 35%;
 	width: 60%;
 }
+#skillBars {
+	position: : relative;
+
+}
+
+#allSkillBars {
+	
+	overflow: scroll;
+	height: 300px;
+}
 
 #fighterArt{
 

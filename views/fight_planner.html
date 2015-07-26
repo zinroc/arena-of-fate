@@ -53,9 +53,17 @@
 						</div>
 					</div>
 					<div ng-if="corner[side].status==='stats'">
-						<h5> Skills </h5>
-						<div ng-repeat="skill in skills">
-							{{skill.name.toTitleCase()}}: {{cSkills[side][skill.name]}}/100;
+						<h5><t ng-if="!show[side].skills"> Noteworthy</t> Skills </h5>
+						<div id="allSkillBars">
+							<div id="skillBars" ng-repeat="skill in skills">
+								<div class="progress" ng-if="getSkillColor(cSkills[side][skill.name]) !== 'progress-bar-info' || show[side].skills">
+									<div class="progress-bar {{getSkillColor(cSkills[side][skill.name])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{cSkills[side][skill.name]}}%;">
+									 	<t style="color: black;">{{skill.name.toTitleCase()}}</t>
+									</div>
+								</div>
+							</div>
+							<p class="btn btn-primary "ng-if="!show[side].skills" ng-click="showAllSkills(side)"> Show All </p>
+							<p class="btn btn-primary" ng-if="show[side].skills" ng-click="hideAllSkills(side)"> Show Noteworthy Skills</p>
 						</div>
 					</div>
 					<div ng-if="corner[side].status==='strategy'">

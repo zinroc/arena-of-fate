@@ -115,6 +115,13 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     });
 
+
+    /**
+    * Figure out if a side is initiator/ defender/ prediting/fumbling
+    * var side STRING ==='red' or blue 
+    * var modiier STRING from $scope.modifiers
+    * return true or false
+    **/
     $scope.getModifierValue = function (side, modifier){
         //console.log(side, modifier);
         if(modifier==='initiator'){
@@ -134,6 +141,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    /**
+    *   bar from $scope.fightBars or scope.roundBars
+    *   return INT
+    */
     $scope.getBarValue = function (bar, side){
 
         if(bar==='initiation'){
@@ -148,7 +159,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             return $scope.vitals[side].bloodied;
         }
     };
-
+    /**
+    *   bar from $scope.fightBars or scope.roundBars
+    *   return INT 0-100
+    */
     $scope.getBarPercent = function (bar, side){
         var val = $scope.getBarValue(bar, side);
 
@@ -164,7 +178,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             return parseInt(val/5);
         }
     };
-
+    /**
+    *   bar from $scope.fightBars or scope.roundBars
+    *   return STRING
+    */
     $scope.getBarColor = function (bar, side){
         var value = $scope.getBarPercent(bar, side);
         console.log(value, side, bar);
@@ -181,6 +198,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    /**
+    *   triggered by starting a fight
+    */
     $scope.evaluateFight = function (){
 
         $scope.initializeFight();
@@ -188,6 +208,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.fightLoop();
     };
 
+
+    //return INT
     $scope.getpositioningSkill = function(side){
         var skill = 0;
         if($scope.distance < 33){
@@ -201,6 +223,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return parseInt(skill);
     };
 
+    //regenerate positioning algorithm
     $scope.fightpositioning = function(side){
         var otherSide = $scope.otherSide(side);
 
@@ -218,6 +241,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return parseInt(regen);
     };
 
+    // stat regeneration within a round
     $scope.regen = function (){
         for(var i=0; i<$scope.sides.length; i++){
             $scope.vitals[$scope.sides[i]].positioning += $scope.fightpositioning($scope.sides[i]);
@@ -236,6 +260,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return;
     };
 
+    // main loop for the fight
     $scope.fightLoop = function (){
 
         if(!$scope.fight.stopped && !$scope.fight.paused){
@@ -265,6 +290,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    //find the distance a fighter wants to move
     $scope.getMovement = function (side){
         var optimalDistance = $scope.distanceConversion($scope.strat[side].range);
         var nextMovement = (optimalDistance - $scope.distance)/2;
@@ -272,6 +298,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
+    // fighter movement within a round
     $scope.movement = function (){
         for (var i=0; i<$scope.sides.length; i++){
 
@@ -287,6 +314,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
+    // non-fight parameters that are set when a new round is started
     $scope.initializeRound = function (){
         $scope.distance = 100;
         for(var i=0; i<$scope.sides.length; i++){
@@ -294,6 +322,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    // fight parameters set when a  new fight is started
     $scope.initializeFight = function (){
 
         $scope.fight.started = true;
@@ -341,6 +370,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.setBarValues();
     };
 
+    //determine how much closer a fighter is to initiating this cycle in fightLoop
     $scope.initIncrease = function (side){
 
         var optimalDistance = $scope.distanceConversion($scope.strat[side].range);
@@ -351,10 +381,12 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return parseInt(rangeMod*$scope.heightConversion($scope.strat[side].initiation_frequency));
     };
 
+    //determine how much cardio fighter pays this cycle in fightLoop
     $scope.idleCardioPayment = function(side){
         return parseInt($scope.heightConversion($scope.strat[side].base_cardio)/2);
     };
 
+    //set all status flags based on vitals
     $scope.updateStatuses = function(side){
         var msg = "";
 
@@ -391,6 +423,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    //set the color of close/medium/far range under fighter portrait within a round
     $scope.getRangeColor = function(side){
         var rangeVal = 0;
         if($scope.strat[side].range ==='close'){
@@ -409,6 +442,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    // return STRING for distance under fight portrait within a round
     $scope.getRangeWord = function (){
         if($scope.distance < 33){
             return 'Close';
@@ -419,12 +453,15 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    //cardio regen while gassed
     $scope.stallForCardio = function (side){
         var base = $scope.getSkill(side, 'recovery');
 
         $scope.vitals[side].cardio += parseInt(Math.random()*base);
     };
 
+    //set the defender / initiator
+    // if there is no initiator, allow for consciousness regen if dazed
     $scope.initiation = function (){
 
         for (var i=0; i<$scope.sides.length; i++){
@@ -470,6 +507,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return;
     };
 
+    //regen fight consciousness while dazed if no initiator
     $scope.fightConsciousness = function (){
         for (var i=0; i<$scope.sides.length; i++){
             var side = $scope.sides[i];
@@ -479,6 +517,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             }
         }
     };
+
 
     $scope.getIndexOf = function(array, object, target){
         var result = false;
@@ -491,6 +530,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return result;
     };
 
+    //apply strategy bonuses to base skills 
+    // return INT
     $scope.getSkill = function (side, skill){
         var base  = parseInt($scope.cSkills[side][skill]);
         var index = $scope.getIndexOf($scope.cStratBonuses[side], 'name', skill);
@@ -577,6 +618,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return $scope.heightConversion($scope.strat[side].initiation_cardio);
     };
 
+    //check if fighter has fumble or predict
     $scope.checkAdvantage = function (initiator, defender){
 
         var initiatorAs = $scope.fightersExperience[$scope.corner[initiator].id][$scope.strat[initiator].id].as;
@@ -612,6 +654,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
+    //resolve all _Score competitions and deal damage
     $scope.resolveInitiation = function (){
         $scope.corner[$scope.initiator].initiationScore = 0;
 
@@ -661,6 +704,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return;
     };
 
+    //blocking reduces damage taken and may result in a counter
     $scope.evaluateBlock = function (blocker, reflex, speed, power){
         var windowSize = null;
         if(reflex - speed < 33){
@@ -684,11 +728,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.evaluateCounter(blocker, reflex, speed);
 
     };
-
+    //dodging negates all damage
     $scope.evaluateDodge = function (dodger){
         return;
     };
-
+    //counter may happen after block
     $scope.evaluateCounter = function(counterer, reflex, speed){
 
         if(!$scope.corner[counterer].gassed){
@@ -710,6 +754,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    //mods that reset after every initiation
     $scope.resetTempCombatMods = function (){
         for(var i=0; i<$scope.sides.length; i++){
             $scope.corner[$scope.sides[i]].dodged = false;
@@ -722,6 +767,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.defender = null;
     };
 
+    //return STRING 'red' or 'blue'
     $scope.otherSide = function(side){
         if(side==='red'){
             return 'blue';
@@ -731,6 +777,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return;
     };
 
+    //victory conditions that trigger fight.stopped
     $scope.checkVictory = function (){
         for(var i=0; i<$scope.sides.length; i++){
             var otherSide = $scope.otherSide($scope.sides[i]);
@@ -767,6 +814,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
+    //when the fight clock goes over the max round timer
     $scope.endRound = function (){
         if ($scope.fightClock > 20*$scope.fight.round){
             $scope.fight.paused = true; 
@@ -797,6 +845,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    //regeneration between rounds
     $scope.regenConsciousness = function(side){
         var base = $scope.getSkill(side, 'recovery');
         base = parseInt(base*Math.random());
@@ -804,6 +853,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return Math.min(base, 100-$scope.vitals[side].consciousness);
     };
 
+    //regeneration between rounds
     $scope.regenCardio = function(side){
         var base = $scope.getSkill(side, 'recovery')*10; //100*10
         var regen = parseInt(base*Math.random());
@@ -813,13 +863,17 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return Math.min(regen, maxCardio-$scope.vitals[side].cardio);
     };
 
+    //regeneration between rounds
     $scope.regenpositioning = function(side){
         return 30;
     };
 
+    //regeneration between rounds
     $scope.regenInitiationScore = function (side){
         return 0;
     };
+
+    //regeneration between rounds
     $scope.roundRegen = function (side){
 
         //regenerate consciousness
@@ -844,13 +898,14 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.record(msg);
     };
 
+    //record onto the fight transcript
     $scope.record = function(msg){
         $scope.transcript[$scope.transIndex] = msg;
         $scope.transIndex++;
 
     };
 
-
+    //determine fraction of consciousness : positioning damage
     $scope.checkVulnerable = function(side){
         var otherSide = '';
         if(side ==='red'){
@@ -872,6 +927,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return Math.min(vulnerability, 100);
     };
 
+    //add modifiers to base positioning damage
     $scope.getpositioningDamage = function (target, damage, vulnerableMod){
         var otherSide = $scope.otherSide(target);
 
@@ -889,6 +945,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return parseInt(damage*((100-vulnerableMod)/100)*skillMod);
     };
 
+    //determine bloodied damage from base consciousness damage
     $scope.getBloodiedDamage = function(target, damage){
         var otherSide = $scope.otherSide(target);
         var base = damage;
@@ -901,7 +958,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
 
-
+    //for stats screen
     $scope.getSkillColor = function (value){
         console.log(value);
         if(value < 20){
@@ -913,6 +970,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    //deal damage to fights conscioussness, positioning, bloodied bar
     $scope.dealDamage = function(target, damage){
         if (damage===0){
             return;
@@ -956,6 +1014,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    //fighters may submit in bad situations before going unconscious
     $scope.checkQuit = function (target){
         var base = 0;
         if ($scope.corner[target].dazed && $scope.corner[target].gassed && $scope.corner[target].pinned){
@@ -982,6 +1041,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
+    //start round 2 or 3
     $scope.startNextRound = function (){
 
         $scope.initializeRound();
@@ -993,6 +1053,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
 
+    // reset to do a new fight
     $scope.reset = function(){
         $scope.selectedFighter = null;
 
@@ -1018,6 +1079,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.transcript = [];
     };
 
+
     $scope.showAllSkills = function (side){
         $scope.show[side].skills = true;
         return;
@@ -1032,6 +1094,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.selectedFighter = id;
     };
 
+
+    //place selected fighter on the fighter list to a corner 
+    // prefight
     $scope.placeInCorner = function (id, side){
         //remove fighter from wrong corner
         var otherSide = '';
@@ -1084,6 +1149,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
+
+    // fill in the side strategy from the fighter info that fills the corner
     $scope.initializeCornerStrategy = function (side){
         $scope.strat[side] = $scope.strats[$scope.corner[side].strategy];
         var j=0;

@@ -13,6 +13,26 @@
 #modifierBox {
 	position: relative;
 	margin: 5px;
+	height: 50%;
+}
+
+
+
+@keyframes slideLeft {
+	0%{
+		margin-left: 0px;
+	}
+	100%{
+		margin-left: 1000px;
+	}
+}
+
+
+
+#animate {
+
+  animation: slideLeft 4s 1s linear;
+
 }
 
 #fighter_box span {
@@ -29,6 +49,12 @@
 }
 
 #fightBars {
+	position: relative;
+
+	left: 35%;
+	width: 60%;
+}
+#roundBars {
 	position: relative;
 
 	left: 35%;

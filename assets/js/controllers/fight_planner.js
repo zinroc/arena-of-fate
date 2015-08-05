@@ -217,15 +217,19 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     //return INT
     $scope.getpositioningSkill = function(side){
         var skill = 0;
+        var injuryMod = 1;
         if($scope.distance < 33){
             skill = $scope.getSkill(side, 'grappling');
+            injuryMod = $scope.getInjuryMod(side, 'body');
         } else if ($scope.distance < 66){
             skill = $scope.getSkill(side, 'pocket');
+            injuryMod = $scope.getInjuryMod(side, 'feet');
         } else if ($scope.distance < 101){
             skill = $scope.getSkill(side, 'striking');
+            injuryMod = $scope.getInjuryMod(side, 'feet');
         }
 
-        return parseInt(skill);
+        return parseInt(skill*injuryMod);
     };
 
     //regenerate positioning algorithm
@@ -299,7 +303,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.getMovement = function (side){
         var optimalDistance = $scope.distanceConversion($scope.strat[side].range);
         var nextMovement = (optimalDistance - $scope.distance)/2;
-        return nextMovement;
+        var injuryMod = $scope.getInjuryMod(side, 'legs') * $scope.getInjuryMod(side, 'feet');
+        return parseInt(nextMovement*injuryMod);
 
     };
 
@@ -446,7 +451,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     *   if level 2-4 upgrade existing injury 
     */
     $scope.addInjury = function(side, level){
-        console.log(side, level);
+        //console.log(side, level);
         var levelIndex = "lv" + level;
 
         level = parseInt(level);
@@ -544,8 +549,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     //cardio regen while gassed
     $scope.stallForCardio = function (side){
         var base = $scope.getSkill(side, 'recovery');
+        var injuryMod = $scope.getInjuryMod(side, 'body');
 
-        $scope.vitals[side].cardio += parseInt(Math.random()*base);
+        $scope.vitals[side].cardio += parseInt(Math.random()*base*injuryMod);
     };
 
     //set the defender / initiator
@@ -651,7 +657,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             base=5;
         }
 
-        return parseInt(base*Math.random());
+        var injuryMod = ($scope.getInjuryMod(side, 'body')+$scope.getInjuryMod(side, ' legs'))/2;
+
+        return parseInt(base*Math.random()*injuryMod);
     };
 
     $scope.getAccuracyScore = function (side){
@@ -668,7 +676,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             base = 5;
         }
 
-        return parseInt(base*Math.random());
+        var injuryMod = $scope.getInjuryMod(side, 'eyes');
+
+        return parseInt(base*Math.random()*injuryMod);
     };
 
     $scope.getEvasionScore = function (side){
@@ -698,6 +708,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         if(base<5){
             base = 5;
         }
+
+        var injuryMod = $scope.getInjuryMod(side, 'eyes');
 
         return parseInt(base*Math.random());
     };
@@ -934,13 +946,13 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     /**
     *   @param side STRING either 'red' or 'blue'
-    *   @param type STRING 
+    *   @param type STRING from injuryLocations array.
     *   @return FLOAT
     */
     $scope.getInjuryMod = function (side, type){
-        console.log(side, type);
+        //console.log(side, type);
         if(!$scope.corner[side][type]){
-            console.log("no injury");
+            //console.log("no injury");
             return 1;
         } else {
             for (var i=1; i<5; i++){
@@ -948,13 +960,14 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 for (var j=0; j<$scope.injuries[injuryIndex].length; j++){
                     if ($scope.corner[side][type]===$scope.injuries[injuryIndex][j]){
                         var percent = (5-i)/5;
-                        console.log("injury lv" + i + " percent: " + percent);
+                        //console.log("injury lv" + i + " percent: " + percent);
                         return percent;
                     }
                 }
             }
         }
     };
+
     /**
     *   regeneration between rounds
     */
@@ -1065,7 +1078,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         var attackerSkill = $scope.getpositioningSkill(otherSide);
 
-        var skillMod = (attackerSkill * Math.random())/20;
+        var skillMod = (attackerSkill * Math.random())/80;
         return parseInt(skillMod*damage);
 
     };
@@ -1119,28 +1132,30 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 $scope.record(msg);
             }
 
-            if ($scope.vitals[target].bloodied > 400) {
-                if (!$scope.corner[target].injuryLv4){
-                    $scope.addInjury(target, '4');
-                }
-            } else if ($scope.vitals[target].bloodied > 200) {
-                if (!$scope.corner[target].injuryLv3){
-                    $scope.addInjury(target, '3');
-                }
-                else if (Math.random()*100 > 50){
-                    $scope.addInjury(target, '3');
-                }
-            } else if ($scope.vitals[target].bloodied > 100){
-                if(!$scope.corner[target].injuryLv2){
-                    $scope.addInjury(target, '2');
-                } else if (Math.random()*100 > 50){
-                    $scope.addInjury(target, '2');
-                }
-            } else if ($scope.vitals[target].bloodied > 50){
-                if (!$scope.corner[target].injuryLv1){
-                    $scope.addInjury(target, '1');
-                } else if (Math.random()*100 > 50){
-                    $scope.addInjury(target, '1');
+            if (bloodiedDMG > 0){
+                if ($scope.vitals[target].bloodied > 400) {
+                    if (!$scope.corner[target].injuryLv4){
+                        $scope.addInjury(target, '4');
+                    }
+                } else if ($scope.vitals[target].bloodied > 200) {
+                    if (!$scope.corner[target].injuryLv3){
+                        $scope.addInjury(target, '3');
+                    }
+                    else if (Math.random()*100 > 50){
+                        $scope.addInjury(target, '3');
+                    }
+                } else if ($scope.vitals[target].bloodied > 100){
+                    if(!$scope.corner[target].injuryLv2){
+                        $scope.addInjury(target, '2');
+                    } else if (Math.random()*100 > 50){
+                        $scope.addInjury(target, '2');
+                    }
+                } else if ($scope.vitals[target].bloodied > 50){
+                    if (!$scope.corner[target].injuryLv1){
+                        $scope.addInjury(target, '1');
+                    } else if (Math.random()*100 > 50){
+                        $scope.addInjury(target, '1');
+                    }
                 }
             }
 
@@ -1168,8 +1183,17 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             if ($scope.corner[target].pinned){
                 base+=5;
             }
-        }
 
+            for (var i=0; i<$scope.injuryLocations.length; i++){
+                var injuryMod = $scope.getInjuryMod(target, $scope.injuryLocations[i]);
+
+                base += parseInt((1-injuryMod)*10);
+
+            }
+
+
+        }
+        console.log(target, "chance to quit: " + base );
         var skill = $scope.getSkill(target, 'heart');
 
         if(Math.random()*base > Math.random()*skill){

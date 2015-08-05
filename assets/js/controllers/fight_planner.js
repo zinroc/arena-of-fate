@@ -446,7 +446,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     *   if level 2-4 upgrade existing injury 
     */
     $scope.addInjury = function(side, level){
-
+        console.log(side, level);
         var levelIndex = "lv" + level;
 
         level = parseInt(level);
@@ -460,21 +460,22 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var injuryIndex = null;
         // pick an injury
         if (level === 1){
-
+            //console.log("adding injury");
             injuryIndex = Math.floor(Math.random()*($scope.injuries[levelIndex].length));
             injury = $scope.injuries[levelIndex][injuryIndex];
             injuryLocation = $scope.injuryLocations[injuryIndex];
 
             // apply the injury
-
-            $scope.corner[side][injuryLocation] = injury;
-            $scope.corner[side].injuryLv1 = true;
-            msg = $scope.corner[side].name.toTitleCase() + " was injured with a " + $scope.corner[side][injuryLocation].toTitleCase();
-            $scope.record(msg);
-
+            if(!$scope.corner[side][injuryLocation]){
+                $scope.corner[side][injuryLocation] = injury;
+                $scope.corner[side].injuryLv1 = true;
+                msg = $scope.corner[side].name.toTitleCase() + " was injured with a " + $scope.corner[side][injuryLocation].toTitleCase();
+                $scope.record(msg);
+             //   console.log(msg);
+            }
 
         } else {
-
+            //console.log("upgradeing injury");
             //pick an injury to upgrade
             var j =0;
             var upgradeArray = [];
@@ -482,12 +483,14 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 if ($scope.corner[side][$scope.injuryLocations[i]] === $scope.injuries[priorLevelIndex][i]){
                     upgradeArray[j] = i;
                     j++;
-                    console.log($scope.corner[side][$scope.injuryLocations[i]], $scope.injuries[priorLevelIndex][i]);
+                    //console.log($scope.corner[side][$scope.injuryLocations[i]], $scope.injuries[priorLevelIndex][i]);
                 }
             }
+            //console.log(upgradeArray);
 
             if(j===0){
                 //nothing to upgrade, add lower level injury
+                //console.log("nothing to upgrade");
                 level--;
                 $scope.addInjury(side, level);
             } else {
@@ -496,12 +499,13 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 $scope.corner[side][$scope.injuryLocations[upgradeArray[upgradeIndex]]] = $scope.injuries[levelIndex][upgradeArray[upgradeIndex]];
                 msg = $scope.corner[side].name.toTitleCase() + " was injured with a " + $scope.corner[side][$scope.injuryLocations[upgradeArray[upgradeIndex]]];
                 $scope.record(msg);
+                //console.log(msg);
 
             }
             var cornerInjury = "injury" + levelIndex;
             $scope.corner[side][cornerInjury] = true;
 
-        } 
+        }
 
 
         return;
@@ -928,10 +932,36 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
-    //regeneration between rounds
+    /**
+    *   @param side STRING either 'red' or 'blue'
+    *   @param type STRING 
+    *   @return FLOAT
+    */
+    $scope.getInjuryMod = function (side, type){
+        console.log(side, type);
+        if(!$scope.corner[side][type]){
+            console.log("no injury");
+            return 1;
+        } else {
+            for (var i=1; i<5; i++){
+                var injuryIndex = "lv"+i;
+                for (var j=0; j<$scope.injuries[injuryIndex].length; j++){
+                    if ($scope.corner[side][type]===$scope.injuries[injuryIndex][j]){
+                        var percent = (5-i)/5;
+                        console.log("injury lv" + i + " percent: " + percent);
+                        return percent;
+                    }
+                }
+            }
+        }
+    };
+    /**
+    *   regeneration between rounds
+    */
     $scope.regenConsciousness = function(side){
         var base = $scope.getSkill(side, 'recovery');
-        base = parseInt(base*Math.random());
+        var injuryMod = $scope.getInjuryMod(side, 'nose');
+        base = parseInt(base*Math.random()*injuryMod);
 
         return Math.min(base, 100-$scope.vitals[side].consciousness);
     };
@@ -1035,7 +1065,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         var attackerSkill = $scope.getpositioningSkill(otherSide);
 
-        var skillMod = (attackerSkill * Math.random())/80;
+        var skillMod = (attackerSkill * Math.random())/20;
         return parseInt(skillMod*damage);
 
     };

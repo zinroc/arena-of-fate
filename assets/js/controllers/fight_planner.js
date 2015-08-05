@@ -876,11 +876,52 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return;
     };
 
+    /**
+    * check injury level of side
+    * @return STRING if doctor stoppage, false if not
+    */
+    $scope.checkDoctor = function (side){
+        for (var i=0; i<$scope.injuryLocations.length; i++){
+            var injuryMod = $scope.getInjuryMod(side, $scope.injuryLocations[i]);
+            if (injuryMod < 0.25) {
+                if ($scope.injuryLocations[i] === 'eyes'){
+                    return $scope.corner[side].name.toTitleCase() + " falls covering their face in incredible pain";
+                } else if ($scope.injuryLocations[i] === 'nose'){
+                    return $scope.corner[side].name.toTitleCase() + " falls covering their face in incredible pain";
+                } else if ($scope.injuryLocations[i] === 'body'){
+                    return $scope.corner[side].name.toTitleCase() + " collapses from excessive internal bleeding";
+                } else if ($scope.injuryLocations[i] === 'legs'){
+                    return $scope.corner[side].name.toTitleCase() + " faints due to blood lost from leg artery";
+                } else if ($scope.injuryLocations[i] === 'hands'){
+                    return $scope.corner[side].name.toTitleCase() + " faints due to blood lost from hand";
+                } else if ($scope.injuryLocations[i] === 'feet'){
+                    return $scope.corner[side].name.toTitleCase() + " faints due to blood lost from foot";
+                }
+            } else if(injuryMod < 0.45){
+                if ($scope.injuryLocations[i] === 'eyes'){
+                    return "Doctor stoppage due to large cut";
+                } else if ($scope.injuryLocations[i] === 'nose'){
+                    return false;
+                } else if ($scope.injuryLocations === 'body'){
+                    return false;
+                } else if ($scope.injuryLocations[i] === 'legs'){
+                    return "Doctor stoppage due to broken leg";
+                } else if ($scope.injuryLocations[i] === 'hands'){
+                    return false;
+                } else if ($scope.injuryLocations[i] === 'feet'){
+                    return "Doctor stopped due to detached foot";
+                }
+            }
+        }
+        return false;
+    };
+
     //victory conditions that trigger fight.stopped
     $scope.checkVictory = function (){
         for(var i=0; i<$scope.sides.length; i++){
             var otherSide = $scope.otherSide($scope.sides[i]);
             var msg = "";
+            //ref stoppage
             if ($scope.vitals[$scope.sides[i]].consciousness < 0){
 
                 $scope.corner[$scope.sides[i]].unconscious = true;
@@ -899,7 +940,17 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 $scope.record(msg);
                 $scope.fight.stopped = true;
             }
+            //doctor stoppeage
 
+            var docMsg = $scope.checkDoctor($scope.sides[i]);
+            if (docMsg) {
+                $scope.record(docMsg);
+
+                $scope.fight.stopped = true;
+                $scope.victor.side = otherSide;
+            }
+
+            //submit
             if ($scope.corner[$scope.sides[i]].quit){
                 msg = $scope.corner[$scope.sides[i]].name.toTitleCase() + " submits!";
                 $scope.record(msg);
@@ -1078,7 +1129,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         var attackerSkill = $scope.getpositioningSkill(otherSide);
 
-        var skillMod = (attackerSkill * Math.random())/80;
+        var skillMod = (attackerSkill * Math.random())/20;
         return parseInt(skillMod*damage);
 
     };

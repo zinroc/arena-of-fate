@@ -55,6 +55,13 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.predict = {};
     //animation -> defender/initiatior , dodged, blocked, fumble, predict
     $scope.modifiers = ['gassed', 'pinned', 'dazed', 'quit', 'unconscious'];
+    $scope.injuries = {};
+    $scope.injuries.lv1 = ['bloody nose', 'bloodied vision', 'bruised leg', 'bruised torso', 'sprained finger', 'sprained ankle'];
+    $scope.injuries.lv2 = ['broken nose', 'broken orbital', 'fractured leg', 'fractured rib', 'broken hand', 'broken ankle'];
+    $scope.injuries.lv3 = ['missing nose', 'mask of blood', 'leg puncturing out', 'punctured organ', 'finger puncturing out', 'ankle ripped open'];
+    $scope.injuries.lv4 = ['death', 'death', 'death', 'death', 'death', 'death'];
+
+    $scope.injuryLocations = ['nose', 'eyes', 'legs', 'body', 'hands', 'feet'];
 
     //vitals
     $scope.vitals = {};
@@ -123,7 +130,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     * return true or false
     **/
     $scope.getModifierValue = function (side, modifier){
-        //console.log(side, modifier);
         if(modifier==='initiator'){
             if($scope.initiator ===side){
                 return true;
@@ -175,7 +181,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         } else if (bar==='cardio'){
             return parseInt(val/10);
         } else if (bar==='bloodied'){
-            return parseInt(val/5);
+            return parseInt(val/4);
         }
     };
     /**
@@ -184,7 +190,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     */
     $scope.getBarColor = function (bar, side){
         var value = $scope.getBarPercent(bar, side);
-        console.log(value, side, bar);
         if (value < 20 && bar==='consciousness'){
             return 'progress-bar-danger';
         } else if(value > 80 && bar==='consciousness') {
@@ -359,6 +364,14 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.sides[i]].dodged = false; //evasion vs accuracy
             $scope.corner[$scope.sides[i]].blocked = false; // reflex vs speed
 
+            //body parts
+            $scope.corner[$scope.sides[i]].nose = null;
+            $scope.corner[$scope.sides[i]].eyes = null;
+            $scope.corner[$scope.sides[i]].body = null;
+            $scope.corner[$scope.sides[i]].legs = null;
+            $scope.corner[$scope.sides[i]].feet = null;
+            $scope.corner[$scope.sides[i]].hands = null;
+
             $scope.fumble[$scope.sides[i]] = false; // adds to vulnerability
             $scope.predict[$scope.sides[i]] = false; // adds to vulnerability, reflex, accuracy
 
@@ -421,6 +434,77 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         } else {
             $scope.corner[side].dazed = false;
         }
+
+
+
+    };
+
+    /**
+    *   @param level INT 
+    *   sets corner[side][bodypart];
+    *   if level 1 - add new injury
+    *   if level 2-4 upgrade existing injury 
+    */
+    $scope.addInjury = function(side, level){
+
+        var levelIndex = "lv" + level;
+
+        level = parseInt(level);
+        var priorLevel = level-1;
+
+        var msg = "";
+        var priorLevelIndex = "lv" + priorLevel;
+
+        var injury = null;
+        var injuryLocation = null;
+        var injuryIndex = null;
+        // pick an injury
+        if (level === 1){
+
+            injuryIndex = Math.floor(Math.random()*($scope.injuries[levelIndex].length));
+            injury = $scope.injuries[levelIndex][injuryIndex];
+            injuryLocation = $scope.injuryLocations[injuryIndex];
+
+            // apply the injury
+
+            $scope.corner[side][injuryLocation] = injury;
+            $scope.corner[side].injuryLv1 = true;
+            msg = $scope.corner[side].name.toTitleCase() + " was injured with a " + $scope.corner[side][injuryLocation].toTitleCase();
+            $scope.record(msg);
+
+
+        } else {
+
+            //pick an injury to upgrade
+            var j =0;
+            var upgradeArray = [];
+            for (var i=0; i<$scope.injuryLocations.length; i++){
+                if ($scope.corner[side][$scope.injuryLocations[i]] === $scope.injuries[priorLevelIndex][i]){
+                    upgradeArray[j] = i;
+                    j++;
+                    console.log($scope.corner[side][$scope.injuryLocations[i]], $scope.injuries[priorLevelIndex][i]);
+                }
+            }
+
+            if(j===0){
+                //nothing to upgrade, add lower level injury
+                level--;
+                $scope.addInjury(side, level);
+            } else {
+                //pick a random injury to upgrade
+                var upgradeIndex = Math.floor(Math.random()*j);
+                $scope.corner[side][$scope.injuryLocations[upgradeArray[upgradeIndex]]] = $scope.injuries[levelIndex][upgradeArray[upgradeIndex]];
+                msg = $scope.corner[side].name.toTitleCase() + " was injured with a " + $scope.corner[side][$scope.injuryLocations[upgradeArray[upgradeIndex]]];
+                $scope.record(msg);
+
+            }
+            var cornerInjury = "injury" + levelIndex;
+            $scope.corner[side][cornerInjury] = true;
+
+        } 
+
+
+        return;
     };
 
     //set the color of close/medium/far range under fighter portrait within a round
@@ -695,7 +779,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.evaluateDodge($scope.defender);
         } else if ($scope.corner[$scope.defender].blocked){
             $scope.evaluateBlock($scope.defender, reflexScore, speedScore, powerScore);
-
         } else {
             $scope.dealDamage($scope.defender, powerScore);
         }
@@ -960,7 +1043,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     //for stats screen
     $scope.getSkillColor = function (value){
-        console.log(value);
         if(value < 20){
             return 'progress-bar-danger';
         } else if (value > 80){
@@ -1005,6 +1087,31 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 msg += " damage ";
 
                 $scope.record(msg);
+            }
+
+            if ($scope.vitals[target].bloodied > 400) {
+                if (!$scope.corner[target].injuryLv4){
+                    $scope.addInjury(target, '4');
+                }
+            } else if ($scope.vitals[target].bloodied > 200) {
+                if (!$scope.corner[target].injuryLv3){
+                    $scope.addInjury(target, '3');
+                }
+                else if (Math.random()*100 > 50){
+                    $scope.addInjury(target, '3');
+                }
+            } else if ($scope.vitals[target].bloodied > 100){
+                if(!$scope.corner[target].injuryLv2){
+                    $scope.addInjury(target, '2');
+                } else if (Math.random()*100 > 50){
+                    $scope.addInjury(target, '2');
+                }
+            } else if ($scope.vitals[target].bloodied > 50){
+                if (!$scope.corner[target].injuryLv1){
+                    $scope.addInjury(target, '1');
+                } else if (Math.random()*100 > 50){
+                    $scope.addInjury(target, '1');
+                }
             }
 
             //check if target quits
@@ -1064,6 +1171,15 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.sides[i]].status = null;
             $scope.corner[$scope.sides[i]].quit = false;
             $scope.corner[$scope.sides[i]].unconscious = false;
+            $scope.corner[$scope.sides[i]].injuryLv1 = false;
+            $scope.corner[$scope.sides[i]].injuryLv2 = false;
+            $scope.corner[$scope.sides[i]].injuryLv3 = false;
+            $scope.corner[$scope.sides[i]].injuryLv4 = false;
+
+            for (var j=0; j<$scope.injuryLocations.length; j++){
+                $scope.corner[$scope.sides[i]][$scope.injuryLocations[j]] = null;
+            }
+
             $scope.victor = {};
             $scope.victor.side = null;
         }

@@ -65,6 +65,9 @@
 							<t ng-repeat="modifier in modifiers" ng-if="getModifierValue(side, modifier)">
 								{{modifier}}
 							</t>
+							<t ng-repeat="location in injuryLocations" ng-if="corner[side][location]">
+								{{corner[side][location]}}
+							</t>
 						</div>
 					</div>
 					<div ng-if="corner[side].status==='stats'">
@@ -77,7 +80,7 @@
 									</div>
 								</div>
 							</div>
-							<p class="btn btn-primary "ng-if="!show[side].skills" ng-click="showAllSkills(side)"> Show All </p>
+							<p class="btn btn-primary "ng-if="!show[side].skills" ng-click="showAllSkills(side)"> Show All </p>  
 							<p class="btn btn-primary" ng-if="show[side].skills" ng-click="hideAllSkills(side)"> Show Noteworthy Skills</p>
 						</div>
 					</div>
@@ -88,7 +91,7 @@
 						Cardio expendature: {{strat[side].base_cardio}} and {{strat[side].initiation_cardio}} when initiating <br>
 						Difficulty: {{strat[side].difficulty}} <br>
 						Optimal Range: {{strat[side].range}} <br>
-						<h5> Strategy Provides Bonuses to: </h5>
+						<h5> Bonuses: </h5>
 						<div ng-repeat="bonus in cStratBonuses[side]">
 							{{bonus.name.toTitleCase()}} - {{bonus.value}}%
 						</div>

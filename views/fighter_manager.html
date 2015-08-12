@@ -1,0 +1,25 @@
+<div ng-controller="fighterManagerController">
+	<h1> Fighter Manager </h1>
+	<div class="container-fluid">
+		<div class="row">
+			<h3> Available Fighters: </h3>
+			<div class="col-md-3">
+				<div  ng-repeat="fighter in fighters">
+					<span id="hover" class="glyphicon glyphicon-user" ng-click="selectFighter(fighter.id)"></span>
+					{{fighter.name.toTitleCase()}}
+					</p>
+				</div>
+			</div>
+			<div ng-if="loaded" class="col-md-9">
+				<img id="prevFighterArt" ng-src="{{ getAssetImg(prevFighter.art) }}" />
+				<img id="selectedFighterArt" ng-src="{{ getAssetImg(selectedFighter.art) }}" />
+				<img id="nextFighterArt" ng-src="{{ getAssetImg(nextFighter.art) }}" />
+				<div id="carouselButtons">
+					<p class="btn btn-primary" ng-click="cycleLeft()"><--</p>
+					<p class="btn btn-primary" ng-click="cycleRight()">--></p>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>

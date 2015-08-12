@@ -53,65 +53,11 @@ function is_active($navbar_item) {
                     } else {
                         
                         $navbar_items = array(
-                         //   array("text" => "Select Character", "href" => "gameplayer/select_character")
                         );
 
-                        if (isset($_SESSION['char_id'])) {
-                            
-                            /*
-                            $char_dropdown = array(
-                                array("text" => "Titles", "href" => "character/titles")
-                            );
 
-                            array_push(
-                                $navbar_items,
-                                array("text" => "Diplomacy", "href" => "character/diplomacy")
-                            );
-
-                            array_push(
-                                $navbar_items,
-                                array("text" => "Narrative", "href" => "character/narrative")
-                            );
-
-                            array_push(
-                                $navbar_items,
-                                array("text" => "Map", "href" => "regions/map")
-                            );
-
-                            array_push(
-                                $navbar_items,
-                                array("text" => "Deck", "href" => "gameplayer/deck")
-                            );
-
-                            array_push(
-                                $navbar_items,
-                                array("text" => "Character", "dropdown" => $char_dropdown)
-                            );
-*/
-
-                        }
 
                         if (isset($_SESSION['admin']) && $_SESSION['admin'] === true) {
-                            /*
-                            array_push(
-                                $navbar_items,
-                                array("text" => "Admin", "href" => "admin/panel")
-                            );
-
-                            array_push(
-                                $navbar_items,
-                                array("text" => "Fast Server", "href" => "admin/fast")
-                            );
-
-                            array_push(
-                                $navbar_items,
-                                array("text" => "Work Server", "href" => "admin/work")
-                            );
-
-                            array_push(
-                                $navbar_items,
-                                array("text" => "Dev", "dropdown" => $dev_menu)
-                            );*/
                         }
 
                         if (defined('ENVIRONMENT') && ENVIRONMENT === "development") {
@@ -124,8 +70,20 @@ function is_active($navbar_item) {
                         // show logout button whenever logged in
                         array_push(
                             $navbar_items,
+                            array("text" => "Arena", "href" => "gameplayer/fight_planner")
+                        );
+
+                        array_push(
+                            $navbar_items,
+                            array("text" => "Figher Manager", "href" => "gameplayer/fighter_manager")
+                        );
+
+                        array_push(
+                            $navbar_items,
                             array("text" => "Logout", "href" => "gameplayer/logout")
                         );
+
+
                     }
 
                     foreach($navbar_items as &$navbar_item) {
@@ -154,10 +112,6 @@ function is_active($navbar_item) {
 
                 if (isset($_SESSION['username'])) {
                     echo "<ul class='nav navbar-nav navbar-right'>";
-                    if (isset($_SESSION['char_name'])) {
-                        navbar_text($_SESSION['char_name'], "charname");
-                        navbar_text("&middot;", "intermezzo");
-                    }
 
                     navbar_text($_SESSION['username'], "username");
                     echo "</ul>";

@@ -1129,7 +1129,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         var attackerSkill = $scope.getpositioningSkill(otherSide);
 
-        var skillMod = (attackerSkill * Math.random())/20;
+        var skillMod = (attackerSkill * Math.random())/80;
         return parseInt(skillMod*damage);
 
     };

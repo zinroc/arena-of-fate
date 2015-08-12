@@ -1,5 +1,5 @@
 <div ng-controller="fightPlannerController">
-<h1> Fight Planner </h1>
+<h1> Arena </h1>
 	<div class="container-fluid">
 		<div class="row">
 			<div ng-if="!fight.started">
@@ -12,7 +12,7 @@
 						<p ng-if="selectedFighter===fighter.id" class="btn btn-danger" ng-click="placeInCorner(fighter.id, 'red')">Red Corner </p>
 						<p ng-if="selectedFighter===fighter.id" class="btn btn-primary"
 						ng-click="placeInCorner(fighter.id, 'blue')"> Blue Corner </p>
-
+						</p>
 					</div>
 				</div>
 			</div>

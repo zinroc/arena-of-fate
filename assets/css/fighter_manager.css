@@ -1,0 +1,18 @@
+#hover {
+	cursor: pointer;
+}
+
+#prevFighterArt {
+	height: 200px;
+}
+#nextFighterArt {
+	height: 200px;
+}
+
+#selectedFighterArt {
+	height: 400px;
+}
+
+#carouselButtons {
+	margin-left: 30%;
+}

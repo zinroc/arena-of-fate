@@ -113,13 +113,6 @@ class GamePlayer extends CI_Controller {
     }
 
     /**
-    *
-    */
-    //public function team_hq() {
-    //    redirect('gameplayer/viewHq', 'refresh');
-    //}
-
-    /**
      * Show fight view
      */
     public function fight_planner () {
@@ -130,6 +123,20 @@ class GamePlayer extends CI_Controller {
             "view" => "fight_planner"
         );
         $this->load->view ('master', array("data" => $data));
+    }
+
+
+    /**
+    * Show fighter manager view
+    */
+    public function fighter_manager (){
+        $data = array(
+            "page_title" => "Fighter Manager",
+            "extra_css" => array(asset_url() . "/css/fighter_manager.css"),
+            "extra_js" => array(asset_url() . "/js/controllers/fighter_manager.js"),
+            "view" => "fighter_manager"
+        );
+        $this->load->view ('master', array("data"=>$data));
     }
 
     /**
@@ -151,19 +158,6 @@ class GamePlayer extends CI_Controller {
         $this->load->view ('master', array("data" => $data));
     }
 
-    /**
-     * Show the team Hq page.
-     */
-    /*public function viewHq () {
-
-        $data = array(
-            "page_title" => "Team Hq",
-            "extra_css" => array(asset_url() . "/css/teamhq.css"),
-            "extra_js" => array(asset_url() . "/js/controllers/teamhq.js"),
-            "view" => "teamhq",
-        );
-        $this->load->view ('master', array("data" => $data));
-    }*/
 
     public function welcome () {
 

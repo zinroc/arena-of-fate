@@ -3,16 +3,73 @@
 }
 
 #prevFighterArt {
-	height: 200px;
+	height: 90%;
 }
+
+#prevFighterBox {
+	position: relative;
+	height: 200px;
+	width: 15%;
+	
+	overflow: none;
+	text-align: top;
+}
+
+#nextFighterBox {
+	position: relative;
+	height: 200px;
+	width: 15%;
+
+	overflow: none;
+	text-align: top;
+}
+
+#selectedFighterBox {
+	position: relative;
+	height: 400px;
+	width: 30%;
+	
+	overflow: none;
+	text-align: top;
+}
+
+#managedFighterBox {
+	position: relative;
+	height: 400px;
+	width: 100%;
+	border: thick black solid;
+	overflow: none;
+	text-align: top;
+}
+
+#managedFighterArt {
+	width: 100%;
+}
+
 #nextFighterArt {
 	height: 200px;
 }
 
 #selectedFighterArt {
-	height: 400px;
+	height: 90%;
+}
+
+#managerButtons {
+	position: relative;
+	margin-left: 60%;
 }
 
 #carouselButtons {
-	margin-left: 30%;
+	position: relative;
+	margin-left: 45%;
+}
+
+#planArt{
+	width: 30%;
+	cursor: pointer;
+	border-radius: 20%;
+}
+
+#planName {
+	margin-left: 10%;
 }

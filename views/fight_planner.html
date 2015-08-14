@@ -1,5 +1,7 @@
 <div ng-controller="fightPlannerController">
 <h1> Arena </h1>
+
+
 	<div class="container-fluid">
 		<div class="row">
 			<div ng-if="!fight.started">
@@ -19,26 +21,41 @@
 			<h3 ng-if="fight.started">Fight Started!</h3>
 
 
-			<div ng-if="fight.started" id="transcript" class="col-md-3">
-				<h3 ng-if="victor.side && victor.side !=='tie' && fight.stopped">{{corner[victor.side].name.toTitleCase()}} Wins!</h3>
-				<h3 ng-if="victor.side==='tie' && fight.stopped">Tie!</h3>
-				<b>{{winningRounds['red']}} - {{winningRounds['blue']}}</b> <br>
-				<b> Round {{fight.round}} Transcript </b><br>
-				<div id="overflow">
-					<div ng-repeat="msg in transcript track by $index">
-						<t ng-if="msg">{{$index}} - {{msg.toTitleCase()}} </t>
-					</div>
-				</div><br>
-				<span><p class="btn btn-primary" ng-click="reset()" ng-if="fight.stopped"> Reset </p></span>
-				<spam><p class="btn btn-primary" ng-click="startNextRound()" ng-if="!fight.stopped && fight.paused"> Start Next Round</p></spam>
-			</div>
+
 
 			<div ng-repeat="side in sides">
+
+				<div class="col-md-2" ng-if="fight.started && side==='blue'">
+
+					<div ng-if="!animations[side]['dodge'].value">
+						<img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+					</div>
+					<div ng-if="animations[side]['dodge'].value">
+						<img id="fighterBodyArtDodging" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+					</div>
+
+					<div id="portraitOverlay">
+						<div ng-repeat="effect in fastEffects" ng-if="animations[side][effect].value">
+							<div id="{{effect}}{{side}}" data-toggle="tooltip" data-placement="top" title="{{effect.toTitleCase()}}" ng-if="activeEffectTooltip(effect, side)">
+								<div ng-if="effect!=='dodge'">
+									<img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
+								</div>
+							</div>
+						</div>
+						<div ng-repeat="damage in damageTypes" ng-if="animations[side][damage].value">
+							<div id="{{damage}}{{side}}">
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			
 				<div id="fighter_box" class="col-md-3" >
 					<h4>{{corner[side].name.toTitleCase()}}</h4>
 					<img id="fighterArt" ng-if="corner[side].status==='art' && !fight.started" ng-src="{{ getAssetImg(corner[side].art) }}" />
 					<div ng-if="corner[side].status==='art' && fight.started">
 						<img id="fighterArtStarted" ng-src="{{ getAssetImg(corner[side].art) }}" />
+
 						<div id="fightBars" ng-repeat="bar in fightBars">
 							<div class="progress">
 
@@ -62,11 +79,16 @@
 						</div>
 						<div id="modifierBox">
 							<h4>Status Effects</h4>
+
 							<t ng-repeat="modifier in modifiers" ng-if="getModifierValue(side, modifier)">
-								{{modifier}}
+								<t id="{{modifier}}" data-toggle="tooltip" data-placement="top" title="{{modifier.toTitleCase()}}" ng-mouseOver="activateTooltip(modifier)">
+									<img id="modifierArt" ng-src="{{ getAssetImg(modifier) }}" />
+								</t>
 							</t>
 							<t ng-repeat="location in injuryLocations" ng-if="corner[side][location]">
-								{{corner[side][location]}}
+								<t id="{{location}}" data-toggle="tooltip" data-placement="top" title="{{corner[side][location].toTitleCase()}}" ng-mouseOver="activateTooltip(location)">
+									<img id="modifierArt" ng-src="{{ getAssetImg(location) }}" />
+								</t>
 							</t>
 						</div>
 					</div>
@@ -113,12 +135,55 @@
 						<p class="btn btn-primary" ng-click="strategyStatus(side)">Strategy</p>
 					</span>
 				</div>
+				<div class="col-md-2" ng-if="fight.started && side==='red'">
+
+					<div ng-if="!animations[side]['dodge'].value">
+						<img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+					</div>
+					<div ng-if="animations[side]['dodge'].value">
+						<img id="fighterBodyArtDodging" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+					</div>
+
+					<div id="portraitOverlay">
+						<div ng-repeat="effect in fastEffects" ng-if="animations[side][effect].value">
+							<div id="{{effect}}{{side}}" data-toggle="tooltip" data-placement="top" title="{{effect.toTitleCase()}}" ng-if="activeEffectTooltip(effect, side)">
+								<div ng-if="effect!=='dodge'">
+								<img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
+								</div>
+							</div>
+						</div>
+						<div ng-repeat="damage in damageTypes" ng-if="animations[side][damage].value">
+							<div id="{{damage}}{{side}}">
+								
+							</div>
+						</div>
+					</div>
+				</div>
+
 			</div>
 
 		</div>
 		<div class="row">
 			<div id="fightButton">
 				<p class="btn btn-danger" ng-if="corner['blue'].selected && corner['red'].selected && !fight.started" ng-click="evaluateFight()"> Fight! </p>
+				<span><p class="btn btn-primary" ng-click="reset()" ng-if="fight.stopped"> Reset </p></span>
+				<spam><p class="btn btn-primary" ng-click="startNextRound()" ng-if="!fight.stopped && fight.paused"> Start Next Round</p></spam>
+			</div>
+
+		</div>
+		<div class="row" ng-if="fight.started">
+			<div class="col-md-4"></div>
+			<div  id="transcript" class="col-md-4">
+				<h3 ng-if="victor.side && victor.side !=='tie' && fight.stopped">{{corner[victor.side].name.toTitleCase()}} Wins!</h3>
+				<h3 ng-if="victor.side==='tie' && fight.stopped">Tie!</h3>
+				<b>{{winningRounds['red']}} - {{winningRounds['blue']}}</b> <br>
+				<b> Round {{fight.round}} Transcript </b><br>
+				<div id="overflow">
+					<div ng-repeat="msg in transcript track by $index">
+						<t ng-if="msg">{{$index}} - {{msg.toTitleCase()}} </t>
+					</div>
+				</div><br>
+
 			</div>
 		</div>
 	</div>

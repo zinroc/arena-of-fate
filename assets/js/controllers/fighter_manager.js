@@ -7,6 +7,10 @@ angular.module('App.controllers').controller('fighterManagerController', functio
     $scope.loaded = false;
     $scope.selectedFighterIndex = null;
 
+    $scope.plans = [];
+
+    $scope.managedFighter = false;
+
     gameAPIservice.getFighters().success(function (response){
         "use strict";
         console.log("Tried to fetch fighters");
@@ -30,12 +34,12 @@ angular.module('App.controllers').controller('fighterManagerController', functio
     $scope.initializeCarousel = function () {
     	$scope.selectedFighter = $scope.fighters[$scope.selectedFighterIndex];
     	var maxIndex = $scope.fighters.length - 1;
-    	console.log(maxIndex);
+
     	var prevIndex = $scope.selectedFighterIndex-1;
-    	console.log(prevIndex);
+
     	if(prevIndex < 0){
     		prevIndex = maxIndex;
-    		console.log(prevIndex);
+
     	}
 
     	$scope.prevFighter = $scope.fighters[prevIndex];
@@ -63,6 +67,39 @@ angular.module('App.controllers').controller('fighterManagerController', functio
     	$scope.initializeCarousel();
     };
 
+    $scope.manageFighter = function (){
+        for (var i=0; i<3; i++){
+            $scope.plans[i] = {};
+            $scope.plans[i].name = i;
+            $scope.plans[i].type = 'none';
+            $scope.plans[i].art = 'noPlan';
+        }
+
+        $scope.managedFighter = $scope.selectedFighter;
+    };
+
+    $scope.selectFighter = function(id){
+        console.log(id);
+        var index = $scope.getIndexOf($scope.fighters, 'id', id);
+        $scope.selectedFighterIndex = index;
+        console.log($scope.selectedFighterIndex);
+        $scope.initializeCarousel();
+    };
+
+    $scope.backToSelector = function (){
+        $scope.managedFighter = false;
+    };
+
+    $scope.getIndexOf = function(array, object, target){
+        var result = false;
+        for(var i=0; i<array.length; i++){
+            if(array[i][object]===target){
+                result = i;
+            }
+        }
+
+        return result;
+    };
     $scope.getAssetImg = function (art) {
         return gameAPIservice.assetPrefix() + "/img2/" + art + ".png";
     };

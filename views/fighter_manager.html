@@ -10,15 +10,67 @@
 					</p>
 				</div>
 			</div>
-			<div ng-if="loaded" class="col-md-9">
-				<img id="prevFighterArt" ng-src="{{ getAssetImg(prevFighter.art) }}" />
-				<img id="selectedFighterArt" ng-src="{{ getAssetImg(selectedFighter.art) }}" />
-				<img id="nextFighterArt" ng-src="{{ getAssetImg(nextFighter.art) }}" />
-				<div id="carouselButtons">
-					<p class="btn btn-primary" ng-click="cycleLeft()"><--</p>
-					<p class="btn btn-primary" ng-click="cycleRight()">--></p>
+
+				<div ng-if="loaded" class="col-md-9">
+					<div ng-if="!managedFighter">
+						<div id="prevFighterBox" class="col-md-2">
+							<h4>{{prevFighter.name.toTitleCase()}} </h4>
+							<img id="prevFighterArt" ng-src="{{ getAssetImg(prevFighter.art) }}" />
+						</div>
+						<div id="selectedFighterBox" class="col-md-4">
+							<h3>{{selectedFighter.name.toTitleCase()}} </h3>
+							<img id="selectedFighterArt" ng-src="{{ getAssetImg(selectedFighter.art) }}" />
+						</div>
+						<div id="nextFighterBox" class="col-md-2">
+							<h4>{{nextFighter.name.toTitleCase()}} </h4>
+							<img id="nextFighterArt" ng-src="{{ getAssetImg(nextFighter.art) }}" />
+						</div><br>
+					</div>
+					<div ng-if="managedFighter">
+						<div ng-if="managedFighter">
+							<div class="col-md-9" id="managedFighterBox">
+								<div class="col-md-3">
+									<h4>{{managedFighter.name.toTitleCase()}}</h4>
+									<img id="managedFighterArt" ng-src="{{ getAssetImg(managedFighter.art)}}">
+								</div>
+								<div class="col-md-4">
+    								<t class=="col-md-1" ng-repeat="plan in plans">
+    									<t id="planName">
+    										Plan {{plan.name}}
+    									</t>
+    								</t>
+
+    								<t class=="col-md-1" ng-repeat="plan in plans">
+      									<img id="planArt" ng-src="{{getAssetImg(plan.art)}}">
+    								</t>
+
+
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
+				<div id="carouselButtons" ng-if="!managedFighter">
+					<p class="btn btn-default" ng-click="cycleLeft()">
+						<t class="glyphicon glyphicon-arrow-left">
+						</t>
+					</p>
+					<p class="btn btn-primary" ng-click="manageFighter()">
+						<t class="glyphicon glyphicon-comment">
+						</t>
+					</p>
+					<p class="btn btn-default" ng-click="cycleRight()">
+						<t class="glyphicon glyphicon-arrow-right">
+						</t>
+					</p>
+				</div>
+				<div id="managerButtons" ng-if="managedFighter">
+					<p class="btn btn-warning" ng-click="backToSelector()">
+						<t class="glyphicon glyphicon-home">
+						</t>
+					</p>
+				</div>
+
 
 		</div>
 	</div>

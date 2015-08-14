@@ -16,3 +16,5 @@ application/views/blog.sublime-project
 application/views/blog.sublime-workspace
 
 assets/img/
+# sublime stuff
+*.sublime-*

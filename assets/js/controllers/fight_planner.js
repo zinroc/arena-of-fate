@@ -486,12 +486,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             for(var j=0; j<$scope.fastEffects.length; j++){
                 $scope.animations[$scope.sides[i]][$scope.fastEffects[j]] = {};
                 $scope.animations[$scope.sides[i]][$scope.fastEffects[j]].value = false;
-                $scope.animations[$scope.sides[i]][$scope.fastEffects[j]].timer = null;
             }
             for (j=0; j<$scope.damageTypes.length; j++){
                 $scope.animations[$scope.sides[i]][$scope.damageTypes[j]] = {};
                 $scope.animations[$scope.sides[i]][$scope.damageTypes[j]].value = false;
-                $scope.animations[$scope.sides[i]][$scope.damageTypes[j]].timer = null;
             }
         }
 
@@ -1116,12 +1114,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
 
                 $scope.animations[$scope.sides[i]][$scope.fastEffects[j]].value = false;
-                $scope.animations[$scope.sides[i]][$scope.fastEffects[j]].timer = null;
 
             }
             for (j=0; j<$scope.damageTypes.length; j++){
                 $scope.animations[$scope.sides[i]][$scope.damageTypes[j]].value = false;
-                $scope.animations[$scope.sides[i]][$scope.damageTypes[j]].timer = null;
             }
         }
         $scope.fightLoop();

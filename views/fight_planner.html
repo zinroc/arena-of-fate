@@ -28,10 +28,17 @@
 				<div class="col-md-2" ng-if="fight.started && side==='blue'">
 
 					<div ng-if="!animations[side]['dodge'].value">
-						<img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+						<div id="bodyOverlay">
+							<div ng-if="animations[side]['blood'].value">
+								<img id="fighterBodyArtDamage" ng-src="{{ getAssetImg(corner[side].body_art+'dmg') }}" />
+							</div>
+
+							<img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+
+						</div>
 					</div>
 					<div ng-if="animations[side]['dodge'].value">
-						<img id="fighterBodyArtDodging" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+						<img id="fighterBodyArtDodging{{side}}" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
 					</div>
 
 					<div id="portraitOverlay">
@@ -138,17 +145,24 @@
 				<div class="col-md-2" ng-if="fight.started && side==='red'">
 
 					<div ng-if="!animations[side]['dodge'].value">
-						<img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+						<div id="bodyOverlay">
+							<div ng-if="animations[side]['blood'].value">
+								<img id="fighterBodyArtDamage" ng-src="{{ getAssetImg(corner[side].body_art+'dmg') }}" />
+							</div>
+
+							<img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+
+						</div>
 					</div>
 					<div ng-if="animations[side]['dodge'].value">
-						<img id="fighterBodyArtDodging" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+						<img id="fighterBodyArtDodging{{side}}" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
 					</div>
 
 					<div id="portraitOverlay">
 						<div ng-repeat="effect in fastEffects" ng-if="animations[side][effect].value">
 							<div id="{{effect}}{{side}}" data-toggle="tooltip" data-placement="top" title="{{effect.toTitleCase()}}" ng-if="activeEffectTooltip(effect, side)">
 								<div ng-if="effect!=='dodge'">
-								<img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
+									<img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
 								</div>
 							</div>
 						</div>

@@ -2,13 +2,18 @@
 	<h1> Fighter Manager </h1>
 	<div class="container-fluid">
 		<div class="row">
-			<h3> Available Fighters: </h3>
-			<div class="col-md-3">
-				<div  ng-repeat="fighter in fighters">
-					<span id="hover" class="glyphicon glyphicon-user" ng-click="selectFighter(fighter.id)"></span>
-					{{fighter.name.toTitleCase()}}
-					</p>
+			<div ng-if="!managedFighter">
+				<h3> Available Fighters: </h3>
+				<div class="col-md-3">
+					<div  ng-repeat="fighter in fighters">
+						<span id="hover" class="glyphicon glyphicon-user" ng-click="selectFighter(fighter.id)"></span>
+						{{fighter.name.toTitleCase()}}
+						</p>
+					</div>
 				</div>
+			</div>
+			<div ng-if="managedFighter">
+				<div class="col-md-3"></div>
 			</div>
 
 				<div ng-if="loaded" class="col-md-9">

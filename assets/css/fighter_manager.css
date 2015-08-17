@@ -37,13 +37,16 @@
 	position: relative;
 	height: 400px;
 	width: 100%;
-	border: thick black solid;
 	overflow: none;
 	text-align: top;
 }
 
 #managedFighterArt {
 	width: 100%;
+}
+
+#traitArt{
+	width: 40%;
 }
 
 #nextFighterArt {

@@ -36,18 +36,18 @@
 							<div class="col-md-9" id="managedFighterBox">
 								<div class="col-md-3">
 									<h4>{{managedFighter.name.toTitleCase()}}</h4>
-									<img id="managedFighterArt" ng-src="{{ getAssetImg(managedFighter.art)}}">
+									<img id="managedFighterArt" ng-src="{{ getAssetImg(managedFighter.art)}}"><br>
+									<h4>Trait</h4>
+									<t id="{{managedFighter.trait}}" data-toggle="tooltip" data-placement="top" title="{{managedFighter.trait}}" ng-mouseOver="activateTooltip(managedFighter.trait)">
+										<img id="traitArt"  ng-src="{{getAssetImg(managedFighter.trait+'trait')}}">
+									</t><br><br><br>
 								</div>
 								<div class="col-md-4">
-    								<t class=="col-md-1" ng-repeat="plan in plans">
-    									<t id="planName">
-    										Plan {{plan.name}}
-    									</t>
-    								</t>
 
-    								<t class=="col-md-1" ng-repeat="plan in plans">
+    								<div ng-repeat="plan in plans">
+    									Plan {{plan.name}} <br>
       									<img id="planArt" ng-src="{{getAssetImg(plan.art)}}">
-    								</t>
+    								</div>
 
 
 								</div>

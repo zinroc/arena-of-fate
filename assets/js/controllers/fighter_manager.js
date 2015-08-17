@@ -11,6 +11,9 @@ angular.module('App.controllers').controller('fighterManagerController', functio
 
     $scope.managedFighter = false;
 
+    $scope.planNames = [];
+    $scope.planNames = ['A', 'B', 'C'];
+
     gameAPIservice.getFighters().success(function (response){
         "use strict";
         console.log("Tried to fetch fighters");
@@ -70,7 +73,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
     $scope.manageFighter = function (){
         for (var i=0; i<3; i++){
             $scope.plans[i] = {};
-            $scope.plans[i].name = i;
+            $scope.plans[i].name = $scope.planNames[i];
             $scope.plans[i].type = 'none';
             $scope.plans[i].art = 'noPlan';
         }
@@ -100,6 +103,16 @@ angular.module('App.controllers').controller('fighterManagerController', functio
 
         return result;
     };
+
+    $scope.activateTooltip = function (tag){
+        console.log("mouse", tag);
+
+        var tagName = "#"+tag;
+
+        $(tagName).tooltip('show');
+        return 1;
+    };
+
     $scope.getAssetImg = function (art) {
         return gameAPIservice.assetPrefix() + "/img2/" + art + ".png";
     };

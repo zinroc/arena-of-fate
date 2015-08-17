@@ -95,6 +95,10 @@ angular.module('App.services', []).factory('gameAPIservice', function($http) {
         return this.getJSON('static_controller', 'getSkills');
     };
 
+    gameAPI.getTraits = function () {
+        return this.getJSON('static_controller', 'getTraits');
+    };
+
 
 	return gameAPI;
 });

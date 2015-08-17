@@ -38,7 +38,7 @@
 									<h4>{{managedFighter.name.toTitleCase()}}</h4>
 									<img id="managedFighterArt" ng-src="{{ getAssetImg(managedFighter.art)}}"><br>
 									<h4>Trait</h4>
-									<t id="{{managedFighter.trait}}" data-toggle="tooltip" data-placement="top" title="{{managedFighter.trait}}" ng-mouseOver="activateTooltip(managedFighter.trait)">
+									<t id="{{managedFighter.trait}}" data-toggle="tooltip" data-placement="top" title="{{traits[managedFighter.trait].toTitleCase()}}" ng-mouseOver="activateTooltip(managedFighter.trait)">
 										<img id="traitArt"  ng-src="{{getAssetImg(managedFighter.trait+'trait')}}">
 									</t><br><br><br>
 								</div>

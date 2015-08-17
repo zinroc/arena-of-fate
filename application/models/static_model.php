@@ -37,6 +37,16 @@ class Static_Model extends CI_MODEL {
 		return $result;
 	}
 
+	function getTraits (){
+		$result = array();
+		$query = $this->db->get('traits');
+		$traits = $query->result_array();
+		foreach($traits as $trait){
+			$result[$trait['id']] = $trait['name'];
+		}
+		return $result;
+	}
+
 	/**
 	*	@param $conversion VARCHAR code for type of conversion to be done
 	*	@param $number INT

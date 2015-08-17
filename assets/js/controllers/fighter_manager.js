@@ -34,6 +34,19 @@ angular.module('App.controllers').controller('fighterManagerController', functio
 
     });
 
+    gameAPIservice.getTraits().success(function (response){
+        "use strict";
+        console.log("Tried to fetch modifiers");
+        console.log(response);
+
+        if (response.hasOwnProperty('status') && response.status === 'error') {
+            $scope.traits = false;
+        } else {
+            $scope.traits = response.traits;
+        }
+
+    });
+
     $scope.initializeCarousel = function () {
     	$scope.selectedFighter = $scope.fighters[$scope.selectedFighterIndex];
     	var maxIndex = $scope.fighters.length - 1;

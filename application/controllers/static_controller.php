@@ -49,6 +49,16 @@ class Static_Controller extends CI_Controller {
     	}
     }
 
+    public function getTraits (){
+        $this->load->model('static_model');
+        $result = $this->static_model->getTraits();
+        if ($result){
+            $this->printJSON(array("traits"=>$result));
+        } else{
+            $this->printJSONDatabaseError();
+        }
+    }
+
     /**
      * Print the given array in JSON with the correct content type.
      */

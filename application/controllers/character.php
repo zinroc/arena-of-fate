@@ -28,6 +28,19 @@ class Character extends CI_Controller {
         }
     }
 
+    public function getPlans (){
+        $id = $this->input->post('id');
+
+        $this->load->model('character_model');
+        $result = $this->character_model->getPlans($id);
+        if($result){
+            $this->printJSON(array("plans"=>$result));
+        } else{
+            $this->printJSONDatabaseError();
+        }
+    }
+
+
     public function setSkills (){
         $this->load->model('character_model');
         $result = $this->character_model->setSkills();

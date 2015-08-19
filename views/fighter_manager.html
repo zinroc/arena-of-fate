@@ -13,10 +13,22 @@
 				</div>
 			</div>
 			<div ng-if="managedFighter">
-				<div class="col-md-3"></div>
+				<div class="col-md-3" ng-if="!selectedPlan"></div>
+				<div id="techniqueBox" class="col-md-3" ng-if="selectedPlan">
+					<h4> Techniques </h4>
+					<div id="techBook">
+						Book of Techniques
+					</div>
+					<div id="techSlots" ng-repeat="slot in techSlots" class="col-md-3">
+						{{slot}}
+					</div>
+					<div id="ultSlot" class="col-md-3">
+						Ultimate Ability
+					</div>
+				</div>
 			</div>
 
-				<div ng-if="loaded" class="col-md-9">
+				<div ng-if="loaded.fighters" class="col-md-9">
 					<div ng-if="!managedFighter">
 						<div id="prevFighterBox" class="col-md-2">
 							<h4>{{prevFighter.name.toTitleCase()}} </h4>
@@ -42,14 +54,43 @@
 										<img id="traitArt"  ng-src="{{getAssetImg(managedFighter.trait+'trait')}}">
 									</t><br><br><br>
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-2">
 
-    								<div ng-repeat="plan in plans">
-    									Plan {{plan.name}} <br>
-      									<img id="planArt" ng-src="{{getAssetImg(plan.art)}}">
+    								<div ng-repeat="plan in plans" ng-if="loaded.plans">
+    									Plan {{plan.index}} <br>
+										<div id="{{plan.name}}" data-toggle="tooltip" data-placement="top" title="{{plan.name.toTitleCase()}}" ng-mouseOver="activateTooltip(plan.name)">
+      										<img id="planArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(plan.index)">
+
+      									</div>
     								</div>
+								</div>
+								<div id="stratDesc" class="col-md-7" ng-if="selectedPlan">
+								<h4> {{traits[managedFighter.trait].toTitleCase()}} {{selectedPlan.name.toTitleCase()}}</h4>
+									<div id="stratParamButtons" class="col-md-3" ng-repeat="param in stratParams">
+										<p id="{{param}}" style="border: solid thick black; width: 100%; height: 50px;">{{param}}</p>
+									</div><br><br>
+									<div id="animationBox">
+										Animation Box
+									</div>
+									<div id="bonusBox" class="col-md-8">
+										Bonus Box
+									</div>
+									<div id="rangeBox" class="col-md-4">
+										Range Box
+									</div>
+									<div>
+										<div id="experienceAsBox" class="col-md-5">
+											Experience As
+										</div>
 
+										<div id="experienceBox" class="col-md-5">
+											Experience Against
+										</div>
 
+										<div id="masteryBox" class="col-md-2">
+											Mastery
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>

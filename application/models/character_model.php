@@ -1,6 +1,26 @@
 <?php
 class Character_Model extends CI_MODEL {
 
+	function getPlans($id){
+		$result = array();
+		$sql= "SELECT * FROM strategy_experience WHERE character=? AND rank IS NOT NULL";
+		$arr = array("character"=>$id);
+		$query = $this->db->query($sql, $arr);
+		$result = $query->result_array();
+
+		$i =0;
+		foreach($result as $plan){
+			$sql = "SELECT * FROM strategies WHERE id=?";
+			$arr = array("id"=>$plan['strategy']);
+			$query = $this->db->query($sql, $arr);
+			$strat = $query->row_array();
+			$result[$i]['name'] = $strat['name'];
+			$i++;
+		}
+
+		return $result;
+	}
+
 	function getFighters(){
 		$result = array();
 

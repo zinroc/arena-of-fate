@@ -7,12 +7,22 @@ angular.module('App.controllers').controller('fighterManagerController', functio
     $scope.loaded = false;
     $scope.selectedFighterIndex = null;
 
-    $scope.plans = [];
+    $scope.plans = false;
+
+    $scope.selectedPlan = null;
 
     $scope.managedFighter = false;
 
     $scope.planNames = [];
     $scope.planNames = ['A', 'B', 'C'];
+
+    $scope.loaded = {};
+    $scope.loaded.fighters = false;
+    $scope.loaded.plans = false;
+
+    $scope.stratParams = [];
+    $scope.stratParams = ['Initiation Frequency', 'Idle Cardio' ,'Initiation Cardio', 'Difficulty'];
+    $scope.techSlots = ['slot 1', 'slot 2', 'slot 3']
 
     gameAPIservice.getFighters().success(function (response){
         "use strict";
@@ -30,7 +40,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
             $scope.selectedFighterIndex = 0;
             $scope.initializeCarousel();
         }
-        $scope.loaded = true;
+        $scope.loaded.fighters = true;
 
     });
 
@@ -46,6 +56,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
         }
 
     });
+
 
     $scope.initializeCarousel = function () {
     	$scope.selectedFighter = $scope.fighters[$scope.selectedFighterIndex];
@@ -84,14 +95,25 @@ angular.module('App.controllers').controller('fighterManagerController', functio
     };
 
     $scope.manageFighter = function (){
-        for (var i=0; i<3; i++){
-            $scope.plans[i] = {};
-            $scope.plans[i].name = $scope.planNames[i];
-            $scope.plans[i].type = 'none';
-            $scope.plans[i].art = 'noPlan';
-        }
 
         $scope.managedFighter = $scope.selectedFighter;
+
+        gameAPIservice.getPlans($scope.managedFighter.id).success(function (response){
+            "use strict";
+            console.log("Tried to fetch plans");
+            console.log(response);
+
+            if (response.hasOwnProperty('status') && response.status === 'error') {
+                $scope.plans = false;
+            } else {
+                $scope.plans = response.plans;
+                for(var i=0; i<3; i++){
+                    $scope.plans[i].index = $scope.planNames[i];
+                }
+                $scope.loaded.plans = true;
+            }
+
+        });
     };
 
     $scope.selectFighter = function(id){
@@ -104,7 +126,20 @@ angular.module('App.controllers').controller('fighterManagerController', functio
 
     $scope.backToSelector = function (){
         $scope.managedFighter = false;
+        $scope.loaded.plans = false;
     };
+
+    $scope.selectPlan = function (index){
+        if($scope.selectedPlan){
+            $('#'+$scope.selectedPlan.name).css('border','none');;
+        }
+
+        var planIndex = $scope.getIndexOf($scope.plans, 'index', index);
+        $scope.selectedPlan = $scope.plans[planIndex];
+        $('#'+$scope.selectedPlan.name).css('border','thick solid orange');
+        $('#'+$scope.selectedPlan.name).css('border-radius','20%');
+
+    }
 
     $scope.getIndexOf = function(array, object, target){
         var result = false;

@@ -99,6 +99,10 @@ angular.module('App.services', []).factory('gameAPIservice', function($http) {
         return this.getJSON('static_controller', 'getTraits');
     };
 
+    gameAPI.getPlans = function (id){
+    	return this.getJSONWithParams("character", "getPlans", {"id":id});
+    };
+
 
 	return gameAPI;
 });

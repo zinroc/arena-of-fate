@@ -21,6 +21,42 @@ class Character_Model extends CI_MODEL {
 		return $result;
 	}
 
+	function getSlots($id){
+		$result = array();
+		$sql= "SELECT * FROM strategy_experience WHERE character=? AND rank IS NOT NULL";
+		$arr = array("character"=>$id);
+		$query = $this->db->query($sql, $arr);
+		$plans = $query->result_array();
+
+
+		foreach ($plans as $plan){
+			$query = $this->db->get_where("plan_techniques", array("plan"=>$plan['id']));
+			$slotInfo = $query->row_array();
+
+			$result[$plan['strategy']]['slot_1'] = $slotInfo['slot_1'];
+			$result[$plan['strategy']]['slot_2'] = $slotInfo['slot_2'];
+			$result[$plan['strategy']]['slot_3'] = $slotInfo['slot_3'];
+			$result[$plan['strategy']]['ultimate'] = $slotInfo['ultimate'];
+
+		}
+
+		return $result;
+	}
+
+	function getTechCond ($id){
+		$result = array();
+		$sql = "SELECT * FROM technique_conditioning WHERE character=?";
+		$arr = array("character"=>$id);
+		$query = $this->db->query($sql, $arr);
+		$conds = $query->result_array();
+
+		foreach ($conds as $cond){
+			$result[$cond['technique']] = $cond['conditioning'];
+		}
+		return $result;
+
+	}
+
 	function getFighters(){
 		$result = array();
 

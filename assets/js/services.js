@@ -98,11 +98,27 @@ angular.module('App.services', []).factory('gameAPIservice', function($http) {
     gameAPI.getTraits = function () {
         return this.getJSON('static_controller', 'getTraits');
     };
+    /**
+    gameAPI.initTechExp = function () {
+        return this.getJSON('static_controller', 'initTechExp');
+    };
+    */
+
+
+    gameAPI.getTechniques = function () {
+        return this.getJSON('static_controller', 'getTechniques');
+    };
 
     gameAPI.getPlans = function (id){
     	return this.getJSONWithParams("character", "getPlans", {"id":id});
     };
 
+    gameAPI.getSlots = function (id){
+    	return this.getJSONWithParams("character", "getSlots", {"id":id});
+    };
+    gameAPI.getTechCond = function (id){
+    	return this.getJSONWithParams("character", "getTechCond", {"id":id});
+    };
 
 	return gameAPI;
 });

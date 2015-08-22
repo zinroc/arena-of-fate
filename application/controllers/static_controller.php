@@ -59,6 +59,28 @@ class Static_Controller extends CI_Controller {
         }
     }
 
+    
+    //public function initTechExp (){
+    //    $this->load->model('static_model');
+    //    $result = $this->static_model->initTechExp();
+    //    if ($result){
+    //        $this->printJSONSuccess('h1');
+    //   } else{
+    //        $this->printJSONDatabaseError();
+    //    }
+    //} 
+    
+    
+    public function getTechniques (){
+        $this->load->model('static_model');
+        $result = $this->static_model->getTechniques();
+        if ($result){
+            $this->printJSON(array("techniques"=>$result));
+        } else{
+            $this->printJSONDatabaseError();
+        }
+    }
+
     /**
      * Print the given array in JSON with the correct content type.
      */

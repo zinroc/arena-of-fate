@@ -40,6 +40,29 @@ class Character extends CI_Controller {
         }
     }
 
+    public function getSlots (){
+        $id = $this->input->post('id');
+
+        $this->load->model('character_model');
+        $result = $this->character_model->getSlots($id);
+        if($result){
+            $this->printJSON(array("slots"=>$result));
+        } else{
+            $this->printJSONDatabaseError();
+        }
+    }
+
+    public function getTechCond (){
+        $id = $this->input->post('id');
+
+        $this->load->model('character_model');
+        $result = $this->character_model->getTechCond($id);
+        if($result){
+            $this->printJSON(array("techConditioning"=>$result));
+        } else{
+            $this->printJSONDatabaseError();
+        }
+    }
 
     public function setSkills (){
         $this->load->model('character_model');

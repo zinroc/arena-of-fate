@@ -251,6 +251,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
 
+
     //return INT
     $scope.getpositioningSkill = function(side){
         var skill = 0;
@@ -509,7 +510,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     //determine how much cardio fighter pays this cycle in fightLoop
     $scope.idleCardioPayment = function(side){
-        return parseInt($scope.heightConversion($scope.strat[side].base_cardio)/2);
+        return parseInt($scope.heightConversion($scope.strat[side].base_cardio_cost)/2);
     };
 
     //set all status flags based on vitals
@@ -824,7 +825,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
     $scope.initiationCardioPayment = function(side){
-        return $scope.heightConversion($scope.strat[side].initiation_cardio);
+        return $scope.heightConversion($scope.strat[side].initiation_cardio_cost);
     };
 
     //check if fighter has fumble or predict

@@ -17,13 +17,48 @@
 				<div id="techniqueBox" class="col-md-3" ng-if="selectedPlan">
 					<h4> Techniques </h4>
 					<div id="techBook">
-						Book of Techniques
+						<h5> Basic Abilities</h5>
+						<div id="techBox" ng-repeat="tech in techniques" ng-if="(tech.trait===managedFighter.trait || tech.strategy===selectedPlan.strategy) && tech.ultimate==='f'">
+
+							<div class="col-md-3 " style="cursor: pointer" ng-click="selectTech(tech.id)" data-toggle="modal" data-target="#techModal">
+
+								<img  id="techBookArt" ng-src="{{ getAssetImg(tech.id+'tech') }}" />
+
+							</div>
+							<div id="techBookText" class="col-md-9">
+								{{tech.name.toTitleCase()}}
+								<div class="progress">
+									
+									<div class="progress-bar {{getExpBarColor(techConditioning[tech.id])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{techConditioning[tech.id]}}%;">
+									<span style="color: black; position: absolute; text-align: left;">  {{getRustWord(techConditioning[tech.id])}}</span>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						<h5> Ultimate Abilities </h5>
+						<div id="techBox" ng-repeat="tech in techniques" ng-if="(tech.trait===managedFighter.trait || tech.strategy===selectedPlan.strategy) && tech.ultimate==='t'">
+							<div class="col-md-3">
+								<img id="techBookArt" ng-src="{{ getAssetImg(tech.id+'tech') }}" />
+							</div>
+							<div id="techBookText" class="col-md-9">
+								{{tech.name.toTitleCase()}}
+								<div class="progress">
+									
+									<div class="progress-bar {{getExpBarColor(techConditioning[tech.id])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{techConditioning[tech.id]}}%;">
+									<span style="color: black; position: absolute; text-align: left;">  {{getRustWord(techConditioning[tech.id])}}</span>
+									</div>
+
+								</div>
+							</div>
+						</div>
 					</div>
 					<div id="techSlots" ng-repeat="slot in techSlots" class="col-md-3">
-						{{slot}}
+						<img id="techSlotArt" ng-src="{{ getAssetImg(slots[selectedPlan.strategy][slot]+'tech') }}" />
+
 					</div>
 					<div id="ultSlot" class="col-md-3">
-						Ultimate Ability
+						<img id="ultSlotArt" ng-src="{{ getAssetImg(slots[selectedPlan.strategy].ultimate+'tech') }}" />
 					</div>
 				</div>
 			</div>
@@ -44,56 +79,84 @@
 						</div><br>
 					</div>
 					<div ng-if="managedFighter">
-						<div ng-if="managedFighter">
-							<div class="col-md-9" id="managedFighterBox">
-								<div class="col-md-3">
-									<h4>{{managedFighter.name.toTitleCase()}}</h4>
-									<img id="managedFighterArt" ng-src="{{ getAssetImg(managedFighter.art)}}"><br>
-									<h4>Trait</h4>
-									<t id="{{managedFighter.trait}}" data-toggle="tooltip" data-placement="top" title="{{traits[managedFighter.trait].toTitleCase()}}" ng-mouseOver="activateTooltip(managedFighter.trait)">
+						<div class="col-md-9" id="managedFighterBox">
+							<div class="col-md-3">
+								<h4>{{managedFighter.name.toTitleCase()}}</h4>
+								<img id="managedFighterArt" ng-src="{{ getAssetImg(managedFighter.art)}}"><br>
+								<h4>Trait</h4>
+								<t class="{{managedFighter.trait}}" data-toggle="tooltip" data-placement="bottom" title="
+								{{traits[managedFighter.trait].description}}">
+									<t class="{{managedFighter.trait}}" data-toggle="tooltip" data-placement="top" title="{{traits[managedFighter.trait].name.toTitleCase()}}" ng-mouseOver="activateClassTooltip(managedFighter.trait)">
 										<img id="traitArt"  ng-src="{{getAssetImg(managedFighter.trait+'trait')}}">
-									</t><br><br><br>
-								</div>
-								<div class="col-md-2">
+									</t>
+								</t><br><br><br>
+							</div>
+							<div class="col-md-2">
 
-    								<div ng-repeat="plan in plans" ng-if="loaded.plans">
-    									Plan {{plan.index}} <br>
-										<div id="{{plan.name}}" data-toggle="tooltip" data-placement="top" title="{{plan.name.toTitleCase()}}" ng-mouseOver="activateTooltip(plan.name)">
-      										<img id="planArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(plan.index)">
+								<div ng-repeat="plan in plans" ng-if="loaded.plans && loaded.techConditioning && loaded.slots">
+									Plan {{plan.index}} <br>
+									<div id="{{plan.name}}" data-toggle="tooltip" data-placement="top" title="{{plan.name.toTitleCase()}}" ng-mouseOver="activateTooltip(plan.name)">
+  										<img id="planArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(plan.index)">
 
-      									</div>
-    								</div>
+  									</div>
 								</div>
-								<div id="stratDesc" class="col-md-7" ng-if="selectedPlan">
-								<h4> {{traits[managedFighter.trait].toTitleCase()}} {{selectedPlan.name.toTitleCase()}}</h4>
-									<div id="stratParamButtons" class="col-md-3" ng-repeat="param in stratParams">
-										<p id="{{param}}" style="border: solid thick black; width: 100%; height: 50px;">{{param}}</p>
-									</div><br><br>
-									<div id="animationBox">
-										Animation Box
+							</div>
+							<div id="stratDesc" class="col-md-7" ng-if="selectedPlan">
+								<h4> 
+									{{traits[managedFighter.trait].name.toTitleCase()}} {{selectedPlan.name.toTitleCase()}}
+								</h4>
+								<div id="stratParamButtons" class="col-md-3" ng-repeat="param in stratParams" ng-mouseOver="activeAnimation(param)" ng-mouseLeave="deactivateAnimation()" ng-style="{'background-color': stratParamBackground(param)}">
+
+
+									<div id="{{param+'tooltip'}}" data-toggle="tooltip" data-placement="top" data-original-title="{{getStratParamHeight(param)}}" ng-mouseOver="activateTooltip(param+'tooltip')" style="width: 100%; height: 100%;">
+										{{param.split('_').join(' ').toTitleCase()}}
 									</div>
-									<div id="bonusBox" class="col-md-8">
-										Bonus Box
-									</div>
-									<div id="rangeBox" class="col-md-4">
-										Range Box
-									</div>
+								</div><br><br><br>
+								<div id="animationBox">
+									<h5> &nbsp {{activeAnimationName.split('_').join(' ').toTitleCase()}} <b ng-if="getStratParamHeight(activeAnimationName)">: {{getStratParamHeight(activeAnimationName).toTitleCase()}}</b> </h5>
 									<div>
-										<div id="experienceAsBox" class="col-md-5">
-											Experience As
-										</div>
+										<img id="activeBodyArt" class="col-md-3" ng-src="{{ getAssetImg(managedFighter.body_art) }}" />
 
-										<div id="experienceBox" class="col-md-5">
-											Experience Against
-										</div>
+										<div id="activeAnimation" ng-if="activeAnimationName" class="col-md-1">
+											<img id="{{activeAnimationName}}" ng-src="{{ getAssetImg(activeAnimationName) }}" ng-if="activeAnimationName !=='initiation_cardio_cost'"/>
+											
+											<img id="{{activeAnimationName+'sword'}}" ng-src="{{ getAssetImg('initiation_frequency') }}" ng-if="activeAnimationName ==='initiation_cardio_cost'"/>
 
-										<div id="masteryBox" class="col-md-2">
-											Mastery
+											<img id="{{activeAnimationName+'gas'}}" ng-src="{{ getAssetImg('base_cardio_cost') }}" ng-if="activeAnimationName ==='initiation_cardio_cost'"/>
 										</div>
+									</div>
+
+								</div>
+								<div id="bonusBox" class="col-md-9" >
+									<h5> Bonuses </h5>
+									<div class="col-md-6" ng-repeat="skill in skills" ng-if="checkBonusDefined(skill.id)">
+										<div class="col-md-8" >{{skill.name.toTitleCase()}}</div>
+										<div class="col-md-2">+{{stratBonuses[selectedPlan.strategy][skill.id]}}%</div>
+										 
+									</div>
+								</div>
+								<div id="rangeBox" class="col-md-3">
+									<b>Optimal Range:</b><br>
+									<b>{{strats[selectedPlan.strategy].range.toTitleCase()}}</b>
+								</div>
+
+								<div>
+									<h5> Conditioning &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+									&nbsp &nbsp &nbsp Mastery</h5>
+									<div id="experienceAsBox" class="col-md-5">
+										<div class="progress">
+											<div class="progress-bar {{getExpBarColor(selectedPlan.experience_as)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{selectedPlan.experience_as}}%;">
+											<span style="color: black; position: absolute; text-align: left;"> {{getRustWord(selectedPlan.experience_as)}}</span>
+											</div>
+
+										</div>
+									</div>
+									<div id="masteryBox" class="col-md-2">
 									</div>
 								</div>
 							</div>
 						</div>
+
 					</div>
 				</div>
 				<div id="carouselButtons" ng-if="!managedFighter">
@@ -110,8 +173,8 @@
 						</t>
 					</p>
 				</div>
-				<div id="managerButtons" ng-if="managedFighter">
-					<p class="btn btn-warning" ng-click="backToSelector()">
+				<div ng-if="managedFighter">
+					<p  id="backButton" class="btn btn-warning" ng-click="backToSelector()">
 						<t class="glyphicon glyphicon-home">
 						</t>
 					</p>
@@ -120,4 +183,45 @@
 
 		</div>
 	</div>
+
+<!-- Modal -->
+<div ng-if="selectedTech">
+	<div class="modal fade" id="techModal" tabindex="-1" role="dialog" aria-labelledby="techModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">{{selectedTech.name.toTitleCase()}} - {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}}</h4>
+				</div>
+				<div id="modalBody" class="modal-body">
+					<img id="techInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTech.id+'tech') }}" />
+					<div id="techEffectText" class="col-md-9">
+						<b>Effect: </b><br>
+						{{selectedTech.effect_description}}
+					</div>
+					<br>
+					<div id="techPreconditionText" class="col-md-9">
+						<b>Preconditions: </b><br>
+						{{selectedTech.preconditions}}
+					</div>
+					<div id="techInfoBoxes" class="col-md-12">
+						<div class="col-md-3">
+							Required Range
+							<b>{{distanceConverter(selectedTech.range).toTitleCase()}}</b>
+						</div>
+						<div class="col-md-3">
+							Level : <b>{{masteryConverter(selectedTech.level).toTitleCase()}} </b>
+						</div>
+						<div class="col-md-3">
+							Cardio Cost: <b>{{heightConverter(selectedTech.cardio_cost).toTitleCase()}}</b>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 </div>

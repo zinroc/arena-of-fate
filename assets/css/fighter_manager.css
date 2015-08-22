@@ -15,6 +15,18 @@
 	text-align: top;
 }
 
+#techEffectText{
+	height: 40px;
+	text-align: left;
+	line-height: 15px;
+}
+
+#techPreconditionText {
+	height: 40px;
+	margin-top: 10px;
+	text-align: left;
+	line-height: 15px;
+}
 #selectedPlan {
 	border: thick red solid;
 }
@@ -45,30 +57,52 @@
 	text-align: top;
 }
 
+#techBox{
+	height: 50px;
+}
+
 #techBook {
 	height: 250px;
 	overflow: scroll;
 	width: 100%;
-	border: thick black solid;
 }
 
 #techSlots {
+	left: -10px;
 	height: 60px;
-	border: thick black solid;
+}
+#techSlotArt{
+	height: 50px;
+	border-radius: 10%;
 }
 
 #ultSlot {
+	left: -10px;
 	height:70px;
-	border: thick black solid;
+}
+
+#techInfoBoxes{
+}
+#techInfoArt {
+	height: 100px;
+	border-radius: 20%;
+}
+
+#ultSlotArt {
+	height: 70px;
+	border-radius: 10%;
 }
 
 #techniqueBox {
 	height:400px;
-	border: thick black solid;
 }
 
 #managedFighterArt {
 	width: 100%;
+}
+
+#modalBody{
+	height: 150px;
 }
 
 #traitArt{
@@ -83,34 +117,209 @@
 #animationBox {
 	width: 100%;
 	height: 150px;
-	border: black thick solid;
-	border-top: none;
+
 }
 
 #bonusBox{
 	height:80px;
-
-	border: black thick solid;
 }
 
 #rangeBox{
+	text-align: center;
 	height:80px;
 
-	border: black thick solid;
+}
+
+@keyframes rotateRight {
+	0%{
+		transform: rotate(0deg);
+	} 100%{
+		transform: rotate(90deg);
+	}
+}
+
+@keyframes slideRight {
+	0% {
+		opacity: 1;
+		left: -50px;
+	}
+	100% {
+		opacity: 1;
+		left: 150px;
+	}
+}
+
+@keyframes rotateRightDelay {
+	0%{
+
+	}
+	49%{
+
+	}
+	50%{
+		transform: rotate(0deg);
+	} 100%{
+		transform: rotate(90deg);
+	}
+}
+
+@keyframes slideRightDelay {
+	0%{
+		left: -50px;
+		opacity: 0;
+	}
+	49%{
+		left: -50px;
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+		left: -50px;
+	}
+	100% {
+		opacity: 1;
+		left: 150px;
+	}
+}
+
+@keyframes growDelay {
+	0%{
+		left: -50px;
+		opacity: 0;
+	}
+	49%{
+		left: -50px;
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+		left: -50px;
+		height: 50px;
+	}
+	75% {
+		opacity: 1;
+		left: 0px;
+		height: 100px;
+	}
+	100% {
+		opacity: 1;
+		left: -50px;
+		height: 50px;
+	}
+}
+@keyframes grow {
+	0% {
+		opacity: 1;
+		left: -50px;
+		height: 50px;
+	}
+	100% {
+		opacity: 1;
+		left: 0px;
+		height: 100px;
+	}
+}
+
+@keyframes spin {
+	0%{
+		opacity: 1;
+		transform: rotate(0deg);
+	} 100%{
+		opacity: 1;
+		transform: rotate(360deg);
+	}
+}
+
+#difficulty {
+	left: -50px;
+	height: 50px;
+	opacity: 0;
+	position: absolute;
+	border-radius: 50%;
+	animation: spin 0.9s 0s linear alternate infinite;
+}
+
+#initiation_frequency {
+	height: 100px;
+
+	opacity: 0;
+	position: absolute;
+	animation: slideRight 0.9s 0s linear infinite,
+				rotateRight 0.9s 0s linear infinite;
+}
+#techBookText {
+	height: 40px;
+}
+#techBookArt {
+	height: 40px;
+	border-radius: 10%;
+}
+
+#initiation_cardio_costsword{
+	z-index: 120;
+	height: 100px;
+	opacity: 0;
+	position: absolute;
+
+	animation: slideRightDelay 1.8s 0s linear infinite,
+				rotateRightDelay 1.8s 0s linear infinite;
+}
+
+#initiation_cardio_costgas {
+	border-radius: 20%;
+	height: 50px;
+	opacity: 0;
+	position: absolute;
+
+	animation: growDelay 1.8s 0s linear infinite;
+}
+
+#base_cardio_cost{
+	border-radius: 20%;
+	height: 100px;
+	opacity: 0;
+	position: absolute;
+	animation: grow 0.5s 0s linear alternate infinite;
+
 }
 
 
+
+#activeBodyArt {
+	height: 100px;
+}
+
+#activeAnimation{
+	height: 100px;
+}
 #selectedFighterArt {
 	height: 90%;
 }
 
 #stratParamButtons {
+	z-index: 140;
+	cursor: pointer;
+
 	text-align: center;
+	height: 75px;
+	color: white;
+
+	border: medium black solid;
+	border-radius: 20%;
+    box-shadow: 10px -5px 5px #888888;
+
 }
 
 #managerButtons {
 	position: relative;
 	margin-left: 60%;
+}
+
+#backButton {
+	margin-top: 50px;
+	text-align: center;
+	margin-left: 30%;
+	width: 33%;
 }
 
 #carouselButtons {
@@ -119,7 +328,6 @@
 }
 
 #stratDesc {
-	border: thick solid black;
 	height: 400px;
 }
 

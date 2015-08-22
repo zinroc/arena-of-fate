@@ -9,8 +9,8 @@ class Static_Model extends CI_MODEL {
 
 		foreach ($strategies as $strategy){
 			$strategy['initiation_frequency'] = $this->numberToTextConverter('height', $strategy['initiation_frequency']);
-			$strategy['base_cardio'] = $this->numberToTextConverter('height', $strategy['base_cardio']);
-			$strategy['initiation_cardio'] = $this->numberToTextConverter('height', $strategy['initiation_cardio']);
+			$strategy['base_cardio_cost'] = $this->numberToTextConverter('height', $strategy['base_cardio_cost']);
+			$strategy['initiation_cardio_cost'] = $this->numberToTextConverter('height', $strategy['initiation_cardio_cost']);
 			$strategy['difficulty'] = $this->numberToTextConverter('height', $strategy['difficulty']);
 			$strategy['range'] = $this->numberToTextConverter('distance', $strategy['range']);
 			$result['strat'][$strategy['id']] = $strategy;
@@ -37,14 +37,41 @@ class Static_Model extends CI_MODEL {
 		return $result;
 	}
 
+	function getTechniques (){
+		$result = array();
+		$query = $this->db->get('techniques');
+		$result = $query->result_array();
+
+		return $result;
+	}
+
 	function getTraits (){
 		$result = array();
 		$query = $this->db->get('traits');
 		$traits = $query->result_array();
 		foreach($traits as $trait){
-			$result[$trait['id']] = $trait['name'];
+			$result[$trait['id']]['name'] = $trait['name'];
+			$result[$trait['id']]['description'] = $trait['description'];
 		}
 		return $result;
+	}
+
+	function initTechExp (){
+		$query = $this->db->get('characters');
+		$characters = $query->result_array();
+
+		$query = $this->db->get('techniques');
+		$techniques = $query->result_array();
+
+		foreach($characters as $character){
+			foreach($techniques as $technique){
+				$random = rand(0, 100);
+				$sql = "INSERT INTO technique_conditioning (id, character, technique, conditioning) VALUES (DEFAULT, ?, ?, ?)";
+				$arr = array("character"=>$character['id'], "technique"=>$technique['id'], "conditioning"=>$random);
+				$this->db->query($sql, $arr);
+			}
+		}
+		return true;
 	}
 
 	/**

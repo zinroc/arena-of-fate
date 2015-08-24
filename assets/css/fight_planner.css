@@ -8,7 +8,6 @@
 	position: relative;
 	height: 400px;
 	margin: 10px;
-    border: thick solid black;
 }
 
 #modifierBox {
@@ -17,6 +16,47 @@
 	height: 50%;
 }
 
+
+#techSlots {
+	left: -20px;
+}
+#ultSlot {
+	top: -20px;
+	left: -20px;
+}
+
+
+#ultSlotArt {
+	height: 70px;
+	border-radius: 20%
+}
+
+#techSlotArt {
+	height: 50px;
+	border-radius: 20%
+}
+
+#stratParamButtons {
+	z-index: 140;
+	cursor: pointer;
+
+	text-align: center;
+	height: 25px;
+	color: white;
+
+	border: thin black solid;
+	border-radius: 20%;
+    box-shadow: 10px -5px 5px #888888;
+
+}
+
+#planArt{
+	height: 70px;
+	border-radius: 20%;
+	cursor: pointer;
+	border: thick black solid;
+
+}
 
 #effectArtinitiator {
 	z-index: 101;
@@ -366,6 +406,9 @@
 }
 
 
+#planList {
+	height: 100px;
+}
 
 
 #portraitOverlay {
@@ -374,7 +417,16 @@
 	top: 20%;
 }
 
+
+#planSelectedArt {
+	height: 70px;
+	border-radius: 20%;
+	cursor: pointer;
+	border: thick orange solid;
+}
+
 #fighter_box span {
+	text-align: left;
    position: absolute;
    bottom: 0;
 

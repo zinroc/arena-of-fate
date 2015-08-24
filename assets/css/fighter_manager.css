@@ -16,13 +16,15 @@
 }
 
 #techEffectText{
-	height: 40px;
+	height: 65px;
 	text-align: left;
 	line-height: 15px;
+	overflow: scroll;
 }
 
 #techPreconditionText {
-	height: 40px;
+	overflow: scroll;
+	height: 65px;
 	margin-top: 10px;
 	text-align: left;
 	line-height: 15px;
@@ -38,6 +40,10 @@
 
 	overflow: none;
 	text-align: top;
+}
+
+#slotModalButtons {
+	text-align: left;
 }
 
 #selectedFighterBox {
@@ -77,12 +83,13 @@
 }
 
 #ultSlot {
-	left: -10px;
+	left: 0px;
 	height:70px;
 }
 
 #techInfoBoxes{
 }
+
 #techInfoArt {
 	height: 100px;
 	border-radius: 20%;
@@ -94,7 +101,7 @@
 }
 
 #techniqueBox {
-	height:400px;
+	height:375px;
 }
 
 #managedFighterArt {
@@ -102,7 +109,7 @@
 }
 
 #modalBody{
-	height: 150px;
+	height: 200px;
 }
 
 #traitArt{

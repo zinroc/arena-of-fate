@@ -1,6 +1,7 @@
 angular.module('App.controllers').controller('fightPlannerController', function ($scope, gameAPIservice, $timeout) {
     "use strict";
 
+/**----------------------- INIT  -------------------**/
     $scope.fighters = null;
     $scope.fighterSkills = {};
     $scope.selectedFighter = null;
@@ -28,6 +29,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.cSkills = {};
     $scope.cSkills.red = {};
 
+
+    $scope.selectedTech = null;
 
     $scope.strat.blue = {};
     $scope.cStratBonuses.blue = [];
@@ -65,6 +68,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     $scope.animations = {};
 
+    $scope.stratParams = [];
+    $scope.stratParams = ['initiation_frequency', 'base_cardio_cost' ,'initiation_cardio_cost', 'difficulty'];
+
     //vitals
     $scope.vitals = {};
     $scope.vitals.red = {};
@@ -85,7 +91,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.damageTypes = ['blood', 'blunt'];
     $scope.barValue = {};
 
+    $scope.loaded = {};
+    $scope.loaded.fighter = false;
 
+    $scope.techSlots = ['slot_1', 'slot_2', 'slot_3'];
 
     gameAPIservice.getFighters().success(function (response){
         "use strict";
@@ -100,7 +109,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.fighterSkills = response.fighterSkills;
             $scope.fightersExperience = response.fightersExperience;
         }
-        $scope.loaded = true;
+        $scope.loaded.fighters = true;
 
     });
 
@@ -117,6 +126,18 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     });
 
+    gameAPIservice.getTraits().success(function (response){
+        "use strict";
+        console.log("Tried to fetch traits");
+        console.log(response);
+
+        if (response.hasOwnProperty('status') && response.status === 'error') {
+            $scope.traits = false;
+        } else {
+            $scope.traits = response.traits;
+        }
+    });
+
     gameAPIservice.getSkills().success(function (response){
         "use strict";
         console.log("Tried to fetch skills");
@@ -129,6 +150,309 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.skillIDs = response.skillIDs;
         }
     });
+
+    gameAPIservice.getTechniques().success(function (response){
+        "use strict";
+        console.log("Tried to fetch techniques");
+        console.log(response);
+
+        if (response.hasOwnProperty('status') && response.status === 'error') {
+            $scope.techniques = false;
+        } else {
+            $scope.techniques = response.techniques;
+        }
+    });
+
+
+/**--------------------------------- INIT END---------------------------------**/
+/**--------------------------------- Indexers ---------------------------------**/
+    $scope.heightConversion = function (height){
+        var rand = parseInt(33*Math.random());
+        if (height==='low'){
+            return rand;
+        } else if (height ==='medium'){
+            return rand + 33;
+        } else if (height ==='high'){
+            return rand + 66;
+        }
+    };
+
+    $scope.distanceConversion = function (distance){
+        var rand = parseInt(33*Math.random());
+        if(distance==='close'){
+            return rand;
+        } else if (distance==='medium'){
+            return rand+33;
+        } else if (distance ==='far'){
+            return rand+66;
+        }
+    };
+
+    $scope.getExpBarColor = function (value){
+        //console.log(value);
+        value = parseInt(value);
+        if( value < 50){
+            return "progress-bar-danger";
+        } else if (value <66){
+            return "progress-bar-info";
+        } else {
+            return "progress-bar-success";
+        }
+    };
+
+    //for stats screen
+    $scope.getSkillColor = function (value){
+        if(value < 20){
+            return 'progress-bar-danger';
+        } else if (value > 80){
+            return 'progress-bar-success';
+        } else {
+            return 'progress-bar-info';
+        }
+    };
+
+    //return STRING 'red' or 'blue'
+    $scope.otherSide = function(side){
+        if(side==='red'){
+            return 'blue';
+        } else if (side==='blue'){
+            return 'red';
+        }
+        return;
+    };
+
+    $scope.getIndexOf = function(array, object, target){
+        var result = false;
+        for(var i=0; i<array.length; i++){
+            if(array[i][object]===target){
+                result = i;
+            }
+        }
+
+        return result;
+    };
+
+    // return STRING for distance under fight portrait within a round
+    $scope.getRangeWord = function (){
+        if($scope.distance < 33){
+            return 'Close';
+        } else if($scope.distance < 66) {
+            return 'Medium';
+        } else {
+            return 'Long';
+        }
+    };
+
+    //set the color of close/medium/far range under fighter portrait within a round
+    $scope.getRangeColor = function(side){
+        var rangeVal = 0;
+        if($scope.strat[side].range ==='close'){
+            rangeVal = 17;
+        } else if ($scope.strat[side].range ==='medium'){
+            rangeVal = 50;
+        } else if ($scope.strat[side].range ==='far'){
+            rangeVal = 83;
+        }
+        if(Math.abs(rangeVal-$scope.distance) < 17){
+            return 'green';
+        } else if (Math.abs(rangeVal-$scope.distance) < 34) {
+            return 'orange';
+        } else {
+            return 'red';
+        }
+    };
+
+   $scope.heightConverter = function (value){
+        if(value==='0'){
+            return 'low';
+        } else if(value==='1'){
+            return 'medium';
+        } else if (value==='2'){
+            return 'high';
+        } 
+        return false;
+    };
+
+    $scope.getShortParamName = function(param){
+        if (param ==='initiation_frequency'){
+            return "Init. Freq.";
+        } else if (param ==='base_cardio_cost'){
+            return "B. C. Cost";
+        } else if (param ==='initiation_cardio_cost'){
+            return "Init. C. Cost";
+        } else if (param ==='difficulty'){
+            return "Difficulty";
+        }
+        return false;
+    };
+
+    $scope.getTech = function (id){
+        var index = $scope.getIndexOf($scope.techniques, 'id', id);
+        return $scope.techniques[index];
+    };
+
+    /**
+    *   bar from $scope.fightBars or scope.roundBars
+    *   return INT
+    */
+    $scope.getBarValue = function (bar, side){
+
+        if(bar==='initiation'){
+            return $scope.corner[side].initiationScore;
+        } else if (bar==='consciousness'){
+            return $scope.vitals[side].consciousness;
+        } else if (bar==='positioning'){
+            return $scope.vitals[side].positioning;
+        } else if (bar==='cardio'){
+            return $scope.vitals[side].cardio;
+        } else if (bar==='bloodied'){
+            return $scope.vitals[side].bloodied;
+        }
+    };
+
+    $scope.stratParamBackground = function(side, param){
+        if(typeof ($scope.corner[side].selectedPlan) !== 'undefined'){
+        //    console.log("entered background", param);
+            var result = "";
+            if ($scope.strats[$scope.corner[side].selectedPlan.strategy][param]==='high'){
+                result = "red";
+            } else if ($scope.strats[$scope.corner[side].selectedPlan.strategy][param]==='medium'){
+                result = "orange";
+            } else if ($scope.strats[$scope.corner[side].selectedPlan.strategy][param]==='low'){
+                result = "green";
+            }
+        //    console.log("result ", result);
+            return result;
+        }
+    };
+
+    /**
+    *   bar from $scope.fightBars or scope.roundBars
+    *   return INT 0-100
+    */
+    $scope.getBarPercent = function (bar, side){
+        var val = $scope.getBarValue(bar, side);
+
+        if(bar==='initiation'){
+            return parseInt(val);
+        } else if (bar==='consciousness'){
+            return parseInt(val);
+        } else if (bar==='positioning'){
+            return parseInt((val/30)*100);
+        } else if (bar==='cardio'){
+            return parseInt(val/10);
+        } else if (bar==='bloodied'){
+            return parseInt(val/4);
+        }
+    };
+
+    /**
+    *   bar from $scope.fightBars or scope.roundBars
+    *   return STRING
+    */
+    $scope.getBarColor = function (bar, side){
+        var value = $scope.getBarPercent(bar, side);
+        if (value < 20 && bar==='consciousness'){
+            return 'progress-bar-danger';
+        } else if(value > 80 && bar==='consciousness') {
+            return 'progress-bar-success';
+        } else if (bar==='consciousness'){
+            return 'progress-bar-warning';
+        } else if (bar==='bloodied'){
+            return 'progress-bar-danger';
+        } else {
+            return 'progress-bar-info';
+        }
+    };
+
+    $scope.getStratParamHeight = function (side, param){
+        if(typeof ($scope.corner[side].selectedPlan) !=='undefined'){
+            if(typeof($scope.strats[$scope.corner[side].selectedPlan.strategy][param]) !=='undefined'){
+                return $scope.strats[$scope.corner[side].selectedPlan.strategy][param].toTitleCase();
+            } else {
+                return false;
+            }
+        }
+    };
+
+    $scope.distanceConverter = function (value){
+        if(value==='0'){
+            return 'close';
+        } else if(value==='1'){
+            return 'medium';
+        } else if (value==='2'){
+            return 'far';
+        } else if (value==='3'){
+            return 'any';
+        }
+        return false;
+    };
+
+    $scope.getRustWord = function (value){
+        value = parseInt(value);
+        console.log(value);
+        if(value < 50){
+            return 'Rusty';
+        } else if (value < 66){
+            return 'Practiced';
+        } else {
+            return 'Conditioned';
+        }
+    };
+/**--------------------------------- Indexers END ---------------------------------**/
+
+/**--------------------------------- Fight Functions--------------------------------- **/
+    // main loop for the fight
+    $scope.fightLoop = function (){
+
+        if(!$scope.fight.stopped && !$scope.fight.paused){
+
+            $scope.resetTempCombatMods();
+            $scope.movement();
+            $scope.initiation();
+            if ($scope.initiator){
+                $scope.resolveInitiation();
+            }
+            $scope.checkVictory();
+            if(!$scope.fight.stopped){
+                $scope.regen();
+            }
+
+            if($scope.fight.paused && !$scope.fight.stopped){
+
+                for (var i=0; i<$scope.sides.length; i++){
+                    $scope.roundRegen($scope.sides[i]);
+                }
+            }
+
+            $scope.setBarValues();
+
+            $scope.fightClock++;
+
+            $scope.fastEffectAnimations();
+            //animation delay
+
+            $timeout(function(){$scope.endAnimations();}, 1050);
+        }
+    };
+
+    // stat regeneration within a round
+    $scope.regen = function (){
+        for(var i=0; i<$scope.sides.length; i++){
+            $scope.vitals[$scope.sides[i]].positioning += $scope.fightpositioning($scope.sides[i]);
+        }
+    };
+
+    /**
+    *   triggered by starting a fight
+    */
+    $scope.evaluateFight = function (){
+
+        $scope.initializeFight();
+
+        $scope.fightLoop();
+    };
+
 
 
     $scope.effectActive = function(side, effect){
@@ -184,74 +508,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
-    /**
-    *   bar from $scope.fightBars or scope.roundBars
-    *   return INT
-    */
-    $scope.getBarValue = function (bar, side){
-
-        if(bar==='initiation'){
-            return $scope.corner[side].initiationScore;
-        } else if (bar==='consciousness'){
-            return $scope.vitals[side].consciousness;
-        } else if (bar==='positioning'){
-            return $scope.vitals[side].positioning;
-        } else if (bar==='cardio'){
-            return $scope.vitals[side].cardio;
-        } else if (bar==='bloodied'){
-            return $scope.vitals[side].bloodied;
-        }
-    };
-    /**
-    *   bar from $scope.fightBars or scope.roundBars
-    *   return INT 0-100
-    */
-    $scope.getBarPercent = function (bar, side){
-        var val = $scope.getBarValue(bar, side);
-
-        if(bar==='initiation'){
-            return parseInt(val);
-        } else if (bar==='consciousness'){
-            return parseInt(val);
-        } else if (bar==='positioning'){
-            return parseInt((val/30)*100);
-        } else if (bar==='cardio'){
-            return parseInt(val/10);
-        } else if (bar==='bloodied'){
-            return parseInt(val/4);
-        }
-    };
-    /**
-    *   bar from $scope.fightBars or scope.roundBars
-    *   return STRING
-    */
-    $scope.getBarColor = function (bar, side){
-        var value = $scope.getBarPercent(bar, side);
-        if (value < 20 && bar==='consciousness'){
-            return 'progress-bar-danger';
-        } else if(value > 80 && bar==='consciousness') {
-            return 'progress-bar-success';
-        } else if (bar==='consciousness'){
-            return 'progress-bar-warning';
-        } else if (bar==='bloodied'){
-            return 'progress-bar-danger';
-        } else {
-            return 'progress-bar-info';
-        }
-    };
-
-    /**
-    *   triggered by starting a fight
-    */
-    $scope.evaluateFight = function (){
-
-        $scope.initializeFight();
-
-        $scope.fightLoop();
-    };
-
-
-
     //return INT
     $scope.getpositioningSkill = function(side){
         var skill = 0;
@@ -288,115 +544,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return parseInt(regen);
     };
 
-    // stat regeneration within a round
-    $scope.regen = function (){
-        for(var i=0; i<$scope.sides.length; i++){
-            $scope.vitals[$scope.sides[i]].positioning += $scope.fightpositioning($scope.sides[i]);
-        }
-    };
-
-    $scope.setBarValues = function (){
-        for (var i=0; i<$scope.fightBars.length; i++){
-            if (typeof($scope.barValue[$scope.fightBars[i]])==='undefined'){
-                $scope.barValue[$scope.fightBars[i]] = {};
-            }
-            for (var j=0; j<$scope.sides.length; j++){
-                $scope.barValue[$scope.fightBars[i]][$scope.sides[i]] = $scope.getBarValue($scope.fightBars[i], $scope.sides[j]);
-            }
-        }
-        return;
-    };
-
-    // main loop for the fight
-    $scope.fightLoop = function (){
-
-        if(!$scope.fight.stopped && !$scope.fight.paused){
-
-            $scope.resetTempCombatMods();
-            $scope.movement();
-            $scope.initiation();
-            if ($scope.initiator){
-                $scope.resolveInitiation();
-            }
-            $scope.checkVictory();
-            if(!$scope.fight.stopped){
-                $scope.regen();
-            }
-
-            if($scope.fight.paused && !$scope.fight.stopped){
-
-                for (var i=0; i<$scope.sides.length; i++){
-                    $scope.roundRegen($scope.sides[i]);
-                }
-            }
-
-            $scope.setBarValues();
-
-            $scope.fightClock++;
-
-            $scope.fastEffectAnimations();
-            //animation delay
-
-            $timeout(function(){$scope.endAnimations();}, 1050);
-        }
-    };
-
-
-
-    $scope.fastEffectAnimations = function (){
-        //check if new fast effect active
-
-        for (var i=0; i<$scope.fastEffects.length; i++){
-            for (var j=0; j<$scope.sides.length; j++){
-                if ($scope.effectActive($scope.sides[j], $scope.fastEffects[i]) && 
-                    !$scope.animations[$scope.sides[j]][$scope.fastEffects[i]].value){
-                    $scope.animations[$scope.sides[j]][$scope.fastEffects[i]].value = true;
-                }
-            }
-        }
-
-        for(i=0; i<$scope.sides.length; i++){
-            if ($scope.corner[$scope.sides[i]].acceptedDamage){
-                $scope.animations[$scope.sides[i]]['blood'].value = true;
-            }
-        }
-
-
-
-    };
-
-    $scope.activeDamageTooltip = function (damage, side){
-        if ($scope.animations[side][damage].timer < 1){
-            $scope.deactivateTooltip(damage+side);
-            return 1;
-        } else {
-            $scope.activateTooltip(damage+side);
-            return 1;
-        }
-    };
-
-    $scope.activeEffectTooltip = function (effect, side){
-        if ($scope.animations[side][effect].timer < 1){
-            $scope.deactivateTooltip(effect+side);
-            return 1;
-        } else {
-            $scope.activateTooltip(effect+side);
-            return 1;
-        }
-    };
-
-    $scope.activateTooltip = function (tag){
-        var tagName = "#"+tag;
-
-        $(tagName).tooltip('show');
-        return 1;
-    };
-
-    $scope.deactivateTooltip = function (tag){
-        var tagName = "#"+tag;
-        $(tagName).tooltip('hide');
-        return 1;
-    };
 
     //find the distance a fighter wants to move
     $scope.getMovement = function (side){
@@ -430,6 +577,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.sides[i]].status = 'art';
         }
     };
+
 
     // fight parameters set when a  new fight is started
     $scope.initializeFight = function (){
@@ -548,9 +696,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         } else {
             $scope.corner[side].dazed = false;
         }
-
-
-
     };
 
     /**
@@ -625,35 +770,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         return;
     };
 
-    //set the color of close/medium/far range under fighter portrait within a round
-    $scope.getRangeColor = function(side){
-        var rangeVal = 0;
-        if($scope.strat[side].range ==='close'){
-            rangeVal = 17;
-        } else if ($scope.strat[side].range ==='medium'){
-            rangeVal = 50;
-        } else if ($scope.strat[side].range ==='far'){
-            rangeVal = 83;
-        }
-        if(Math.abs(rangeVal-$scope.distance) < 17){
-            return 'green';
-        } else if (Math.abs(rangeVal-$scope.distance) < 34) {
-            return 'orange';
-        } else {
-            return 'red';
-        }
-    };
 
-    // return STRING for distance under fight portrait within a round
-    $scope.getRangeWord = function (){
-        if($scope.distance < 33){
-            return 'Close';
-        } else if($scope.distance < 66) {
-            return 'Medium';
-        } else {
-            return 'Long';
-        }
-    };
+
+
 
     //cardio regen while gassed
     $scope.stallForCardio = function (side){
@@ -723,16 +842,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
 
-    $scope.getIndexOf = function(array, object, target){
-        var result = false;
-        for(var i=0; i<array.length; i++){
-            if(array[i][object]===target){
-                result = i;
-            }
-        }
-
-        return result;
-    };
 
     //apply strategy bonuses to base skills 
     // return INT
@@ -982,15 +1091,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.defender = null;
     };
 
-    //return STRING 'red' or 'blue'
-    $scope.otherSide = function(side){
-        if(side==='red'){
-            return 'blue';
-        } else if (side==='blue'){
-            return 'red';
-        }
-        return;
-    };
 
     /**
     * check injury level of side
@@ -1109,20 +1209,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
-    $scope.endAnimations = function (){
-        for (var i=0; i<$scope.sides.length; i++){
-            for (var j=0; j<$scope.fastEffects.length; j++){
 
-
-                $scope.animations[$scope.sides[i]][$scope.fastEffects[j]].value = false;
-
-            }
-            for (j=0; j<$scope.damageTypes.length; j++){
-                $scope.animations[$scope.sides[i]][$scope.damageTypes[j]].value = false;
-            }
-        }
-        $scope.fightLoop();
-    };
 
     /**
     *   @param side STRING either 'red' or 'blue'
@@ -1204,12 +1291,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.record(msg);
     };
 
-    //record onto the fight transcript
-    $scope.record = function(msg){
-        $scope.transcript[$scope.transIndex] = msg;
-        $scope.transIndex++;
-
-    };
 
     //determine fraction of consciousness : positioning damage
     $scope.checkVulnerable = function(side){
@@ -1263,17 +1344,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
-
-    //for stats screen
-    $scope.getSkillColor = function (value){
-        if(value < 20){
-            return 'progress-bar-danger';
-        } else if (value > 80){
-            return 'progress-bar-success';
-        } else {
-            return 'progress-bar-info';
-        }
-    };
 
     //deal damage to fights conscioussness, positioning, bloodied bar
     $scope.dealDamage = function(target, damage){
@@ -1432,20 +1502,15 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.transcript = [];
     };
 
-
-    $scope.showAllSkills = function (side){
-        $scope.show[side].skills = true;
-        return;
-    };
-
-    $scope.hideAllSkills = function (side){
-        $scope.show[side].skills = false;
-        return;
-    };
-
     $scope.selectFighter = function (id){
         $scope.selectedFighter = id;
     };
+
+    $scope.selectPlan = function (side, plan){
+        //console.log(side, plan);
+        $scope.corner[side].selectedPlan = plan;
+    };
+
 
 
     //place selected fighter on the fighter list to a corner 
@@ -1463,6 +1528,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[otherSide].name = "empty";
             $scope.corner[otherSide].selected = false;
             $scope.corner[otherSide].status = null;
+
+            $scope.corner[otherSide].plans = null;
+            $scope.corner[otherSide].selectedPlan = null;
+
+            $scope.corner[otherSide].slots = null;
 
             //strategies
             $scope.strat[otherSide] = {};
@@ -1483,16 +1553,36 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                     tempStatus = 'art';
                 }
                 $scope.corner[side] = $scope.fighters[i];
-
                 $scope.corner[side].selected = true;
-
                 $scope.corner[side].status = tempStatus;
 
+                gameAPIservice.getPlans($scope.corner[side].id).success(function (response){
+                    "use strict";
+                    console.log("Tried to fetch strategies");
+                    console.log(response);
+
+                    if (response.hasOwnProperty('status') && response.status === 'error') {
+                        $scope.corner[side].plans = false;
+                    } else {
+                        $scope.corner[side].plans = response.plans;
+                        $scope.corner[side].selectedPlan = response.plans[0];
+                    }
+                });
+
+                gameAPIservice.getSlots($scope.corner[side].id).success(function (response){
+                    "use strict";
+                    console.log("Tried to fetch slots");
+                    console.log(response);
+
+                    if (response.hasOwnProperty('status') && response.status === 'error') {
+                        $scope.corner[side].slots = false;
+                    } else {
+                        $scope.corner[side].slots = response.slots;
+                    }
+                });
+
                 $scope.show[side].skills = false;
-
-
                 $scope.experience[side] = $scope.fightersExperience[$scope.fighters[i].id];
-
                 break;
             }
         }
@@ -1501,7 +1591,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.selectedFighter = null;
 
     };
-
 
     // fill in the side strategy from the fighter info that fills the corner
     $scope.initializeCornerStrategy = function (side){
@@ -1521,19 +1610,124 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
-    $scope.showChangeStratInput = function (side){
-        $scope.corner[side].changeStrat = true;
+/**--------------------------------- Fighter Functions  END--------------------------------- **/
+/**--------------------------------- Dynamic UI --------------------------------- **/
+
+    $scope.setBarValues = function (){
+        for (var i=0; i<$scope.fightBars.length; i++){
+            if (typeof($scope.barValue[$scope.fightBars[i]])==='undefined'){
+                $scope.barValue[$scope.fightBars[i]] = {};
+            }
+            for (var j=0; j<$scope.sides.length; j++){
+                $scope.barValue[$scope.fightBars[i]][$scope.sides[i]] = $scope.getBarValue($scope.fightBars[i], $scope.sides[j]);
+            }
+        }
+        return;
+    };
+
+
+    $scope.fastEffectAnimations = function (){
+        //check if new fast effect active
+
+        for (var i=0; i<$scope.fastEffects.length; i++){
+            for (var j=0; j<$scope.sides.length; j++){
+                if ($scope.effectActive($scope.sides[j], $scope.fastEffects[i]) && 
+                    !$scope.animations[$scope.sides[j]][$scope.fastEffects[i]].value){
+                    $scope.animations[$scope.sides[j]][$scope.fastEffects[i]].value = true;
+                }
+            }
+        }
+
+        for(i=0; i<$scope.sides.length; i++){
+            if ($scope.corner[$scope.sides[i]].acceptedDamage){
+                $scope.animations[$scope.sides[i]]['blood'].value = true;
+            }
+        }
 
     };
 
-    $scope.hideChangeStratInput = function (side){
-        $scope.corner[side].changeStrat = false;
+    $scope.activeDamageTooltip = function (damage, side){
+        if ($scope.animations[side][damage].timer < 1){
+            $scope.deactivateTooltip(damage+side);
+            return 1;
+        } else {
+            $scope.activateTooltip(damage+side);
+            return 1;
+        }
+    };
+
+
+    $scope.activeEffectTooltip = function (effect, side){
+        if ($scope.animations[side][effect].timer < 1){
+            $scope.deactivateTooltip(effect+side);
+            return 1;
+        } else {
+            $scope.activateTooltip(effect+side);
+            return 1;
+        }
+    };
+
+
+    $scope.activateTooltip = function (tag){
+        var tagName = "#"+tag;
+
+        $(tagName).tooltip('show');
+        return 1;
+    };
+
+
+    $scope.activateClassTooltip = function (tag){
+        var tagName = "."+tag;
+        $(tagName).tooltip('show');
+        return 1;
+    };
+
+
+    $scope.deactivateTooltip = function (tag){
+        var tagName = "#"+tag;
+        $(tagName).tooltip('hide');
+        return 1;
+    };
+
+
+    $scope.selectTech = function(tech){
+        var index = $scope.getIndexOf($scope.techniques, 'id', tech); 
+
+        $scope.selectedTech = $scope.techniques[index];
+    };
+
+
+    $scope.endAnimations = function (){
+        for (var i=0; i<$scope.sides.length; i++){
+            for (var j=0; j<$scope.fastEffects.length; j++){
+
+
+                $scope.animations[$scope.sides[i]][$scope.fastEffects[j]].value = false;
+
+            }
+            for (j=0; j<$scope.damageTypes.length; j++){
+                $scope.animations[$scope.sides[i]][$scope.damageTypes[j]].value = false;
+            }
+        }
+        $scope.fightLoop();
+    };
+
+    //record onto the fight transcript
+    $scope.record = function(msg){
+        $scope.transcript[$scope.transIndex] = msg;
+        $scope.transIndex++;
 
     };
 
-    $scope.updateSelectedStrat = function(side){
-        $scope.corner[side].strategy = $scope.corner[side].changeStratID;
-        $scope.initializeCornerStrategy(side);
+
+    $scope.showAllSkills = function (side){
+        $scope.show[side].skills = true;
+        return;
+    };
+
+    $scope.hideAllSkills = function (side){
+        $scope.show[side].skills = false;
+        return;
     };
 
     $scope.artStatus = function (side){
@@ -1547,31 +1741,18 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.strategyStatus = function (side){
         $scope.corner[side].status = 'strategy';
     };
+/**--------------------------------- Dynamic UI END--------------------------------- **/
+
+/**--------------------------------- API  --------------------------------- **/
 
     $scope.getAssetImg = function (art) {
         return gameAPIservice.assetPrefix() + "/img2/" + art + ".png";
     };
 
-    $scope.heightConversion = function (height){
-        var rand = parseInt(33*Math.random());
-        if (height==='low'){
-            return rand;
-        } else if (height ==='medium'){
-            return rand + 33;
-        } else if (height ==='high'){
-            return rand + 66;
-        }
-    };
+/**--------------------------------- API END--------------------------------- **/
 
-    $scope.distanceConversion = function (distance){
-        var rand = parseInt(33*Math.random());
-        if(distance==='close'){
-            return rand;
-        } else if (distance==='medium'){
-            return rand+33;
-        } else if (distance ==='far'){
-            return rand+66;
-        }
-    };
+/** End of functions**/
+
+
 
 });

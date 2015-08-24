@@ -58,7 +58,23 @@
 				</div>
 			
 				<div id="fighter_box" class="col-md-3" >
-					<h4>{{corner[side].name.toTitleCase()}}</h4>
+					<div ng-if="corner[side].status!=='strategy'">
+						<div ng-if="corner[side].name!=='empty'">	
+							<h4>
+								{{corner[side].name.toTitleCase()}}
+							</h4>
+						</div>
+						<div ng-if="corner[side].name==='empty'">
+							<h4>
+								{{side.toTitleCase()}} Corner: Empty
+ 							</h4>
+						</div>
+					</div>
+					<div ng-if="corner[side].status==='strategy'">
+						<h4>
+							{{traits[corner[side].trait].name.toTitleCase()}} {{strats[corner[side].selectedPlan.strategy].name.toTitleCase()}} 
+						</h4>
+					</div>
 					<img id="fighterArt" ng-if="corner[side].status==='art' && !fight.started" ng-src="{{ getAssetImg(corner[side].art) }}" />
 					<div ng-if="corner[side].status==='art' && fight.started">
 						<img id="fighterArtStarted" ng-src="{{ getAssetImg(corner[side].art) }}" />
@@ -102,37 +118,60 @@
 					<div ng-if="corner[side].status==='stats'">
 						<h5><t ng-if="!show[side].skills"> Noteworthy</t> Skills </h5>
 						<div id="allSkillBars">
-							<div id="skillBars" ng-repeat="skill in skills">
-								<div class="progress" ng-if="getSkillColor(cSkills[side][skill.name]) !== 'progress-bar-info' || show[side].skills">
+							<div id="skillBars" ng-repeat="skill in skills" class="col-md-6" ng-if="getSkillColor(cSkills[side][skill.name]) !== 'progress-bar-info' || show[side].skills">
+								<div class="progress" >
 									<div class="progress-bar {{getSkillColor(cSkills[side][skill.name])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{cSkills[side][skill.name]}}%;">
 									 	<t style="color: black;">{{skill.name.toTitleCase()}}</t>
 									</div>
 								</div>
 							</div>
-							<p class="btn btn-primary "ng-if="!show[side].skills" ng-click="showAllSkills(side)"> Show All </p>  
-							<p class="btn btn-primary" ng-if="show[side].skills" ng-click="hideAllSkills(side)"> Show Noteworthy Skills</p>
+							<div class="col-md-12">
+								<p class="btn btn-primary "ng-if="!show[side].skills" ng-click="showAllSkills(side)"> Show All </p>  
+								<p class="btn btn-primary" ng-if="show[side].skills" ng-click="hideAllSkills(side)"> Show Noteworthy Skills</p>
+							</div>
 						</div>
 					</div>
 					<div ng-if="corner[side].status==='strategy'">
-						<h5> {{strat[side].name.toTitleCase()}} - EXP: {{experience[side][strat[side].id].as}} </h5>
-						Initiation Frequency: {{strat[side].initiation_frequency}}
-						<br>
-						Cardio expendature: {{strat[side].base_cardio_cost}} and {{strat[side].initiation_cardio_cost}} when initiating <br>
-						Difficulty: {{strat[side].difficulty}} <br>
-						Optimal Range: {{strat[side].range}} <br>
-						<h5> Bonuses: </h5>
-						<div ng-repeat="bonus in cStratBonuses[side]">
-							{{bonus.name.toTitleCase()}} - {{bonus.value}}%
+						<div id="planList">
+							<div ng-repeat="plan in corner[side].plans" class="col-md-4" >
+								Plan {{plan.rank}} <br>
+
+								<img id="planArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(side, plan)" class="{{plan.name}}{{side}}" ng-mouseOver="activateClassTooltip(plan.name+side)" title="{{plan.name.toTitleCase()}}" data-toggle="tooltip" data-placement="top"   ng-if="plan.rank !== corner[side].selectedPlan.rank">
+							
+								<img id="planSelectedArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(side, plan)" class="{{plan.name}}{{side}}" ng-mouseOver="activateClassTooltip(plan.name+side)" title="{{plan.name.toTitleCase()}}" data-toggle="tooltip" data-placement="top" ng-if="plan.rank === corner[side].selectedPlan.rank">
+							</div>
 						</div>
-						<p class="btn btn-primary" ng-if="(!fight.started || fight.paused) && !corner[side].changeStrat" ng-click="showChangeStratInput(side)">Change Strategy</p>
-						
-						<div ng-if="corner[side].changeStrat">
-				            <select class="form-control" ng-change="updateSelectedStrat(side)" ng-model="corner[side].changeStratID">
-				            	<option value=false>---View strats---</option>
-				                <option ng-selected="strategy.id===corner[side].strategy" value="{{strategy.id}}" ng-repeat="strategy in strats">{{strategy.name.toTitleCase()}} Exp: {{experience[side][strategy.id].as}}</option>
-				            </select>
-				            
-				            <p class="btn btn-primary" ng-click="hideChangeStratInput(side)"> OK </p>
+						<div ng-if="corner[side].selectedPlan">
+							Conditioning
+							<div class="progress">
+								<div class="progress-bar {{getExpBarColor(corner[side].selectedPlan.experience_as)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{corner[side].selectedPlan.experience_as}}%;">
+									<t style="color: black; position: absolute; text-align: left;">
+										{{getRustWord(corner[side].selectedPlan.experience_as)}}
+									</t>
+								</div>
+
+							</div>
+						</div>
+						<div style="height: 50px;">
+							<div id="stratParamButtons" class="col-md-6" ng-repeat="param in stratParams"  ng-style="{'background-color': stratParamBackground(side, param)}" ng-if="corner[side].selectedPlan">
+								<div id="{{param+side+'tooltip'}}" data-toggle="tooltip" data-placement="top" data-original-title="{{getStratParamHeight(side, param)}}" ng-mouseOver="activateTooltip(param+side+'tooltip')" style="height: 25px">
+									{{getShortParamName(param)}}
+								</div>
+							</div>
+						</div>
+						<h5>Techniques</h5>
+						<div style="height: 80px;">
+							<div id="techSlots" ng-repeat="slot in techSlots" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]).name.toTitleCase()}}" ng-mouseOver="activateClassTooltip(slot+side)" class="col-md-3 {{slot+side}}" ><!-- TODO tooltip -->
+								<div style="cursor: pointer" ng-click="selectTech(getTech(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]).id)" data-toggle="modal"  data-target="#techModal" >
+									<img id="techSlotArt" ng-if="corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy][slot]" ng-src="{{ getAssetImg(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]+'tech') }}" style="cursor: pointer;" />
+								</div>
+							</div><!-- TODO empty slot if !slot -->
+
+							<div id="ultSlot" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']).name.toTitleCase()}}" ng-mouseOver="activateClassTooltip('ultimate'+side)"  class="col-md-3 ultimate{{side}}"><!-- TODO tooltip -->
+								<div style="cursor: pointer" ng-click="selectTech(getTech(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']).id)" data-toggle="modal"  data-target="#techModal" >
+									<img id="ultSlotArt" ng-if="corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']" ng-src="{{ getAssetImg(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']+'tech') }}" style="cursor: pointer;" />
+								</div>
+							</div><!-- TODO empty slot if !slot -->
 						</div>
 
 					</div>
@@ -198,6 +237,43 @@
 					</div>
 				</div><br>
 
+			</div>
+		</div>
+	</div>
+
+	<!--- Modal -->
+	<div ng-if="selectedTech">
+		<div class="modal fade" id="techModal" tabindex="-1" role="dialog" aria-labelledby="techModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" id="myModalLabel">{{selectedTech.name.toTitleCase()}} </h4> <h5> {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}} {{masteryConverter(selectedTech.level).toTitleCase()}} Ability </h5>
+					</div>
+					<div id="modalBody" class="modal-body">
+						<img id="techInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTech.id+'tech') }}" />
+						<div id="techEffectText" class="col-md-9">
+							<b>Effect: </b><br>
+							{{selectedTech.effect_description}}
+						</div>
+						<br>
+						<div id="techPreconditionText" class="col-md-9">
+							<b>Preconditions: </b><br>
+							{{selectedTech.preconditions}}
+						</div>
+						<div id="techInfoBoxes" class="col-md-12">
+							<div class="col-md-3">
+								Required Range
+								<b>{{distanceConverter(selectedTech.range).toTitleCase()}}</b>
+							</div>
+							<div class="col-md-3">
+								Cardio Cost: <b>{{heightConverter(selectedTech.cardio_cost).toTitleCase()}}</b>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

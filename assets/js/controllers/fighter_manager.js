@@ -119,7 +119,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
         var index = $scope.getIndexOf($scope.techniques, 'id', tech); 
 
         $scope.selectedTech = $scope.techniques[index];
-    }
+    };
 
     $scope.initializeCarousel = function () {
     	$scope.selectedFighter = $scope.fighters[$scope.selectedFighterIndex];
@@ -163,7 +163,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
         } else {
             return false;
         }
-    }
+    };
 
     $scope.manageFighter = function (){
 
@@ -225,7 +225,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
             return 'master';
         }
         return false;
-    }
+    };
 
     $scope.heightConverter = function (value){
         if(value==='0'){
@@ -236,7 +236,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
             return 'high';
         } 
         return false;
-    }
+    };
 
     $scope.distanceConverter = function (value){
         if(value==='0'){
@@ -249,7 +249,8 @@ angular.module('App.controllers').controller('fighterManagerController', functio
             return 'any';
         }
         return false;
-    }
+    };
+
     $scope.stratParamBackground = function(param){
     //    console.log("entered background", param);
         var result = "";
@@ -280,11 +281,11 @@ angular.module('App.controllers').controller('fighterManagerController', functio
         } else {
             return 'Conditioned';
         }
-    }
+    };
 
     $scope.deactivateAnimation = function (){
         $scope.activeAnimationName = null;
-    }
+    };
 
     $scope.activeAnimation = function (animation){
         console.log("animation ", animation);
@@ -315,7 +316,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
         } else {
             return "progress-bar-success";
         }
-    }
+    };
 
     $scope.selectPlan = function (index){
         $scope.activeAnimationName = null;
@@ -329,7 +330,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
         $('#'+$scope.selectedPlan.name).css('border','thick solid orange');
         $('#'+$scope.selectedPlan.name).css('border-radius','20%');
 
-    }
+    };
 
     $scope.getIndexOf = function(array, object, target){
         var result = false;
@@ -342,14 +343,19 @@ angular.module('App.controllers').controller('fighterManagerController', functio
         return result;
     };
 
+    $scope.getTech = function (id){
+        var index = $scope.getIndexOf($scope.techniques, 'id', id);
+        return $scope.techniques[index];
+    };
+
     $scope.activateClassTooltip = function (tag){
         var tagName = "."+tag;
         $(tagName).tooltip('show');
         return 1;
-    }
+    };
 
     $scope.activateTooltip = function (tag){
-
+        console.log(tag);
         var tagName = "#"+tag;
 
         $(tagName).tooltip('show');

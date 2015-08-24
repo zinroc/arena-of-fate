@@ -142,15 +142,25 @@
 							</div>
 						</div>
 						<div ng-if="corner[side].selectedPlan">
-							Conditioning
-							<div class="progress">
-								<div class="progress-bar {{getExpBarColor(corner[side].selectedPlan.experience_as)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{corner[side].selectedPlan.experience_as}}%;">
-									<t style="color: black; position: absolute; text-align: left;">
-										{{getRustWord(corner[side].selectedPlan.experience_as)}}
-									</t>
-								</div>
+							
+							<div class="col-md-12">
+								<div class="col-md-6">
+									Conditioning <br>
+									<div class="progress">
+										<div class="progress-bar {{getExpBarColor(corner[side].selectedPlan.experience_as)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{corner[side].selectedPlan.experience_as}}%;">
+											<t style="color: black; position: absolute; text-align: left;">
+												{{getRustWord(corner[side].selectedPlan.experience_as)}}
+											</t>
+										</div>
 
+									</div>
+								</div>
+								<div class="col-md-6">
+									Opt. Range<br>
+									<b>{{strat[side].range.toTitleCase()}} </b>
+								</div>
 							</div>
+
 						</div>
 						<div style="height: 50px;">
 							<div id="stratParamButtons" class="col-md-6" ng-repeat="param in stratParams"  ng-style="{'background-color': stratParamBackground(side, param)}" ng-if="corner[side].selectedPlan">

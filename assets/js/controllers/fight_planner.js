@@ -376,6 +376,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
     $scope.distanceConverter = function (value){
+        console.log(value);
         if(value==='0'){
             return 'close';
         } else if(value==='1'){
@@ -1509,6 +1510,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.selectPlan = function (side, plan){
         //console.log(side, plan);
         $scope.corner[side].selectedPlan = plan;
+
+        $scope.initializeCornerStrategy(side);
     };
 
 
@@ -1567,6 +1570,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                         $scope.corner[side].plans = response.plans;
                         $scope.corner[side].selectedPlan = response.plans[0];
                     }
+                    $scope.initializeCornerStrategy(side);
                 });
 
                 gameAPIservice.getSlots($scope.corner[side].id).success(function (response){
@@ -1587,14 +1591,15 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             }
         }
         //initialize side Strat StratBonuses
-        $scope.initializeCornerStrategy(side);
+
         $scope.selectedFighter = null;
 
     };
 
     // fill in the side strategy from the fighter info that fills the corner
     $scope.initializeCornerStrategy = function (side){
-        $scope.strat[side] = $scope.strats[$scope.corner[side].strategy];
+        $scope.strat[side] = $scope.strats[$scope.corner[side].selectedPlan.strategy];
+        console.log("selected Strat: ", side, $scope.strat[side]);
         var j=0;
         for (var i=0; i<$scope.skills.length; i++){
             if (typeof($scope.stratBonuses[$scope.corner[side].strategy][$scope.skills[i].id]) !=='undefined'){

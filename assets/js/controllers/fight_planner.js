@@ -2,6 +2,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     "use strict";
 
 /**----------------------- INIT  -------------------**/
+    
+    $scope.activeTechniques = {};
+
     $scope.fighters = null;
     $scope.fighterSkills = {};
     $scope.selectedFighter = null;
@@ -57,7 +60,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.fumble = {};
     $scope.predict = {};
     //animation -> defender/initiatior , dodged, blocked, fumble, predict
-    $scope.modifiers = ['gassed', 'pinned', 'dazed', 'quit', 'unconscious'];
+    $scope.modifiers = ['gassed', 'pinned', 'dazed', 'quit', 'unconscious', 'blood_lust', 'blood_rage', 
+    'unstoppable_frenzy'];
     $scope.injuries = {};
     $scope.injuries.lv1 = ['bloody nose', 'bloodied vision', 'bruised leg', 'bruised torso', 'sprained finger', 'sprained ankle'];
     $scope.injuries.lv2 = ['broken nose', 'broken orbital', 'fractured leg', 'fractured rib', 'broken hand', 'broken ankle'];
@@ -85,16 +89,20 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.roundBars = ['initiation', 'positioning'];
 
     $scope.fastEffects = [];
-    $scope.fastEffects = ['initiator', 'dodge', 'block', 'fumble', 'predict', 'counter'];
+    $scope.fastEffects = ['initiator', 'dodge', 'block', 'fumble', 'predict', 'counter', 'gassed'];
 
-    $scope.damageTypes = [];
-    $scope.damageTypes = ['blood', 'blunt'];
+    $scope.techAnimations = [];
+    $scope.techAnimations = ['blood_lust', 'blood_rage', 'unstoppable_frenzy'];
+
     $scope.barValue = {};
 
     $scope.loaded = {};
     $scope.loaded.fighter = false;
 
+    //tech slots used for itterating through UI since 'ultimate' gets its own css
     $scope.techSlots = ['slot_1', 'slot_2', 'slot_3'];
+    //all slots used for itterating through fight functions where ultimates arn't treated differently.
+    $scope.allSlots = ['slot_1', 'slot_2', 'slot_3', 'ultimate'];
 
     gameAPIservice.getFighters().success(function (response){
         "use strict";
@@ -189,7 +197,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
     $scope.getExpBarColor = function (value){
-        //console.log(value);
         value = parseInt(value);
         if( value < 50){
             return "progress-bar-danger";
@@ -312,7 +319,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     $scope.stratParamBackground = function(side, param){
         if(typeof ($scope.corner[side].selectedPlan) !== 'undefined'){
-        //    console.log("entered background", param);
             var result = "";
             if ($scope.strats[$scope.corner[side].selectedPlan.strategy][param]==='high'){
                 result = "red";
@@ -321,7 +327,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             } else if ($scope.strats[$scope.corner[side].selectedPlan.strategy][param]==='low'){
                 result = "green";
             }
-        //    console.log("result ", result);
             return result;
         }
     };
@@ -376,7 +381,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
     $scope.distanceConverter = function (value){
-        console.log(value);
         if(value==='0'){
             return 'close';
         } else if(value==='1'){
@@ -391,7 +395,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     $scope.getRustWord = function (value){
         value = parseInt(value);
-        console.log(value);
         if(value < 50){
             return 'Rusty';
         } else if (value < 66){
@@ -409,11 +412,22 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         if(!$scope.fight.stopped && !$scope.fight.paused){
 
             $scope.resetTempCombatMods();
+            $scope.resetTechniques();
+
             $scope.movement();
+
+            $scope.checkAnyTimeTechniques();
+            $scope.checkPreInitTechniques();
             $scope.initiation();
             if ($scope.initiator){
+                $scope.checkReplaceInitTechniques();
                 $scope.resolveInitiation();
+                $scope.checkPostInitTechniques();
+            } else if (!$scope.initiator){
+                $scope.checkNoInitTechniques();
             }
+            $scope.checkAnyTimeTechniques();
+
             $scope.checkVictory();
             if(!$scope.fight.stopped){
                 $scope.regen();
@@ -434,6 +448,190 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             //animation delay
 
             $timeout(function(){$scope.endAnimations();}, 1050);
+        }
+    };
+
+
+    $scope.checkAnyTimeTechniques = function (){
+
+    };
+
+    $scope.checkNoInitTechniques = function (){
+
+    };
+    $scope.checkPostInitTechniques = function (){
+
+    };
+    $scope.checkDuringInitTechniques = function (){
+
+    };
+
+    $scope.conditionCheck = function (side, tech, exp){
+        
+        exp = parseInt(exp);
+        var bar = parseInt(parseInt(tech.technical_value)*33*Math.random()) + 33*Math.random();
+        console.log("bar", bar, "exp", exp);
+
+        var score = parseInt(Math.random()*exp);
+        if(exp > bar){
+            return true;
+        } else{
+            var msg = $scope.corner[side].name.toTitleCase() + " fumbled attempting " + 
+            tech.name.split('_').join(' ').toTitleCase();
+            $scope.record(msg);
+        }
+    };
+
+    /**
+    * target 'red' / 'blue' -> side taking damage
+    */
+    $scope.checkTechBloodLust = function (side, bloodiedDMG){
+        //check if target () has applicable technique
+        for(var i=0; i<$scope.allSlots.length; i++){
+            var tech = $scope.getTech($scope.activeTechniques[side][$scope.allSlots[i]].id);
+            if(tech.name==='blood_lust'){
+                //check if significant bloodied damage
+                if (bloodiedDMG < 5){
+                    $scope.corner[side].blood_lust = false;
+                    console.log("insufficient blood", bloodiedDMG);
+                    return;
+                }
+                //conditioning check
+                if (!$scope.conditionCheck(side, tech, $scope.activeTechniques[side][$scope.allSlots[i]].exp)){
+                    $scope.corner[side].blood_lust = false;
+                    return;
+                }
+
+                $scope.animations[side].blood_lust.value = true;
+
+                $scope.corner[side].blood_lust = 100; // bloodlust is reset when an attack is dodged
+                var msg = $scope.corner[side].name.toTitleCase() + " enters Blood Lust!";
+                $scope.record(msg);
+            }
+        }
+    };
+
+    $scope.checkTechUnstoppableFrenzy = function (target, targeter, bloodiedDMG){
+        //check if target () has applicable technique
+        for(var i=0; i<$scope.allSlots.length; i++){
+            var tech = $scope.getTech($scope.activeTechniques[target][$scope.allSlots[i]].id);
+            var msg = "";
+            var maxCardio = 0;
+            var oldCardio = 0;
+            if(tech.name==='unstoppable_frenzy'){
+                //check if blood_rage is active
+                if(!$scope.corner[target].blood_rage){
+                    return;
+                }
+
+                //check if significant bloodied damage
+                if (bloodiedDMG < 10){
+                    console.log("insufficient blood for frenzy", bloodiedDMG);
+                    return;
+                }
+                //conditioning check
+                if (!$scope.conditionCheck(target, tech, $scope.activeTechniques[target][$scope.allSlots[i]].exp)){
+                    return;
+                }
+
+                $scope.animations[target].unstoppable_frenzy.value = true;
+                $scope.corner[target].unstoppable_frenzy = 20;
+                oldCardio = $scope.vitals[target].cardio;
+                maxCardio = 100 + $scope.getSkill(target, 'endurance')*10;
+                $scope.vitals[target].cardio = maxCardio;
+
+                msg = $scope.corner[target].name.toTitleCase() + " recovers " + (maxCardio - oldCardio) + 
+                    " cardio and enters an Unstoppable Frenzy!";
+                $scope.record(msg);
+            }
+
+            tech = $scope.getTech($scope.activeTechniques[targeter][$scope.allSlots[i]].id);
+            if(tech.name==='unstoppable_frenzy'){
+                //check if blood_rage is active
+                if(!$scope.corner[targeter].blood_rage){
+                    return;
+                }
+
+                //check if significant bloodied damage
+                if (bloodiedDMG < 10){
+                    console.log("insufficient blood for frenzy", bloodiedDMG);
+                    return;
+                }
+                //conditioning check
+                if (!$scope.conditionCheck(targeter, tech, $scope.activeTechniques[targeter][$scope.allSlots[i]].exp)){
+                    return;
+                }
+
+                $scope.animations[targeter].unstoppable_frenzy.value = true;
+                $scope.corner[targeter].unstoppable_frenzy = 20;
+                oldCardio = $scope.vitals[targeter].cardio;
+                maxCardio = 100 + $scope.getSkill(targeter, 'endurance')*10;
+                $scope.vitals[targeter].cardio = maxCardio;
+
+                msg = $scope.corner[targeter].name.toTitleCase() + " recovers " + (maxCardio - oldCardio) + 
+                    " cardio and enters an Unstoppable Frenzy!";
+                $scope.record(msg);
+            }
+        }
+    };
+
+    /**
+    * target 'red' / 'blue' -> side taking damage
+    */
+    $scope.checkTechBloodRage = function (side, bloodiedDMG){
+        //check if target () has applicable technique
+        for(var i=0; i<$scope.allSlots.length; i++){
+            var tech = $scope.getTech($scope.activeTechniques[side][$scope.allSlots[i]].id);
+            if(tech.name==='blood_rage'){
+                //check if significant bloodied damage
+                if (bloodiedDMG < 5){
+                    $scope.corner[side].blood_rage = false;
+                    console.log("insufficient blood", bloodiedDMG);
+                    return;
+                }
+                //conditioning check
+                if (!$scope.conditionCheck(side, tech, $scope.activeTechniques[side][$scope.allSlots[i]].exp)){
+                    $scope.corner[side].blood_rage = false;
+                    return;
+                }
+
+                $scope.animations[side].blood_rage.value = true;
+
+                $scope.corner[side].blood_rage = 15;
+                var msg = $scope.corner[side].name.toTitleCase() + " enters Blood Rage!";
+                $scope.record(msg);
+            }
+        }
+    };
+
+    $scope.checkReplaceInitTechniques = function (){
+
+    };
+
+    $scope.checkPreInitTechniques = function (){
+
+    };
+
+    $scope.resetTechniques = function (){
+        for(var i=0; i<$scope.sides.length; i++){
+            var side = $scope.sides[i];
+            for (var j=0; j<$scope.allSlots.length; j++){
+                var slot = $scope.allSlots[j];
+                console.log(side, slot, $scope.activeTechniques[side][slot].name, $scope.corner[side][$scope.activeTechniques[side][slot].name]);
+                if($scope.corner[side][$scope.activeTechniques[side][slot].name] < 2 && 
+                    $scope.corner[side][$scope.activeTechniques[side][slot].name]){
+                    $scope.corner[side][$scope.activeTechniques[side][slot].name] = false;
+                    if ($scope.activeTechniques[side][slot].name==='unstoppable_frenzy'){
+                        var cardio = $scope.vitals[side].cardio;
+                        $scope.vitals[side].cardio = 0;
+                        var msg = $scope.corner[side].name.toTitleCase() + " loses " + cardio + 
+                        " cardio when leaving an Unstoppable Frenzy";
+                        $scope.record(msg);
+                    }
+                } else if ($scope.corner[side][$scope.activeTechniques[side][slot].name]){
+                    $scope.corner[side][$scope.activeTechniques[side][slot].name]--;
+                }
+            }
         }
     };
 
@@ -479,6 +677,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             }
         } else if (effect ==='predict'){
             if($scope.predict[side]){
+                return true;
+            }
+        } else if (effect==='gassed'){
+            if ($scope.corner[side].gassed){
                 return true;
             }
         }
@@ -637,10 +839,15 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 $scope.animations[$scope.sides[i]][$scope.fastEffects[j]] = {};
                 $scope.animations[$scope.sides[i]][$scope.fastEffects[j]].value = false;
             }
-            for (j=0; j<$scope.damageTypes.length; j++){
-                $scope.animations[$scope.sides[i]][$scope.damageTypes[j]] = {};
-                $scope.animations[$scope.sides[i]][$scope.damageTypes[j]].value = false;
+
+            $scope.animations[$scope.sides[i]]['blood'] = {};
+            $scope.animations[$scope.sides[i]]['blood'].value = false;
+
+            for( j=0; j<$scope.techAnimations.length; j++){
+                $scope.animations[$scope.sides[i]][$scope.techAnimations[j]] = {};
+                $scope.animations[$scope.sides[i]][$scope.techAnimations[j]].value = false;
             }
+
         }
 
         $scope.setBarValues();
@@ -706,7 +913,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     *   if level 2-4 upgrade existing injury 
     */
     $scope.addInjury = function(side, level){
-        //console.log(side, level);
         var levelIndex = "lv" + level;
 
         level = parseInt(level);
@@ -720,7 +926,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var injuryIndex = null;
         // pick an injury
         if (level === 1){
-            //console.log("adding injury");
             injuryIndex = Math.floor(Math.random()*($scope.injuries[levelIndex].length));
             injury = $scope.injuries[levelIndex][injuryIndex];
             injuryLocation = $scope.injuryLocations[injuryIndex];
@@ -731,11 +936,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 $scope.corner[side].injuryLv1 = true;
                 msg = $scope.corner[side].name.toTitleCase() + " was injured with a " + $scope.corner[side][injuryLocation].toTitleCase();
                 $scope.record(msg);
-             //   console.log(msg);
             }
 
         } else {
-            //console.log("upgradeing injury");
             //pick an injury to upgrade
             var j =0;
             var upgradeArray = [];
@@ -743,14 +946,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 if ($scope.corner[side][$scope.injuryLocations[i]] === $scope.injuries[priorLevelIndex][i]){
                     upgradeArray[j] = i;
                     j++;
-                    //console.log($scope.corner[side][$scope.injuryLocations[i]], $scope.injuries[priorLevelIndex][i]);
                 }
             }
-            //console.log(upgradeArray);
 
             if(j===0){
                 //nothing to upgrade, add lower level injury
-                //console.log("nothing to upgrade");
                 level--;
                 $scope.addInjury(side, level);
             } else {
@@ -759,7 +959,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 $scope.corner[side][$scope.injuryLocations[upgradeArray[upgradeIndex]]] = $scope.injuries[levelIndex][upgradeArray[upgradeIndex]];
                 msg = $scope.corner[side].name.toTitleCase() + " was injured with a " + $scope.corner[side][$scope.injuryLocations[upgradeArray[upgradeIndex]]];
                 $scope.record(msg);
-                //console.log(msg);
 
             }
             var cornerInjury = "injury" + levelIndex;
@@ -773,14 +972,23 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
 
 
-
-
     //cardio regen while gassed
     $scope.stallForCardio = function (side){
         var base = $scope.getSkill(side, 'recovery');
         var injuryMod = $scope.getInjuryMod(side, 'body');
 
-        $scope.vitals[side].cardio += parseInt(Math.random()*base*injuryMod);
+        var regen = parseInt(Math.random()*base*injuryMod);
+
+        if($scope.corner[side].blood_rage){
+            var oldRegen = regen;
+            regen += parseInt(regen*1.5);
+
+            var msg = $scope.corner[side].name.toTitleCase() + " regenerated " + (regen-oldRegen) +
+            " bonus due to Blood Range";
+            $scope.record(msg);
+        }
+
+        $scope.vitals[side].cardio += regen;
     };
 
     //set the defender / initiator
@@ -865,6 +1073,17 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var strength = $scope.getSkill(side, 'strength');
         var speed = $scope.getSkill(side, 'speed');
 
+        //tech Blood Lust
+        if($scope.corner[side].blood_lust){
+            var oldStrength = strength;
+            strength = parseInt(strength*1.5);
+
+            var msg = $scope.corner[side].name.toTitleCase() + " gains " + (strength - oldStrength) + 
+            " bonus strength under the effect of Blood Lust!";
+            $scope.record(msg);
+
+        }
+
         var base = parseInt((strength + speed) / 2);
 
         return parseInt(base*Math.random());
@@ -916,7 +1135,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.getReflexScore = function (side){
         var base = $scope.getSkill(side, 'reflex');
         if($scope.corner[side].gassed){
+            //tech turtle
+
             base -= 90;
+
         }
         if($scope.predict[side]){
             base +=50;
@@ -976,11 +1198,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     //resolve all _Score competitions and deal damage
     $scope.resolveInitiation = function (){
+
+
         $scope.corner[$scope.initiator].initiationScore = 0;
 
         $scope.checkAdvantage($scope.initiator, $scope.defender);
-
-
         $scope.vitals[$scope.initiator].cardio -= $scope.initiationCardioPayment($scope.initiator);
 
         var powerScore = $scope.getPowerScore($scope.initiator);
@@ -988,6 +1210,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var accuracyScore = $scope.getAccuracyScore($scope.initiator);
         var evasionScore = $scope.getEvasionScore($scope.defender);
         var reflexScore = $scope.getReflexScore($scope.defender);
+
+        $scope.checkDuringInitTechniques();
 
         var msg = "";
         if($scope.corner[$scope.defender].gassed){
@@ -998,6 +1222,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         if (accuracyScore < evasionScore){
             msg = $scope.corner[$scope.defender].name.toTitleCase() + " dodges attack";
             $scope.corner[$scope.defender].dodged = true;
+            $scope.corner[$scope.initiator].blood_lust = false;
+
             $scope.record(msg);
 
         }
@@ -1008,6 +1234,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.defender].blocked = true;
 
         }
+
 
         if ($scope.corner[$scope.defender].dodged && $scope.corner[$scope.defender].blocked){
             $scope.evaluateCounter($scope.defender, reflexScore, speedScore);
@@ -1025,6 +1252,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     //blocking reduces damage taken and may result in a counter
     $scope.evaluateBlock = function (blocker, reflex, speed, power){
+        var attacker = $scope.otherSide(blocker);
         var windowSize = null;
         if(reflex - speed < 33){
             windowSize = 0.33;
@@ -1038,6 +1266,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         if (blockScore > power){
             msg = $scope.corner[$scope.defender].name.toTitleCase() + " fully blocks the attack";
             $scope.record(msg);
+            $scope.corner[attacker].blood_lust = false;
         } else {
             msg = $scope.corner[blocker].name.toTitleCase() + " blocks " + (power-blockScore) + " damage.";
             $scope.record(msg);
@@ -1218,9 +1447,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     *   @return FLOAT
     */
     $scope.getInjuryMod = function (side, type){
-        //console.log(side, type);
         if(!$scope.corner[side][type]){
-            //console.log("no injury");
             return 1;
         } else {
             for (var i=1; i<5; i++){
@@ -1228,7 +1455,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 for (var j=0; j<$scope.injuries[injuryIndex].length; j++){
                     if ($scope.corner[side][type]===$scope.injuries[injuryIndex][j]){
                         var percent = (5-i)/5;
-                        //console.log("injury lv" + i + " percent: " + percent);
                         return percent;
                     }
                 }
@@ -1244,7 +1470,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var injuryMod = $scope.getInjuryMod(side, 'nose');
         base = parseInt(base*Math.random()*injuryMod);
 
-        return Math.min(base, 100-$scope.vitals[side].consciousness);
+        var regen = Math.min(base, 100-$scope.vitals[side].consciousness);
+
+
+
+        return regen;
     };
 
     //regeneration between rounds
@@ -1253,6 +1483,16 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var regen = parseInt(base*Math.random());
 
         var maxCardio = 100+$scope.getSkill(side, 'endurance')*10;
+
+        if($scope.corner[side].blood_rage){
+            var oldRegen = regen;
+            regen = parseInt(regen*1.5);
+            if(regen > oldRegen){
+                var msg = $scope.corner[side].name.toTitleCase() + " regenerated " + (regen-oldRegen) +
+                " bonus cardio due to Blood Rage";
+                $scope.record(msg);
+            }
+        }
 
         return Math.min(regen, maxCardio-$scope.vitals[side].cardio);
     };
@@ -1340,7 +1580,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         var attackerSkill = $scope.getpositioningSkill(otherSide);
 
-        var skillMod = (attackerSkill * Math.random())/80;
+        var skillMod = (attackerSkill * Math.random())/20;
         return parseInt(skillMod*damage);
 
     };
@@ -1361,16 +1601,25 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
             var consciousnessDMG = parseInt(damage*(vulnerableMod/100)*chinMod);
 
+
             var positioningDMG = $scope.getpositioningDamage(target, damage, vulnerableMod);
 
             var bloodiedDMG = $scope.getBloodiedDamage(target, consciousnessDMG);
+            var msg ="";
+            if($scope.corner[target].unstoppable_frenzy){
+                msg = $scope.corner[target].name.toTitleCase() + 
+                " has consciousness damage reduced to 0 due to being in an Unstoppable Frenzy";
+                $scope.record(msg);
+                consciousnessDMG = 0;
+            }
+
             var totalDMG = consciousnessDMG + positioningDMG + bloodiedDMG;
             $scope.vitals[target].consciousness -= consciousnessDMG;
             $scope.vitals[target].positioning -= positioningDMG;
             $scope.vitals[target].bloodied += bloodiedDMG;
 
             if (totalDMG > 0){
-                var msg = $scope.corner[target].name + " takes ";
+                msg = $scope.corner[target].name + " takes ";
                 if(consciousnessDMG){
                     msg += consciousnessDMG + " consciousness ";
                 }
@@ -1384,8 +1633,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
                 $scope.record(msg);
             }
-
-
 
             if (bloodiedDMG > 0){
                 if ($scope.vitals[target].bloodied > 400) {
@@ -1414,6 +1661,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 }
             }
 
+            var targeter = $scope.otherSide(target);
+
+            $scope.checkPostDamageTech(target, targeter, bloodiedDMG);
             //check if target quits
             $scope.checkQuit(target);
 
@@ -1421,8 +1671,19 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    $scope.checkPostDamageTech = function(target, targeter, bloodiedDMG){
+        $scope.checkTechUnstoppableFrenzy(target, targeter, bloodiedDMG);
+        //unstoppable frenzy comes first so it cant be activated on same turn as lust/rage
+        $scope.checkTechBloodLust(targeter, bloodiedDMG);
+        $scope.checkTechBloodRage(target, bloodiedDMG);
+    };
+
     //fighters may submit in bad situations before going unconscious
     $scope.checkQuit = function (target){
+        if($scope.corner[target].unstoppable_frenzy){
+            return;
+        }
+
         var base = 0;
         if ($scope.corner[target].dazed && $scope.corner[target].gassed && $scope.corner[target].pinned){
             base += 100;
@@ -1467,6 +1728,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.fightLoop();
     };
 
+    $scope.initializeTechniques = function (side){
+            $scope.corner[side].blood_lust = false;
+            $scope.corner[side].blood_rage = false;
+            $scope.corner[side].unstoppable_frenzy = false;
+    };
 
     // reset to do a new fight
     $scope.reset = function(){
@@ -1484,6 +1750,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.sides[i]].injuryLv3 = false;
             $scope.corner[$scope.sides[i]].injuryLv4 = false;
 
+            $scope.initializeTechniques($scope.sides[i]);
             for (var j=0; j<$scope.injuryLocations.length; j++){
                 $scope.corner[$scope.sides[i]][$scope.injuryLocations[j]] = null;
             }
@@ -1498,8 +1765,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.fight.round = null;
 
         $scope.transIndex = 0;
-        // $scope.transcript = null;
-        // $scope.transcript = {};
         $scope.transcript = [];
     };
 
@@ -1508,10 +1773,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
     $scope.selectPlan = function (side, plan){
-        //console.log(side, plan);
+        $scope.corner[side].selected = false;
         $scope.corner[side].selectedPlan = plan;
 
         $scope.initializeCornerStrategy(side);
+        $scope.corner[side].selected = true;
     };
 
 
@@ -1556,7 +1822,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                     tempStatus = 'art';
                 }
                 $scope.corner[side] = $scope.fighters[i];
-                $scope.corner[side].selected = true;
                 $scope.corner[side].status = tempStatus;
 
                 gameAPIservice.getPlans($scope.corner[side].id).success(function (response){
@@ -1570,23 +1835,38 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                         $scope.corner[side].plans = response.plans;
                         $scope.corner[side].selectedPlan = response.plans[0];
                     }
-                    $scope.initializeCornerStrategy(side);
+
+                    gameAPIservice.getSlots($scope.corner[side].id).success(function (response){
+                        "use strict";
+                        console.log("Tried to fetch slots");
+                        console.log(response);
+
+                        if (response.hasOwnProperty('status') && response.status === 'error') {
+                            $scope.corner[side].slots = false;
+                        } else {
+                            $scope.corner[side].slots = response.slots;
+                        }
+
+                        gameAPIservice.getTechCond($scope.corner[side].id).success(function (response){
+                            "use strict";
+                            console.log("Tried to fetch tech conditioning");
+                            console.log(response);
+
+                            if (response.hasOwnProperty('status') && response.status === 'error') {
+                                $scope.corner[side].techCond = false;
+                            } else {
+                                $scope.corner[side].techCond = response.techConditioning;
+                            }
+                            $scope.initializeCornerStrategy(side);
+                            $scope.corner[side].selected = true;
+                        });
+                    });
                 });
 
-                gameAPIservice.getSlots($scope.corner[side].id).success(function (response){
-                    "use strict";
-                    console.log("Tried to fetch slots");
-                    console.log(response);
-
-                    if (response.hasOwnProperty('status') && response.status === 'error') {
-                        $scope.corner[side].slots = false;
-                    } else {
-                        $scope.corner[side].slots = response.slots;
-                    }
-                });
 
                 $scope.show[side].skills = false;
                 $scope.experience[side] = $scope.fightersExperience[$scope.fighters[i].id];
+
                 break;
             }
         }
@@ -1599,7 +1879,20 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     // fill in the side strategy from the fighter info that fills the corner
     $scope.initializeCornerStrategy = function (side){
         $scope.strat[side] = $scope.strats[$scope.corner[side].selectedPlan.strategy];
-        console.log("selected Strat: ", side, $scope.strat[side]);
+        $scope.activeTechniques[side] = {};
+
+        $scope.initializeTechniques(side);
+
+        for(var k=0; k<$scope.allSlots.length; k++){
+            $scope.activeTechniques[side][$scope.allSlots[k]] = {};
+
+            $scope.activeTechniques[side][$scope.allSlots[k]].id = $scope.corner[side].slots[$scope.strat[side].id][$scope.allSlots[k]];
+            $scope.activeTechniques[side][$scope.allSlots[k]].exp = $scope.corner[side].techCond[$scope.activeTechniques[side][$scope.allSlots[k]].id];
+            var tech = $scope.getTech($scope.activeTechniques[side][$scope.allSlots[k]].id);
+            $scope.activeTechniques[side][$scope.allSlots[k]].name = tech.name;
+        }
+        //console.log($scope.activeTechniques);
+        console.log("active techniques: ", side, $scope.activeTechniques[side]);
         var j=0;
         for (var i=0; i<$scope.skills.length; i++){
             if (typeof($scope.stratBonuses[$scope.corner[side].strategy][$scope.skills[i].id]) !=='undefined'){
@@ -1705,14 +1998,14 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.endAnimations = function (){
         for (var i=0; i<$scope.sides.length; i++){
             for (var j=0; j<$scope.fastEffects.length; j++){
-
-
                 $scope.animations[$scope.sides[i]][$scope.fastEffects[j]].value = false;
+            }
 
+            for ( j=0; j<$scope.techAnimations.length; j++){
+                $scope.animations[$scope.sides[i]][$scope.techAnimations[j]].value = false;
             }
-            for (j=0; j<$scope.damageTypes.length; j++){
-                $scope.animations[$scope.sides[i]][$scope.damageTypes[j]].value = false;
-            }
+
+            $scope.animations[$scope.sides[i]]['blood'].value = false;
         }
         $scope.fightLoop();
     };

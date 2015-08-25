@@ -43,15 +43,21 @@
 
 					<div id="portraitOverlay">
 						<div ng-repeat="effect in fastEffects" ng-if="animations[side][effect].value">
-							<div id="{{effect}}{{side}}" data-toggle="tooltip" data-placement="top" title="{{effect.toTitleCase()}}" ng-if="activeEffectTooltip(effect, side)">
+							<div id="{{effect}}{{side}}" >
 								<div ng-if="effect!=='dodge'">
 									<img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
+
 								</div>
 							</div>
 						</div>
-						<div ng-repeat="damage in damageTypes" ng-if="animations[side][damage].value">
+						<div ng-if="animations[side][damage].value">
 							<div id="{{damage}}{{side}}">
 								
+							</div>
+						</div>
+						<div ng-repeat="animation in techAnimations" ng-if="animations[side][animation].value">
+							<div id="{{animation}}{{side}}">
+								<img id="effectArt{{animation}}" ng-src="{{ getAssetImg(animation) }} " />
 							</div>
 						</div>
 					</div>
@@ -102,9 +108,8 @@
 						</div>
 						<div id="modifierBox">
 							<h4>Status Effects</h4>
-
 							<t ng-repeat="modifier in modifiers" ng-if="getModifierValue(side, modifier)">
-								<t id="{{modifier}}" data-toggle="tooltip" data-placement="top" title="{{modifier.toTitleCase()}}" ng-mouseOver="activateTooltip(modifier)">
+								<t id="{{modifier}}{{side}}mod" data-toggle="tooltip" data-placement="top" title="{{modifier.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateTooltip(modifier+side+'mod')">
 									<img id="modifierArt" ng-src="{{ getAssetImg(modifier) }}" />
 								</t>
 							</t>
@@ -171,13 +176,13 @@
 						</div>
 						<h5>Techniques</h5>
 						<div style="height: 80px;">
-							<div id="techSlots" ng-repeat="slot in techSlots" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]).name.toTitleCase()}}" ng-mouseOver="activateClassTooltip(slot+side)" class="col-md-3 {{slot+side}}" ><!-- TODO tooltip -->
+							<div id="techSlots" ng-repeat="slot in techSlots" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip(slot+side)" class="col-md-3 {{slot+side}}" ><!-- TODO tooltip -->
 								<div style="cursor: pointer" ng-click="selectTech(getTech(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]).id)" data-toggle="modal"  data-target="#techModal" >
 									<img id="techSlotArt" ng-if="corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy][slot]" ng-src="{{ getAssetImg(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]+'tech') }}" style="cursor: pointer;" />
 								</div>
 							</div><!-- TODO empty slot if !slot -->
 
-							<div id="ultSlot" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']).name.toTitleCase()}}" ng-mouseOver="activateClassTooltip('ultimate'+side)"  class="col-md-3 ultimate{{side}}"><!-- TODO tooltip -->
+							<div id="ultSlot" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip('ultimate'+side)"  class="col-md-3 ultimate{{side}}"><!-- TODO tooltip -->
 								<div style="cursor: pointer" ng-click="selectTech(getTech(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']).id)" data-toggle="modal"  data-target="#techModal" >
 									<img id="ultSlotArt" ng-if="corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']" ng-src="{{ getAssetImg(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']+'tech') }}" style="cursor: pointer;" />
 								</div>
@@ -209,15 +214,21 @@
 
 					<div id="portraitOverlay">
 						<div ng-repeat="effect in fastEffects" ng-if="animations[side][effect].value">
-							<div id="{{effect}}{{side}}" data-toggle="tooltip" data-placement="top" title="{{effect.toTitleCase()}}" ng-if="activeEffectTooltip(effect, side)">
+							<div id="{{effect}}{{side}}" >
 								<div ng-if="effect!=='dodge'">
 									<img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
+
 								</div>
 							</div>
 						</div>
-						<div ng-repeat="damage in damageTypes" ng-if="animations[side][damage].value">
+						<div ng-if="animations[side][damage].value">
 							<div id="{{damage}}{{side}}">
 								
+							</div>
+						</div>
+						<div ng-repeat="animation in techAnimations" ng-if="animations[side][animation].value">
+							<div id="{{animation}}{{side}}">
+								<img id="effectArt{{animation}}" ng-src="{{ getAssetImg(animation) }} " />
 							</div>
 						</div>
 					</div>
@@ -257,7 +268,7 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h4 class="modal-title" id="myModalLabel">{{selectedTech.name.toTitleCase()}} </h4> <h5> {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}} {{masteryConverter(selectedTech.level).toTitleCase()}} Ability </h5>
+						<h4 class="modal-title" id="myModalLabel">{{selectedTech.name.split('_').join(' ').toTitleCase()}} </h4> <h5> {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}} {{masteryConverter(selectedTech.level).toTitleCase()}} Ability </h5>
 					</div>
 					<div id="modalBody" class="modal-body">
 						<img id="techInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTech.id+'tech') }}" />

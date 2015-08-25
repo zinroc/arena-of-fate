@@ -322,7 +322,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
         $scope.activeAnimationName = null;
 
         if($scope.selectedPlan){
-            $('#'+$scope.selectedPlan.name).css('border','none');;
+            $('#'+$scope.selectedPlan.name).css('border','none');
         }
 
         var planIndex = $scope.getIndexOf($scope.plans, 'index', index);

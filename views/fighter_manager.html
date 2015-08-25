@@ -26,7 +26,7 @@
 								</div>
 							</div>
 							<div id="techBookText" class="col-md-9">
-								{{tech.name.toTitleCase()}}
+								{{tech.name.split('_').join(' ').toTitleCase()}}
 								<div class="progress">
 									
 									<div class="progress-bar {{getExpBarColor(techConditioning[tech.id])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{techConditioning[tech.id]}}%;">
@@ -46,7 +46,7 @@
 								</div>
 							</div>
 							<div id="techBookText" class="col-md-9">
-								{{tech.name.toTitleCase()}}
+								{{tech.name.split('_').join(' ').toTitleCase()}}
 								<div class="progress">
 									
 									<div class="progress-bar {{getExpBarColor(techConditioning[tech.id])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{techConditioning[tech.id]}}%;">
@@ -57,7 +57,7 @@
 							</div>
 						</div>
 					</div>
-					<div ng-repeat="slot in techSlots" data-toggle="tooltip" data-placement="top" title="{{getTech(slots[selectedPlan.strategy][slot]).name.toTitleCase()}}" ng-mouseOver="activateClassTooltip(slot)" class="col-md-3 {{slot}}"><!-- TODO tooltip -->
+					<div ng-repeat="slot in techSlots" data-toggle="tooltip" data-placement="top" title="{{getTech(slots[selectedPlan.strategy][slot]).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip(slot)" class="col-md-3 {{slot}}"><!-- TODO tooltip -->
 						<div id="techSlots"  ng-if="slots[selectedPlan.strategy][slot]" style="cursor: pointer" ng-click="selectTech(slots[selectedPlan.strategy][slot])"
 						data-toggle="modal" data-target="#techModal">
 							<img id="techSlotArt" ng-src="{{ getAssetImg(slots[selectedPlan.strategy][slot]+'tech') }}" />
@@ -65,7 +65,7 @@
 					</div><!-- TODO empty slot if !slot -->
 
 					<div id="ultSlot" class="col-md-3" ng-if="slots[selectedPlan.strategy].ultimate" style="cursor: pointer" ng-click="selectTech(slots[selectedPlan.strategy].ultimate)" data-toggle="modal" data-target="#techModal">
-						<img id="ultSlotArt" ng-src="{{ getAssetImg(slots[selectedPlan.strategy].ultimate+'tech') }}" data-toggle="tooltip" data-placement="top" title="{{getTech(slots[selectedPlan.strategy].ultimate).name.toTitleCase()}}" ng-mouseOver="activateClassTooltip('ultimate')" class="ultimate"/>
+						<img id="ultSlotArt" ng-src="{{ getAssetImg(slots[selectedPlan.strategy].ultimate+'tech') }}" data-toggle="tooltip" data-placement="top" title="{{getTech(slots[selectedPlan.strategy].ultimate).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip('ultimate')" class="ultimate"/>
 					</div><!-- TODO empty slot if no ultimate -->
 
 				</div>
@@ -193,7 +193,7 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h4 class="modal-title" id="myModalLabel">{{selectedTech.name.toTitleCase()}} </h4> <h5> {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}} {{masteryConverter(selectedTech.level).toTitleCase()}} Ability </h5>
+						<h4 class="modal-title" id="myModalLabel">{{selectedTech.name.split('_').join(' ').toTitleCase()}} </h4> <h5> {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}} {{masteryConverter(selectedTech.level).toTitleCase()}} Ability </h5>
 					</div>
 					<div id="modalBody" class="modal-body">
 						<img id="techInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTech.id+'tech') }}" />

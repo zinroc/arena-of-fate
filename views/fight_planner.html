@@ -18,7 +18,15 @@
 					</div>
 				</div>
 			</div>
-			<h3 ng-if="fight.started">Fight Started!</h3>
+			<!--<h3 ng-if="fight.started">Fight Started!</h3>-->
+			<div ng-if="fight.started" style="height: 50px;">
+				<h5> Techniques</h5>
+				<div ng-repeat="side in sides" class="col-md-6">
+					<div ng-repeat="slot in allSlots" class="col-md-2">
+						<img ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" />
+					</div>
+				</div>
+			</div>
 
 
 

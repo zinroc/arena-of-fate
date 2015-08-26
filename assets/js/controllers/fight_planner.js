@@ -61,7 +61,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.predict = {};
     //animation -> defender/initiatior , dodged, blocked, fumble, predict
     $scope.modifiers = ['gassed', 'pinned', 'dazed', 'quit', 'unconscious', 'blood_lust', 'blood_rage', 
-    'unstoppable_frenzy'];
+    'unstoppable_frenzy', 'stunned'];
     $scope.injuries = {};
     $scope.injuries.lv1 = ['bloody nose', 'bloodied vision', 'bruised leg', 'bruised torso', 'sprained finger', 'sprained ankle'];
     $scope.injuries.lv2 = ['broken nose', 'broken orbital', 'fractured leg', 'fractured rib', 'broken hand', 'broken ankle'];
@@ -92,7 +92,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.fastEffects = ['initiator', 'dodge', 'block', 'fumble', 'predict', 'counter', 'gassed'];
 
     $scope.techAnimations = [];
-    $scope.techAnimations = ['blood_lust', 'blood_rage', 'unstoppable_frenzy'];
+    $scope.techAnimations = ['blood_lust', 'blood_rage', 'unstoppable_frenzy', 'flying', 'shield_smash', 
+    'jumping_strike', 'maul', 'burning_strike'];
 
     $scope.barValue = {};
 
@@ -185,6 +186,17 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    $scope.distnaceBackConverter = function(distance){
+        if (distance < 33){
+            return 0; 
+        } else if (distance < 66){
+            return 1;
+        } else if (distance < 100){
+            return 2;
+        }
+        return false;
+    }
+
     $scope.distanceConversion = function (distance){
         var rand = parseInt(33*Math.random());
         if(distance==='close'){
@@ -255,10 +267,16 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var rangeVal = 0;
         if($scope.strat[side].range ==='close'){
             rangeVal = 17;
+            if ($scope.distance < 0){
+                return 'green';
+            }
         } else if ($scope.strat[side].range ==='medium'){
             rangeVal = 50;
         } else if ($scope.strat[side].range ==='far'){
             rangeVal = 83;
+            if($scope.distance > 99){
+                return 'green';
+            }
         }
         if(Math.abs(rangeVal-$scope.distance) < 17){
             return 'green';
@@ -420,8 +438,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.checkPreInitTechniques();
             $scope.initiation();
             if ($scope.initiator){
-                $scope.checkReplaceInitTechniques();
+
                 $scope.resolveInitiation();
+                
                 $scope.checkPostInitTechniques();
             } else if (!$scope.initiator){
                 $scope.checkNoInitTechniques();
@@ -462,12 +481,24 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.checkPostInitTechniques = function (){
 
     };
-    $scope.checkDuringInitTechniques = function (){
+    $scope.checkDuringInitTechniques = function (initiator, defender){
+        var skipAbility = $scope.checkTechFlying(initiator);
+        console.log("skipAbility", skipAbility);
+        if (skipAbility!=='shield_smash'){
+            $scope.checkTechShieldSmash(initiator);
+        }
+        if(skipAbility!=='jumping_strike'){
+            $scope.checkTechJumpingStrike(initiator);
+        }
+        if(skipAbility!=='burning_strike'){
+            $scope.checkTechBurningStrike(initiator);
+        }
 
+        $scope.checkTechMaul(initiator);
     };
 
+
     $scope.conditionCheck = function (side, tech, exp){
-        
         exp = parseInt(exp);
         var bar = parseInt(parseInt(tech.technical_value)*33*Math.random()) + 33*Math.random();
         console.log("bar", bar, "exp", exp);
@@ -482,33 +513,236 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
     };
 
+    $scope.checkTechActive = function (side, name){
+       for(var i=0; i<$scope.allSlots.length; i++){
+            var tech = $scope.getTech($scope.activeTechniques[side][$scope.allSlots[i]].id);
+            if(tech.name===name){
+                tech.exp = $scope.activeTechniques[side][$scope.allSlots[i]].exp;
+                return tech;
+            }
+        }
+        return false;
+    }
+
+    $scope.checkTechBurningStrike = function(side){
+        var tech = $scope.checkTechActive(side, 'burning_strike');
+
+        if (tech){
+            //range check
+            if (!$scope.rangeCheck(tech)){
+                $scope.corner[side].burning_strike = false;
+                console.log("burning strike range check failed");
+                return false;
+            }
+            //conditioning check
+            if (!$scope.conditionCheck(side, tech, tech.exp)){
+                $scope.corner[side].burning_strike = false;
+                console.log("burning strike fumbled");
+                return false;
+            }
+            //cardio check
+            if (!$scope.cardioCheck(side, tech.cardio_cost)){
+                $scope.corner[side].jumping_strike = false;
+                console.log("insufficient cardio to burning_strike");
+                return false;
+            }
+
+            $scope.corner[side].burning_strike = 2;
+            $scope.animations[side].burning_strike.value = true;
+            console.log("BURNING STRIKE!");
+
+            return 'burning_strike';
+        } else {
+
+            return false;
+        }
+    }
+
+    $scope.checkTechShieldSmash = function(side){
+        var tech = $scope.checkTechActive(side, 'shield_smash');
+
+        if (tech){
+            //range check
+            if (!$scope.rangeCheck(tech)){
+                $scope.corner[side].shield_smash = false;
+                console.log("shield smash range check failed");
+                return false;
+            }
+            //conditioning check
+            if (!$scope.conditionCheck(side, tech, tech.exp)){
+                $scope.corner[side].shield_smash = false;
+                console.log("shield smash fumbled");
+                return false;
+            }
+            //cardio check done when resolved
+
+
+            $scope.corner[side].shield_smash = 2;
+            console.log("SHIELD SMASH!");
+
+            return 'shield_smash';
+        } else {
+
+            return false;
+        }
+    }
+
+    $scope.checkTechJumpingStrike = function(side){
+        var tech = $scope.checkTechActive(side, 'jumping_strike');
+
+        if (tech){
+            //range check 
+            if (!$scope.rangeCheck(tech)){
+                $scope.corner[side].jumping_strike = false;
+                console.log("jumping strike range check failed");
+                return false;
+            }
+            //conditioning check
+            if (!$scope.conditionCheck(side, tech, tech.exp)){
+                $scope.corner[side].jumping_strike = false;
+                console.log("jumping strike fumbled");
+                return false;
+            }
+            //cardio check
+            if (!$scope.cardioCheck(side, tech.cardio_cost)){
+                $scope.corner[side].jumping_strike = false;
+                console.log("insufficient cardio to jumping_strike");
+            }
+
+            $scope.corner[side].jumping_strike = 2;
+            $scope.animations[side]['jumping_strike'].value = true;
+
+            console.log("JUMPING STRIKE!");
+
+            return 'jumping_strike';
+        } else {
+            return false;
+        }
+
+    }
+
+    $scope.checkTechFlying = function(side){
+        for(var i=0; i<$scope.allSlots.length; i++){
+            var tech = $scope.getTech($scope.activeTechniques[side][$scope.allSlots[i]].id);
+            if(tech.name==='flying'){
+                tech.exp = $scope.activeTechniques[side][$scope.allSlots[i]].exp;
+                //range check 
+                if (!$scope.rangeCheck(tech)){
+                    $scope.corner[side].flying = false;
+                    console.log("Flying range check failed");
+                    return false;
+                }
+                //conditioning check
+                if (!$scope.conditionCheck(side, tech, tech.exp)){
+                    $scope.corner[side].flying = false;
+                    console.log("Flying fumbled");
+                    return false;
+                }
+                //cardio check 
+                if (!$scope.cardioCheck(side, tech.cardio_cost)){
+                    $scope.corner[side].flying = false;
+                    console.log("insufficient cardio to fly");
+                }
+                $scope.animations[side].flying.value = true;
+
+                $scope.corner[side].flying = 2;
+                console.log("FLYING!");
+
+                $scope.distance = 80;
+                var ability = $scope.findFlyAbility(side);
+                if(ability){
+                    return ability;
+                } else {
+                    $scope.distance = 50;
+                }
+                ability = $scope.findFlyAbility(side);
+                if(ability){
+                    return ability;
+                } else {
+                    $scope.distance = 1;
+                }
+                ability = $scope.findFlyAbility(side);
+                if (ability){
+                    return ability;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    $scope.findFlyAbility = function (side){
+        var result = false;
+        result = $scope.checkTechShieldSmash(side);
+
+        if (!result){
+            result = $scope.checkTechJumpingStrike(side);
+        }
+
+        if (!result){
+            result = $scope.checkTechBurningStrike(side);
+        }
+
+        if(!result){
+            console.log($scope.distance, "no ability found");
+        } else {
+            console.log($scope.distance, result);
+        }
+        return result;
+    }
+
+    $scope.cardioCheck = function (side, cardio_cost){
+        var cardioCost = parseInt(cardio_cost);
+        cardioCost = 33*cardioCost;
+        if ($scope.vitals[side].cardio < cardioCost){
+            return false;
+        } else {
+            $scope.vitals[side].cardio -= cardioCost;
+            return true;
+        }
+    }
+
+    $scope.rangeCheck = function (tech){
+        console.log(tech, tech.range, $scope.distance);
+        var distance = $scope.distnaceBackConverter($scope.distance);
+        var range = parseInt(tech.range);
+        if (range===3 || range === distance){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
     * target 'red' / 'blue' -> side taking damage
     */
     $scope.checkTechBloodLust = function (side, bloodiedDMG){
         //check if target () has applicable technique
-        for(var i=0; i<$scope.allSlots.length; i++){
-            var tech = $scope.getTech($scope.activeTechniques[side][$scope.allSlots[i]].id);
-            if(tech.name==='blood_lust'){
-                //check if significant bloodied damage
-                if (bloodiedDMG < 5){
-                    $scope.corner[side].blood_lust = false;
-                    console.log("insufficient blood", bloodiedDMG);
-                    return;
-                }
-                //conditioning check
-                if (!$scope.conditionCheck(side, tech, $scope.activeTechniques[side][$scope.allSlots[i]].exp)){
-                    $scope.corner[side].blood_lust = false;
-                    return;
-                }
+        var tech = $scope.checkTechActive(side, 'blood_lust');
 
-                $scope.animations[side].blood_lust.value = true;
-
-                $scope.corner[side].blood_lust = 100; // bloodlust is reset when an attack is dodged
-                var msg = $scope.corner[side].name.toTitleCase() + " enters Blood Lust!";
-                $scope.record(msg);
+        if(tech){
+            //check if significant bloodied damage
+            if (bloodiedDMG < 5){
+                $scope.corner[side].blood_lust = false;
+                console.log("insufficient blood", bloodiedDMG);
+                return;
             }
+            //conditioning check
+            if (!$scope.conditionCheck(side, tech, tech.exp)){
+                $scope.corner[side].blood_lust = false;
+                return;
+            }
+
+            $scope.animations[side].blood_lust.value = true;
+
+            $scope.corner[side].blood_lust = 100; // bloodlust is reset when an attack is dodged
+            var msg = $scope.corner[side].name.toTitleCase() + " enters Blood Lust!";
+            $scope.record(msg);
+        } else {
+            return false;
         }
+
     };
 
     $scope.checkTechUnstoppableFrenzy = function (target, targeter, bloodiedDMG){
@@ -580,31 +814,71 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     */
     $scope.checkTechBloodRage = function (side, bloodiedDMG){
         //check if target () has applicable technique
-        for(var i=0; i<$scope.allSlots.length; i++){
-            var tech = $scope.getTech($scope.activeTechniques[side][$scope.allSlots[i]].id);
-            if(tech.name==='blood_rage'){
-                //check if significant bloodied damage
-                if (bloodiedDMG < 5){
-                    $scope.corner[side].blood_rage = false;
-                    console.log("insufficient blood", bloodiedDMG);
-                    return;
-                }
-                //conditioning check
-                if (!$scope.conditionCheck(side, tech, $scope.activeTechniques[side][$scope.allSlots[i]].exp)){
-                    $scope.corner[side].blood_rage = false;
-                    return;
-                }
+        var tech = $scope.checkTechActive(side, 'blood_rage');
 
-                $scope.animations[side].blood_rage.value = true;
-
-                $scope.corner[side].blood_rage = 15;
-                var msg = $scope.corner[side].name.toTitleCase() + " enters Blood Rage!";
-                $scope.record(msg);
+        if(tech){
+            //check if significant bloodied damage
+            if (bloodiedDMG < 5){
+                $scope.corner[side].blood_rage = false;
+                console.log("insufficient blood", bloodiedDMG);
+                return;
             }
+            //conditioning check
+            if (!$scope.conditionCheck(side, tech, tech.exp)){
+                $scope.corner[side].blood_rage = false;
+                return;
+            }
+
+            $scope.animations[side].blood_rage.value = true;
+
+            $scope.corner[side].blood_rage = 15;
+            var msg = $scope.corner[side].name.toTitleCase() + " enters Blood Rage!";
+            $scope.record(msg);
+        } else {
+            return false;
         }
+        
     };
 
-    $scope.checkReplaceInitTechniques = function (){
+
+    $scope.checkTechMaul = function (side){
+       var otherSide = $scope.otherSide(side);
+
+        var tech = $scope.checkTechActive(side, 'maul');
+
+        if (tech){
+            //check pinned
+            if (!$scope.corner[otherSide].pinned){
+                $scope.corner[side].maul = false;
+                console.log("maul target not pinned");
+                return false;
+            }
+            //range check 
+            if (!$scope.rangeCheck(tech)){
+                $scope.corner[side].maul = false;
+                console.log("maul range check failed");
+                return false;
+            }
+            //conditioning check
+            if (!$scope.conditionCheck(side, tech, tech.exp)){
+                $scope.corner[side].maul = false;
+                console.log("maul fumbled");
+                return false;
+            }
+            //cardio check
+            if (!$scope.cardioCheck(side, tech.cardio_cost)){
+                $scope.corner[side].maul = false;
+                console.log("insufficient cardio to maul");
+                return false;
+            }
+            $scope.animations[side].maul.value = true;
+            $scope.corner[side].maul = 2;
+            console.log("MAUL!");
+
+            return 'maul';
+        } else {
+            return false;
+        }
 
     };
 
@@ -617,7 +891,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             var side = $scope.sides[i];
             for (var j=0; j<$scope.allSlots.length; j++){
                 var slot = $scope.allSlots[j];
-                console.log(side, slot, $scope.activeTechniques[side][slot].name, $scope.corner[side][$scope.activeTechniques[side][slot].name]);
+                //console.log(side, slot, $scope.activeTechniques[side][slot].name, $scope.corner[side][$scope.activeTechniques[side][slot].name]);
                 if($scope.corner[side][$scope.activeTechniques[side][slot].name] < 2 && 
                     $scope.corner[side][$scope.activeTechniques[side][slot].name]){
                     $scope.corner[side][$scope.activeTechniques[side][slot].name] = false;
@@ -738,6 +1012,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         var regen = parseInt(Math.random()*skill - Math.random()*opposingSkill);
 
+        if ($scope.corner[side].stunned){
+            regen = 0;
+        }
         if (regen > 0){
             regen = Math.min(30-$scope.vitals[side].positioning ,(regen/100)*30);
         } else {
@@ -753,6 +1030,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var optimalDistance = $scope.distanceConversion($scope.strat[side].range);
         var nextMovement = (optimalDistance - $scope.distance)/2;
         var injuryMod = $scope.getInjuryMod(side, 'legs') * $scope.getInjuryMod(side, 'feet');
+
+        if ($scope.corner[side].stunned){
+            nextMovement = 0;
+        }
+
         return parseInt(nextMovement*injuryMod);
 
     };
@@ -813,6 +1095,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.sides[i]].gassed = false; //cardio
             $scope.corner[$scope.sides[i]].pinned = false; // positioning
             $scope.corner[$scope.sides[i]].dazed = false;
+            $scope.corner[$scope.sides[i]].stunned = false;
             $scope.corner[$scope.sides[i]].quit = false;
             $scope.corner[$scope.sides[i]].unconscious = false;
 
@@ -860,8 +1143,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var range = Math.abs(optimalDistance - $scope.distance);
         var rangeMod = (100-range)/(100);
 
-
-        return parseInt(rangeMod*$scope.heightConversion($scope.strat[side].initiation_frequency));
+        var increase = parseInt(rangeMod*$scope.heightConversion($scope.strat[side].initiation_frequency));
+        if($scope.corner[side].stunned){
+            increase = 0;
+        }
+        return increase;
     };
 
     //determine how much cardio fighter pays this cycle in fightLoop
@@ -984,7 +1270,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             regen += parseInt(regen*1.5);
 
             var msg = $scope.corner[side].name.toTitleCase() + " regenerated " + (regen-oldRegen) +
-            " bonus due to Blood Range";
+            " bonus cardio due to Blood Range";
             $scope.record(msg);
         }
 
@@ -998,8 +1284,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         for (var i=0; i<$scope.sides.length; i++){
 
             $scope.updateStatuses($scope.sides[i]);
-
-
             if(!$scope.corner[$scope.sides[i]].gassed && !$scope.corner[$scope.sides[i]].pinned){
                 $scope.corner[$scope.sides[i]].initiationScore += $scope.initIncrease($scope.sides[i]);
                 $scope.vitals[$scope.sides[i]].cardio -= $scope.idleCardioPayment($scope.sides[i]);
@@ -1084,7 +1368,29 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         }
 
+
         var base = parseInt((strength + speed) / 2);
+
+        //tech Flying
+        if ($scope.corner[side].flying){
+            var oldBase = base;
+
+            base = parseInt(base*1.4);
+
+            var msg = $scope.corner[side].name.toTitleCase() + " gains " + (base - oldBase) + 
+            " bonus power under the effect of Flying!";
+            $scope.record(msg);
+        }
+
+        if ($scope.corner[side].maul){
+            var oldBase = base;
+
+            base = parseInt(base*1.2);
+
+            var msg = $scope.corner[side].name.toTitleCase() + " gains " + (base - oldBase) + 
+            " bonus power while Mauling!";
+            $scope.record(msg);
+        }
 
         return parseInt(base*Math.random());
     };
@@ -1205,13 +1511,13 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.checkAdvantage($scope.initiator, $scope.defender);
         $scope.vitals[$scope.initiator].cardio -= $scope.initiationCardioPayment($scope.initiator);
 
+        $scope.checkDuringInitTechniques($scope.initiator, $scope.defender);
+
         var powerScore = $scope.getPowerScore($scope.initiator);
         var speedScore = $scope.getSpeedScore($scope.initiator);
         var accuracyScore = $scope.getAccuracyScore($scope.initiator);
         var evasionScore = $scope.getEvasionScore($scope.defender);
         var reflexScore = $scope.getReflexScore($scope.defender);
-
-        $scope.checkDuringInitTechniques();
 
         var msg = "";
         if($scope.corner[$scope.defender].gassed){
@@ -1223,9 +1529,13 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             msg = $scope.corner[$scope.defender].name.toTitleCase() + " dodges attack";
             $scope.corner[$scope.defender].dodged = true;
             $scope.corner[$scope.initiator].blood_lust = false;
-
+            $scope.corner[$scope.initiator].jumping_strike = false;
+            $scope.corner[$scope.initiator].maul = false;
+            $scope.corner[$scope.initiator].burning_strike = false;
             $scope.record(msg);
 
+        } else if ($scope.corner[$scope.initiator].jumping_strike){
+            $scope.resolveJumpingStrike($scope.initiator);
         }
 
         if (speedScore < reflexScore){
@@ -1233,6 +1543,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.record(msg);
             $scope.corner[$scope.defender].blocked = true;
 
+            //tech shield_smash
+            if($scope.corner[$scope.initiator].shield_smash){
+
+                $scope.resolveShieldSmash($scope.initiator);
+            }
         }
 
 
@@ -1249,6 +1564,46 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         return;
     };
+
+    $scope.resolveJumpingStrike = function (side){
+        var otherSide = $scope.otherSide(side);
+        $scope.corner[otherSide].stunned = true;
+        
+        var abilityName = "";
+        if(!$scope.corner[side].flying){
+            abilityName = "Jumping Strike";
+        } else {
+            abilityName = "Flying Jumping Strike";
+        }
+
+        var msg = $scope.corner[$scope.initiator].name.toTitleCase() + " stuns with "+ abilityName +" Strike";
+        $scope.record(msg);
+    }
+
+    $scope.resolveShieldSmash = function(side){
+        var otherSide = $scope.otherSide(side);
+        if (!$scope.cardioCheck(side, 1)){
+            $scope.corner[side].shield_smash = false;
+            console.log("insufficient cardio to shield smash");
+        } else {
+            var cardioDMG = $scope.getPowerScore(side);
+            var techName = "";
+            if($scope.corner[side].flying){
+                techName = "Flying Shield Smash";
+            } else {
+                techName = "Shield Smash";
+            }
+
+            $scope.vitals[otherSide].cardio -= cardioDMG;
+            var msg = $scope.corner[side].name.toTitleCase() + " performs " + techName + " dealing " + 
+            cardioDMG + " cardio damage!";
+            $scope.record(msg);
+
+            $scope.animations[side].shield_smash.value = true;
+            $scope.corner[side].shield_smash = false;
+        }
+        return;
+    }
 
     //blocking reduces damage taken and may result in a counter
     $scope.evaluateBlock = function (blocker, reflex, speed, power){
@@ -1267,6 +1622,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             msg = $scope.corner[$scope.defender].name.toTitleCase() + " fully blocks the attack";
             $scope.record(msg);
             $scope.corner[attacker].blood_lust = false;
+            $scope.corner[attacker].burning_strike = false;
         } else {
             msg = $scope.corner[blocker].name.toTitleCase() + " blocks " + (power-blockScore) + " damage.";
             $scope.record(msg);
@@ -1308,10 +1664,15 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     //mods that reset after every initiation
     $scope.resetTempCombatMods = function (){
         for(var i=0; i<$scope.sides.length; i++){
+            var otherSide = $scope.otherSide($scope.sides[i]);
             $scope.corner[$scope.sides[i]].dodged = false;
             $scope.corner[$scope.sides[i]].blocked = false;
             $scope.corner[$scope.sides[i]].counter = false;
             $scope.corner[$scope.sides[i]].acceptedDamage = false;
+
+            if (!$scope.corner[otherSide].jumping_strike){
+                $scope.corner[$scope.sides[i]].stunned = false;
+            }
 
             $scope.fumble[$scope.sides[i]] = false;
             $scope.predict[$scope.sides[i]] = false;
@@ -1569,8 +1930,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         } else {
             skillMod = 1+ Math.abs(skillMod);
         }
-
-        return parseInt(damage*((100-vulnerableMod)/100)*skillMod);
+        var finalDamage = parseInt(damage*((100-vulnerableMod)/100)*skillMod);
+        return finalDamage;
     };
 
     //determine bloodied damage from base consciousness damage
@@ -1588,6 +1949,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     //deal damage to fights conscioussness, positioning, bloodied bar
     $scope.dealDamage = function(target, damage){
+        var targeter = $scope.otherSide(target);
+
         $scope.corner[target].acceptedDamage = true;
 
         if (damage===0){
@@ -1614,6 +1977,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             }
 
             var totalDMG = consciousnessDMG + positioningDMG + bloodiedDMG;
+
+            if($scope.corner[targeter].burning_strike){
+                $scope.resolveBurningStrike(targeter, totalDMG);
+            }
+
             $scope.vitals[target].consciousness -= consciousnessDMG;
             $scope.vitals[target].positioning -= positioningDMG;
             $scope.vitals[target].bloodied += bloodiedDMG;
@@ -1663,6 +2031,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
             var targeter = $scope.otherSide(target);
 
+
             $scope.checkPostDamageTech(target, targeter, bloodiedDMG);
             //check if target quits
             $scope.checkQuit(target);
@@ -1670,6 +2039,29 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             return totalDMG;
         }
     };
+
+    $scope.resolveBurningStrike = function (targeter, totalDMG){
+        var damage = parseInt(totalDMG/3);
+        var target = $scope.otherSide(targeter);
+        var maxDMG = parseInt($scope.vitals[target].bloodied); 
+        var burnDMG = parseInt(damage/2);
+
+        var msg = "";
+        //perform bloodied -> consciousnessDMG conversion
+        if(maxDMG > 0){
+            var conDMG = Math.min(maxDMG, totalDMG);
+            $scope.vitals[target].bloodied -= conDMG;
+            $scope.vitals[target].conscioussness -= (conDMG+burnDMG);
+            msg = $scope.corner[targeter].name.toTitleCase() + "'s burning strike burns into wounds dealing "
+             + (conDMG+burnDMG) + " conscioussness damage! ";
+            $scope.record(msg);
+        } else {
+            msg = $scope.corner[target].name.toTitleCase() + " is not wounded and imune to burning strike";
+            $scope.record(msg);
+        }
+        $scope.corner[targeter].burning_strike = false;
+
+    }
 
     $scope.checkPostDamageTech = function(target, targeter, bloodiedDMG){
         $scope.checkTechUnstoppableFrenzy(target, targeter, bloodiedDMG);
@@ -1680,6 +2072,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     //fighters may submit in bad situations before going unconscious
     $scope.checkQuit = function (target){
+        var targeter = $scope.otherSide(target);
+
         if($scope.corner[target].unstoppable_frenzy){
             return;
         }
@@ -1698,6 +2092,12 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
             if ($scope.corner[target].pinned){
                 base+=5;
+            }
+
+            if($scope.corner[targeter].maul){
+                var msg = "Mauling increases " + $scope.corner[target].name.toTitleCase() + "'s chance to quit";
+                $scope.record(msg);
+                base+=15;
             }
 
             for (var i=0; i<$scope.injuryLocations.length; i++){
@@ -1732,6 +2132,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[side].blood_lust = false;
             $scope.corner[side].blood_rage = false;
             $scope.corner[side].unstoppable_frenzy = false;
+            $scope.corner[side].flying = false;
+            $scope.corner[side].shield_smash = false;
+            $scope.corner[side].jumping_strike = false;
+            $scope.corner[side].maul = false;
+            $scope.corner[side].burning_strike = false;
     };
 
     // reset to do a new fight
@@ -1891,8 +2296,6 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             var tech = $scope.getTech($scope.activeTechniques[side][$scope.allSlots[k]].id);
             $scope.activeTechniques[side][$scope.allSlots[k]].name = tech.name;
         }
-        //console.log($scope.activeTechniques);
-        console.log("active techniques: ", side, $scope.activeTechniques[side]);
         var j=0;
         for (var i=0; i<$scope.skills.length; i++){
             if (typeof($scope.stratBonuses[$scope.corner[side].strategy][$scope.skills[i].id]) !=='undefined'){

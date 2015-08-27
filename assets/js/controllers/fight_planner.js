@@ -73,7 +73,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.predict = {};
     //animation -> defender/initiatior , dodged, blocked, fumble, predict
     $scope.modifiers = ['gassed', 'pinned', 'dazed', 'quit', 'unconscious', 'blood_lust', 'blood_rage', 
-    'unstoppable_frenzy', 'stunned', 'poisoned'];
+    'unstoppable_frenzy', 'stunned', 'poisoned', 'poison_catalyst'];
     $scope.injuries = {};
     $scope.injuries.lv1 = ['bloody nose', 'bloodied vision', 'bruised leg', 'bruised torso', 'sprained finger', 'sprained ankle'];
     $scope.injuries.lv2 = ['broken nose', 'broken orbital', 'fractured leg', 'fractured rib', 'broken hand', 'broken ankle'];
@@ -105,7 +105,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     $scope.techAnimations = [];
     $scope.techAnimations = ['blood_lust', 'blood_rage', 'unstoppable_frenzy', 'flying', 'shield_smash', 
-    'jumping_strike', 'maul', 'burning_strike', 'suffication', 'venom_spit'];
+    'jumping_strike', 'maul', 'burning_strike', 'suffication', 'venom_spit', 'cobra_strike'];
 
     $scope.barValue = {};
 
@@ -497,9 +497,18 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             if ($scope.checklist[side].poison){
                 var poison = parseInt($scope.checklist[side].poison);
                 var damage = parseInt(poison/10);
+                var oldDamage = damage;
+
+                if ($scope.corner[side].poison_catalyst){
+                    damage = 3*damage;
+                    var msg = $scope.corner[side].name.toTitleCase() + "'s conscioussness loss due to poison increased from " + 
+                    oldDamage + " to " + damage + " due to Poison Catalyst!";
+                    $scope.record(msg);
+
+                }
 
                 $scope.vitals[side].consciousness -= damage;
-                $scope.checklist[side].poison -= damage;
+                $scope.checklist[side].poison -= oldDamage;
 
 
                 if ($scope.checklist[side].poison < 10){
@@ -536,7 +545,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         if(skipAbility !=='venom_spit'){
             $scope.checkTechVenomSpit(initiator);
         }
-
+        if(skipAbility !=='cobra_strike'){
+            $scope.checkTechCobraStrike(initiator);
+        }
         $scope.checkTechMaul(initiator);
 
         $scope.checkTechSuffication(initiator);
@@ -702,19 +713,19 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
                 $scope.corner[side].flying = 2;
 
-                $scope.distance = 80;
+                $scope.changeDistance(80);
 
                 var ability = $scope.findFlyAbility(side);
                 if(ability){
                     return ability;
                 } else {
-                    $scope.distance = 50;
+                    $scope.changeDistance(50);
                 }
                 ability = $scope.findFlyAbility(side);
                 if(ability){
                     return ability;
                 } else {
-                    $scope.distance = 1;
+                    $scope.changeDistance(1);
                 }
                 ability = $scope.findFlyAbility(side);
                 if (ability){
@@ -730,6 +741,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.findFlyAbility = function (side){
         var result = false;
         result = $scope.checkTechShieldSmash(side);
+
+        if(!result){
+            result = $scope.checkTechCobraStrike(side);
+        }
 
         if (!result){
             result = $scope.checkTechJumpingStrike(side);
@@ -918,6 +933,56 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             return false;
         }
         
+    };
+
+    $scope.vulnerableCheck = function (side){
+        if ($scope.corner[side].stunned ||  $scope.corner[side].dazed || $scope.corner[side].pinned){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $scope.checkTechCobraStrike = function (side){
+       var otherSide = $scope.otherSide(side);
+
+        var tech = $scope.checkTechActive(side, 'cobra_strike');
+
+        if (tech){
+            //range check 
+            if (!$scope.rangeCheck(tech)){
+                $scope.corner[side].cobra_strike = false;
+                return false;
+            }
+            //vulnerable check 
+            if (!$scope.vulnerableCheck(otherSide)){
+                $scope.corner[side].cobra_strike = false;
+                return false;
+            }
+            //conditioning check
+            if (!$scope.conditionCheck(side, tech, tech.exp)){
+                $scope.corner[side].cobra_strike = false;
+                return false;
+            }
+            //cardio check
+            if (!$scope.cardioCheck(side, tech.cardio_cost)){
+                $scope.corner[side].cobra_strike = false;
+                return false;
+            } else {
+                $scope.vitals[side].cardio -= parseInt(33*tech.cardio_cost);
+            }
+            $scope.animations[side].cobra_strike.value = true;
+            $scope.corner[side].cobra_strike = 2;
+            $scope.changeDistance(1);
+
+            var msg = $scope.corner[side].name.toTitleCase() + " Cobra Strikes into close range!";
+            $scope.record(msg);
+
+            return 'cobra_strike'; //name STRING used inside  checkTechFlying
+        } else {
+            return false;
+        }
+
     };
 
     $scope.checkTechVenomSpit = function (side){
@@ -1201,6 +1266,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
+    $scope.changeDistance = function (amount){
+        $scope.distance = amount;
+    }
+
     // fighter movement within a round
     $scope.movement = function (){
         for (var i=0; i<$scope.sides.length; i++){
@@ -1211,7 +1280,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
 
         for (i=0; i<$scope.sides.length; i++){
-            $scope.distance += $scope.corner[$scope.sides[i]].nextMovement;
+            var newDistance = $scope.distance + $scope.corner[$scope.sides[i]].nextMovement;
+            $scope.changeDistance(newDistance);
         }
 
 
@@ -1272,6 +1342,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.sides[i]].poisoned = false;
             $scope.corner[$scope.sides[i]].quit = false;
             $scope.corner[$scope.sides[i]].unconscious = false;
+            $scope.corner[$scope.sides[i]].poison_catalyst = false;
 
             $scope.corner[$scope.sides[i]].dodged = false; //evasion vs accuracy
             $scope.corner[$scope.sides[i]].blocked = false; // reflex vs speed
@@ -1759,6 +1830,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.initiator].venom_spit = false;
             result.push('venom_spit')
         }
+        if ($scope.corner[side].cobra_strike){
+            $scope.corner[$scope.initiator].cobra_strike = false;
+            result.push('cobra_strike')
+        }
         return result;
     }
 
@@ -1787,8 +1862,34 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.initiator].venom_spit = false;
             result.push('venom_spit');
         }
+        if ($scope.corner[$scope.initiator].cobra_strike){
+            $scope.corner[$scope.initiator].cobra_strike = false;
+            result.push('cobra_strike');
+        }
 
         return result;
+    }
+
+    $scope.resolveCobraStrike = function (side, blood){
+        var otherSide = $scope.otherSide(side);
+        var msg = "";
+        //pin
+        if($scope.vitals[otherSide].positioning > -10 || !$scope.corner[otherSide].pinned){
+            msg += "  Cobra Strike pins " + $scope.corner[otherSide].name.toTitleCase();
+            $scope.vitals[otherSide].positioning = -10;
+            $scope.corner[otherSide].pinned = true;
+        } 
+        if (blood < 1){
+            msg += $scope.corner[side].name.toTitleCase() + " but the poison catalyst does not enter the blood stream";
+        } else {
+            $scope.corner[otherSide].poison_catalyst = true;
+            msg += " and releases a poison catalyst  " + $scope.corner[otherSide].name.toTitleCase() + 
+            "'s blood stream increasing poison damage 3x!";
+        }
+        $scope.record(msg);
+
+
+        return;
     }
 
     $scope.resolveVenomSpit = function (side, blood){
@@ -1800,6 +1901,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.record(msg);
         } else {
             var poison = 20;
+
             if (currentPoison){
                 var vulnerability =  $scope.poisonMultiplier(currentPoison);
                 poison = parseInt(poison*(vulnerability+1));
@@ -1969,6 +2071,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             }
             if (!$scope.checklist[$scope.sides[i]].poison){
                 $scope.corner[$scope.sides[i]].poisoned = false;
+            }
+            if (!$scope.corner[$scope.sides[i]].pinned){
+                console.log($scope.sides[i], "END POISON CATA");
+                $scope.corner[$scope.sides[i]].poison_catalyst = false;
             }
             $scope.fumble[$scope.sides[i]] = false;
             $scope.predict[$scope.sides[i]] = false;
@@ -2284,6 +2390,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             if ($scope.corner[targeter].venom_spit){
                 $scope.resolveVenomSpit(targeter, bloodiedDMG);
             }
+            if ($scope.corner[targeter].cobra_strike){
+                $scope.resolveCobraStrike(targeter, bloodiedDMG);
+            }
+
 
             $scope.vitals[target].consciousness -= consciousnessDMG;
             $scope.vitals[target].positioning -= positioningDMG;
@@ -2781,6 +2891,16 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 passed = false;
             }
             msg +="Opponent is pinned <br>";
+        }
+        //target vulnerable 
+        if(tech.name==='cobra_strike'){
+            if($scope.vulnerableCheck(otherSide)){
+                msg +="<i class='glyphicon glyphicon-ok' style='color: green'></i> ";
+            } else {
+                msg +="<i class='glyphicon glyphicon-remove' style='color: red'></i> ";
+                passed = false;
+            }
+            msg +="Opponent is vulnerable <br>";
         }
         //attack blocked
         if (tech.name==='shield_smash'){

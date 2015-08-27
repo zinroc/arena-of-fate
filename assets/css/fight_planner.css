@@ -34,6 +34,11 @@
 	border-radius: 20%
 }
 
+#inFightTech {
+	height: 70px;
+	border-radius: 20%;
+}
+
 #techSlotArt {
 	height: 50px;
 	border-radius: 20%
@@ -368,6 +373,8 @@
 
 	animation: grow 0.5s 0s linear alternate infinite;
 }
+
+
 
 #gassedred {
 	z-index: 101;

@@ -20,10 +20,10 @@
 			</div>
 			<!--<h3 ng-if="fight.started">Fight Started!</h3>-->
 			<div ng-if="fight.started" style="height: 50px;">
-				<h5> Techniques</h5>
+				<h4> Techniques </h4> 
 				<div ng-repeat="side in sides" class="col-md-6">
-					<div ng-repeat="slot in allSlots" class="col-md-2">
-						<img ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" />
+					<div ng-repeat="slot in allSlots" class="col-md-2 {{activeTechniques[side][slot].name}}{{side}}" data-container="body" data-toggle="popover" data-placement="bottom" data-content='{{getPopoverContent(side, activeTechniques[side][slot] )}}'>
+						<img id="inFightTech" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])"/>
 					</div>
 				</div>
 			</div>
@@ -306,4 +306,5 @@
 			</div>
 		</div>
 	</div>
+
 </div>

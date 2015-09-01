@@ -39,6 +39,11 @@
 	border-radius: 20%;
 }
 
+.animationOn {
+	opacity: 0;
+	animation: twinkle 1s 0s linear alternate infinite;
+}
+
 #techSlotArt {
 	height: 50px;
 	border-radius: 20%
@@ -273,11 +278,100 @@
 }
 
 
+@keyframes twinkle {
+	0% {
+		opacity: 1;
+		filter: invert(100%);
+		height: 70px;
+	}
+	50%{
+		height: 80px;
+		margin-left: -5px;
+		margin-top: -5px;
+	}
+	100% {
+		opacity: 1;
+		filter: invert(100%);
+		height: 70px;
+
+	}
+}
+
+@keyframes squeeze {
+	0%{
+		opacity: 1;
+	}
+	50%{
+		opacity: 1;
+		width: 70px;
+	}
+	100%{
+		opacity: 1;
+		width: 100px;
+	}
+}
+@keyframes centerSqueezeRed {
+	0%{
+		opacity: 1;
+	}
+	50%{
+		opacity: 1;
+		left: 245px;
+	}
+	100%{
+		opacity: 1;
+	}
+}
+@keyframes centerSqueezeBlue {
+	0%{
+		opacity: 1;
+	}
+	50%{
+		opacity: 1;
+		left: -135px;
+	}
+	100%{
+		opacity: 1;
+	}
+}
+
 #effectArtfumble {
 	z-index: 100;
 	height: 50px;
 	border-radius: 50%;
 	overflow: none;
+}
+
+#sufficationred {
+
+	z-index: 200;
+	position: absolute;
+	top: 50px;
+	left: 230px;
+	height: 200px;
+	width: 100px;
+	animation: centerSqueezeRed 0.8s 0.1s linear alternate infinite;
+
+}
+
+#sufficationblue {
+
+	z-index: 200;
+	position: absolute;
+	top: 50px;
+	left: -150px;
+	height: 200px;
+	width: 100px;
+	animation: centerSqueezeBlue 0.8s 0.1s linear alternate infinite;
+
+}
+
+#effectArtsuffication {
+	opacity: 0;
+	height: 200px;
+	width: 100px;
+	animation: squeeze 0.8s 0.1s linear alternate infinite;
+
 }
 
 #effectArtpredict {

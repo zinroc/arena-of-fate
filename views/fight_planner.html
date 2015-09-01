@@ -22,9 +22,12 @@
 			<div ng-if="fight.started" style="height: 50px;">
 				<h4> Techniques </h4> 
 				<div ng-repeat="side in sides" class="col-md-6">
-					<div ng-repeat="slot in allSlots" class="col-md-2 {{activeTechniques[side][slot].name}}{{side}}" data-container="body" data-toggle="popover" data-placement="bottom" data-content='{{getPopoverContent(side, activeTechniques[side][slot] )}}'>
-						<img id="inFightTech" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])"/>
+
+					<div ng-repeat="slot in allSlots" class="col-md-2 {{activeTechniques[side][slot].name}}{{side}}" data-container="body" data-toggle="popover" data-placement="bottom" data-content='{{getPopoverContent(side, activeTechniques[side][slot] )}}' style="height:80px">
+						<img id="inFightTech" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="!animations[side][activeTechniques[side][slot].name].value"/>
+						<img id="inFightTech" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" class="animationOn" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="animations[side][activeTechniques[side][slot].name].value"/>
 					</div>
+
 				</div>
 			</div>
 

@@ -368,6 +368,15 @@
 		transform: rotate(90deg);
 	}
 }
+
+@keyframes rotateLeftTaunt {
+	0%{
+		transform: scaleX(-1) rotate(0deg);
+	} 100%{
+		transform: scaleX(-1) rotate(-90deg);
+	}
+}
+
 @keyframes rotateRightFeint {
 	0%{
 		transform: rotate(0deg);
@@ -513,13 +522,29 @@
 	}
 }
 
+@keyframes crush {
+	0%{
+		tranform: scaleY(1);
+	}
+	100%{
+		transform: scaleY(0.1);
+	}
+}
 
+@keyframes jump {
+	0%{	
+		opacity: 1;
+		top: 60px;
+	}
+	70%{
+		opacity: 1;
+		top: -50px;
+	}
+	100%{
+		opacity: 1;
+		top: 60px;
+	}
 
-#effectArtfumble {
-	z-index: 100;
-	height: 50px;
-	border-radius: 50%;
-	overflow: none;
 }
 
 #initiatorred {
@@ -549,6 +574,314 @@
 	height:150px;
 	overflow: none;
 }
+/* ---------- Technique Animations START -----------*/
+
+#mezmorizered {
+	position: absolute;
+	left: 100px;
+	top: 60px;
+	animation: spin 0.2s 0s linear infinite;
+}
+
+#mezmorizeblue {
+	position: absolute;
+	left: 0px;
+	top: 60px;
+	animation: spin 0.2s 0s linear infinite;
+}
+
+
+#effectArtmezmorize {
+	z-index: 100;
+	height: 200px;
+	border-radius: 50%;
+	overflow: none;
+}
+
+#tauntred {
+	z-index: 101;
+
+	top: 40px;
+	left: 150px;
+	opacity: 0;
+	position: absolute;
+
+	animation: appear 0.9s 0s linear, 
+						rotateLeft 0.22s 0s linear alternate infinite;
+}
+
+#tauntblue {
+	z-index: 101;
+
+	left: -50px;
+
+	top: 40px;
+	opacity: 0;
+	position: absolute;
+
+	transform: scaleX(-1);
+
+	animation: appear 0.9s 0s linear, 
+				rotateLeftTaunt 0.22s 0s linear alternate infinite;
+}
+
+
+#effectArttaunt {
+	z-index: 101;
+	height: 150px;
+	overflow: none;
+}
+
+
+#divine_interventionred {
+	z-index: -1;
+
+	left: -25px;
+	top: 0px;
+	opacity: 0;
+	position: absolute;
+	animation: appear 0.9s 0s linear;
+
+}
+
+#divine_interventionblue {
+	z-index: -1;
+
+	left: -25px;
+	top: 0px;
+	opacity: 0;
+	position: absolute;
+
+	animation: appear 0.9s 0s linear;
+}
+
+#effectArtdivine_intervention {
+	z-index: -1;
+	border-radius: 20%;
+	height: 400px;
+}
+
+#prayer_of_fortitudered {
+	z-index: 101;
+
+	left: 50px;
+	top: 50px;
+	opacity: 0;
+	position: absolute;
+	animation: appear 0.9s 0s linear;
+
+}
+
+#prayer_of_fortitudeblue {
+	z-index: 101;
+
+	left: 50px;
+	top: 50px;
+	opacity: 0;
+	position: absolute;
+
+	animation: appear 0.9s 0s linear;
+}
+
+#effectArtprayer_of_fortitude {
+	z-index: 101;
+
+	height: 100px;
+}
+
+#evasive_strikesred {
+	z-index: 50;
+
+	top: 100px;
+	opacity: 0;
+	position: absolute;
+
+	animation: slideRight 0.9s 0s linear, 
+			   rotateRight 0.9s 0s linear;
+}
+
+#evasive_strikesblue {
+	z-index: 50;
+
+	top: 100px;
+	opacity: 0;
+	position: absolute;
+	animation: slideLeft 0.9s 0s linear, 
+			   rotateLeft 0.9s 0s linear;
+}
+
+
+#effectArtevasive_strikes {
+	z-index: 50;
+	height:150px;
+	overflow: none;
+}
+
+
+
+#flyingred {
+	z-index: -1;
+	opacity: 0;
+	position: absolute;
+	left: 50px;
+	top: 60px;
+	transform: scaleX(-1);
+	animation: jump 0.9s 0s linear;;
+}
+
+#flyingblue {
+	z-index: -1;
+	opacity: 0;
+	position: absolute;
+	left: 50px;
+	top: 60px;
+	animation: jump 0.9s 0s linear;
+}
+
+
+#effectArtflying {
+	z-index: -1;
+	height: 100px;
+	overflow: none;
+}
+
+
+#jumping_strikered {
+	opacity: 0;
+	position: absolute;
+	left: 100px;
+	top: 60px;
+	transform: scaleX(-1);
+	animation: slideRightWall 0.7s 0.2s linear,
+				jump 0.7s 0.2s linear;;
+}
+
+#jumping_strikeblue {
+	opacity: 0;
+	position: absolute;
+	left: 0px;
+	top: 60px;
+	animation: slideLeftWall 0.7s 0.2s linear,
+				jump 0.7s 0.2s linear;
+}
+
+
+#effectArtjumping_strike {
+	z-index: 100;
+	height: 70px;
+	overflow: none;
+}
+
+
+#maulred {
+	z-index: 200;
+
+	left: 225px;
+	top: 30px;
+	opacity: 0;
+	position: absolute;
+	animation: appear 0.9s 0s linear;
+
+}
+
+#maulblue {
+	z-index: 200;
+	left: -150px;
+	top: 30px;
+	opacity: 0;
+	position: absolute;
+
+	animation: appear 0.9s 0s linear;
+}
+
+#effectArtmaul {
+	z-index: 101;
+
+	height: 100px;
+	animation: crush 0.2s 0s linear alternate infinite;
+}
+
+#brilliant_aurared {
+	z-index: -1;
+
+	left: 0px;
+	top: 0px;
+	opacity: 0;
+	position: absolute;
+	animation: appear 0.6s 0.3s linear;
+
+}
+
+#brilliant_aurablue {
+	z-index: -1;
+
+	left: 25px;
+	top: 0px;
+	opacity: 0;
+	position: absolute;
+
+	animation: appear 0.6s 0.3s linear;
+}
+
+#effectArtbrilliant_aura {
+	z-index: -1;
+
+	height: 150px;
+}
+
+#burning_strikered {
+	z-index: 50;
+
+	top: 100px;
+	opacity: 0;
+	position: absolute;
+
+	animation: slideRight 0.9s 0s linear, 
+			   rotateRight 0.9s 0s linear;
+}
+
+#burning_strikeblue {
+	z-index: 50;
+
+	top: 100px;
+	opacity: 0;
+	position: absolute;
+	animation: slideLeft 0.9s 0s linear, 
+			   rotateLeft 0.9s 0s linear;
+}
+
+
+#effectArtburning_strike {
+	z-index: 50;
+	height:150px;
+	overflow: none;
+}
+
+#mezmorizing_gazered {
+	position: absolute;
+	left: 100px;
+	top: 60px;
+	animation: spin 0.2s 0s linear infinite, 
+				slideRightWall 0.9s 0s linear;
+}
+
+#mezmorizing_gazeblue {
+	position: absolute;
+	left: 0px;
+	top: 60px;
+	animation: spin 0.2s 0s linear infinite,
+				slideLeftWall 0.9s 0s linear;
+}
+
+
+#effectArtmezmorizing_gaze {
+	z-index: 100;
+	height: 70px;
+	border-radius: 50%;
+	overflow: none;
+}
+
+
 #sewing_machinered {
 	z-index: 101;
 
@@ -895,7 +1228,7 @@
 	animation: squeeze 0.8s 0.1s linear alternate infinite;
 
 }
-
+/* ---------------- Technique Animations END -------------*/
 #effectArtpredict {
 	z-index: 100;
 	height: 50px;
@@ -1022,7 +1355,20 @@
 	animation: spin 1s 0s linear infinite alternate;
 }
 
+#fumbleblue {
+	position: absolute;
+	left: 50px;
+	top: -30px;
+	animation: spin 1s 0s linear infinite alternate;
+}
 
+
+#effectArtfumble {
+	z-index: 100;
+	height: 50px;
+	border-radius: 50%;
+	overflow: none;
+}
 
 #counterred{
 	opacity: 0;
@@ -1040,12 +1386,6 @@
 
 
 
-#fumbleblue {
-	position: absolute;
-	left: 50px;
-	top: -30px;
-	animation: spin 1s 0s linear infinite alternate;
-}
 
 
 

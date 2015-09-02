@@ -16,6 +16,7 @@ angular.module('App.controllers').controller('fighterManagerController', functio
 
     $scope.managedFighter = false;
     $scope.activeAnimationName = null;
+    $scope.techAnimationName = null;
 
     $scope.planNames = [];
     $scope.planNames = ['A', 'B', 'C'];
@@ -147,6 +148,14 @@ angular.module('App.controllers').controller('fighterManagerController', functio
     		$scope.selectedFighterIndex = 0;
     	}
     	$scope.initializeCarousel();
+    };
+
+    $scope.setTechAnimation = function (name){
+        $scope.techAnimationName = name;
+    };
+
+    $scope.unsetTechAnimation = function (name){
+        $scope.techAnimationName = null;
     };
 
     $scope.cycleLeft = function (){

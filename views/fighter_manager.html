@@ -19,8 +19,8 @@
 						<h5> Basic Abilities</h5>
 						<div id="techBox" ng-repeat="tech in techniques" ng-if="(tech.trait===managedFighter.trait || tech.strategy===selectedPlan.strategy) && tech.ultimate==='f'">
 							<div id="{{tech.name}}" class="col-md-3 " data-toggle="tooltip" data-placement="top" title="{{traits[tech.trait].name.toTitleCase()}} {{strats[tech.strategy].name.toTitleCase()}} {{masteryConverter(tech.level).toTitleCase()}} Ability" ng-mouseOver="activateTooltip(tech.name)">
-								<div   style="cursor: pointer" ng-click="selectTech(tech.id)" data-toggle="modal"  data-target="#techModal" >
-
+								<div   style="cursor: pointer" ng-click="selectTech(tech.id)" data-toggle="modal"  data-target="#techModal" ng-mouseOver="setTechAnimation(tech.name)"
+								ng-mouseLeave="unsetTechAnimation()">
 									<img  id="techBookArt" ng-src="{{ getAssetImg(tech.id+'tech') }}" />
 
 								</div>
@@ -39,7 +39,8 @@
 						<h5> Ultimate Abilities </h5>
 						<div id="techBox" ng-repeat="tech in techniques" ng-if="(tech.trait===managedFighter.trait || tech.strategy===selectedPlan.strategy) && tech.ultimate==='t'">
 							<div id="{{tech.name}}" class="col-md-3 " data-toggle="tooltip" data-placement="top" title="{{traits[tech.trait].name.toTitleCase()}} {{strats[tech.strategy].name.toTitleCase()}} {{masteryConverter(tech.level).toTitleCase()}} Ability" ng-mouseOver="activateTooltip(tech.name)">
-								<div   style="cursor: pointer" ng-click="selectTech(tech.id)" data-toggle="modal"  data-target="#techModal" >
+								<div   style="cursor: pointer" ng-click="selectTech(tech.id)" data-toggle="modal"  data-target="#techModal" ng-mouseOver="setTechAnimation(tech.name)"
+								ng-mouseLeave="unsetTechAnimation()">
 
 									<img  id="techBookArt" ng-src="{{ getAssetImg(tech.id+'tech') }}" />
 
@@ -122,7 +123,7 @@
 								<h5> &nbsp {{activeAnimationName.split('_').join(' ').toTitleCase()}} <b ng-if="getStratParamHeight(activeAnimationName)">: {{getStratParamHeight(activeAnimationName).toTitleCase()}}</b> </h5>
 								<div>
 									<img id="activeBodyArt" class="col-md-3" ng-src="{{ getAssetImg(managedFighter.body_art) }}" />
-
+									<img id="activeBodyArt" class="col-md-3" ng-src="{{ getAssetImg('13') }}" style="position: absolute; left 100px;" />
 									<div id="activeAnimation" ng-if="activeAnimationName" class="col-md-1">
 										<img id="{{activeAnimationName}}" ng-src="{{ getAssetImg(activeAnimationName) }}" ng-if="activeAnimationName !=='initiation_cardio_cost'"/>
 										
@@ -130,6 +131,10 @@
 
 										<img id="{{activeAnimationName+'gas'}}" ng-src="{{ getAssetImg('base_cardio_cost') }}" ng-if="activeAnimationName ==='initiation_cardio_cost'"/>
 									</div>
+									<div id="techAnimation" ng-if="techAnimationName">
+										<img id="{{techAnimationName}}Anim" ng-src="{{ getAssetImg(techAnimationName) }}"/>
+									</div>
+
 								</div>
 
 							</div>

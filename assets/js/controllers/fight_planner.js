@@ -589,7 +589,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.getConditionPercent = function (side, tech){
         var exp = parseInt(tech.exp);
         var bar = parseInt(parseInt(tech.technical_value)*33) + 33;
-
+        var otherSide = $scope.otherSide(side);
         if (tech.name ==='mezmorizing_gaze'){
             bar += 33;
             var poisonMultiplier = $scope.poisonMultiplier($scope.checklist[otherSide].poison);
@@ -722,8 +722,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.checkTechMezmorizingGaze = function(side){
         var tech = $scope.checkTechActive(side, 'mezmorizing_gaze');
         var otherSide = $scope.otherSide(side);
-
+        var msg = "";
         if (tech){
+            
             //range check
             if (!$scope.rangeCheck(tech)){
                 $scope.corner[side].mezmorizing_gaze = false;
@@ -734,10 +735,21 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 $scope.corner[side].mezmorizing_gaze = false;
                 return false;
             }
-            //cardio check done when resolved
+            //cardio check
+            if (!$scope.cardioCheck(side, tech.cardio_cost)){
+                $scope.corner[side].mezorizing_gaze = false;
+            } else {
+                $scope.vitals[side].cardio -= tech.cardio_cost;
+
+            }
+            
+
             $scope.corner[side].mezmorizing_gaze = 15;
             $scope.corner[otherSide].mezmorized = true;
             $scope.animations[side].mezmorizing_gaze.value = true;
+            msg = $scope.corner[otherSide].name.toTitleCase() + " is mezmorized!";
+            $scope.record(msg);
+
 
             return 'mezmorizing_gaze';
         } else {
@@ -751,6 +763,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var msg = "";
         if (tech){
             //range check
+            
             if (!$scope.rangeCheck(tech)){
                 $scope.corner[side].divine_intervention = false;
                 return false;
@@ -772,7 +785,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 $scope.vitals[side].cardio -= tech.cardio_cost;
 
             }
-
+            
             msg = "Divine Intervention restores " + $scope.corner[side].name.toTitleCase();
             $scope.record(msg);
             $scope.corner[side].divine_intervention = 2;
@@ -1155,6 +1168,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
             $scope.corner[side].jumping_strike = 2;
             $scope.animations[side].jumping_strike.value = true;
+            $scope.animations[side].initiator.value = false;
 
 
             return 'jumping_strike';
@@ -1170,6 +1184,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             if(tech.name==='flying'){
                 tech.exp = $scope.activeTechniques[side][$scope.allSlots[i]].exp;
                 //range check 
+                
                 if (!$scope.rangeCheck(tech)){
                     $scope.corner[side].flying = false;
                     return false;
@@ -1185,6 +1200,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 } else {
                     $scope.vitals[side].cardio -= tech.cardio_cost;
                 }
+                
                 $scope.animations[side].flying.value = true;
 
                 $scope.corner[side].flying = 2;
@@ -1607,6 +1623,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var tech = $scope.checkTechActive(side, 'maul');
 
         if (tech){
+            
             //check pinned
             if (!$scope.corner[otherSide].pinned){
                 $scope.corner[side].maul = false;
@@ -1629,8 +1646,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             } else {
                 $scope.vitals[side].cardio -= parseInt(33*tech.cardio_cost);
             }
+            
             $scope.animations[side].maul.value = true;
             $scope.corner[side].maul = 2;
+
 
             return 'maul';
         } else {
@@ -2581,10 +2600,9 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     };
 
     $scope.resolveEvasiveStrikes = function(side){
-        msg = $scope.corner[side].name.toTitleCase() + " evades the counter strike!";
+        var msg = $scope.corner[side].name.toTitleCase() + " evades the counter strike!";
         $scope.record(msg);
         $scope.animations[side].evasive_strikes.value = true;
-
         //cardio check
         if (!$scope.cardioCheck(side, tech.cardio_cost)){
             $scope.corner[side].evasive_strikes = false;
@@ -2626,7 +2644,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             abilityName = "Flying Jumping Strike";
         }
 
-        var msg = $scope.corner[$scope.initiator].name.toTitleCase() + " stuns with "+ abilityName +" Strike";
+        var msg = $scope.corner[side].name.toTitleCase() + " stuns with "+ abilityName +" Strike";
         $scope.record(msg);
     };
 

@@ -75,8 +75,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.fumble = {};
     $scope.predict = {};
     //animation -> defender/initiatior , dodged, blocked, fumble, predict
-    $scope.modifiers = ['gassed', 'pinned', 'dazed', 'quit', 'unconscious', 'blood_lust', 'blood_rage', 
-    'unstoppable_frenzy', 'stunned', 'poisoned', 'poison_catalyst', 'mezmorized', 'blinded'];
+    $scope.modifiers = ['gassed', 'pinned', 'dazed', 'quit', 'unconscious', 'blood_lust_mod', 'blood_rage_mod', 
+    'unstoppable_frenzy_mod', 'stunned', 'poisoned', 'poison_catalyst', 'mezmorized', 'blinded'];
     $scope.injuries = {};
     $scope.injuries.lv1 = ['bloody nose', 'bloodied vision', 'bruised leg', 'bruised torso', 'sprained finger', 'sprained ankle'];
     $scope.injuries.lv2 = ['broken nose', 'broken orbital', 'fractured leg', 'fractured rib', 'broken hand', 'broken ankle'];
@@ -839,6 +839,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var tech = $scope.checkTechActive(side, 'shield_smash');
 
         if (tech){
+            
             //range check
             if (!$scope.rangeCheck(tech)){
                 $scope.corner[side].shield_smash = false;
@@ -850,7 +851,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 return false;
             }
             //cardio check done when resolved
-
+            
 
             $scope.corner[side].shield_smash = 2;
 
@@ -909,6 +910,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var tech = $scope.checkTechActive(side, 'sewing_machine');
 
         if (tech){
+            console.log(side, "SEWING MACHINE");
+            
             //range check 
             if (!$scope.rangeCheck(tech)){
                 $scope.corner[side].sewing_machine = false;
@@ -932,7 +935,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             } else {
                 $scope.vitals[side].cardio -= tech.cardio_cost;
             }
-            //cardio check done in resolveEvasiveStrikes
+            
             $scope.corner[side].sewing_machine = 2;
 
             $scope.resolveSewingMachine(side);
@@ -946,8 +949,26 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.resolveSewingMachine = function(side){
         var otherSide = $scope.otherSide(side);
         var msg = "";
+        var time = "";
+        $scope.initiator = side;
+        $scope.defender = otherSide;
         for (var i=0; i<3; i++){
+            $scope.animations[side].sewing_machine.value = true;
+            $scope.animations[side].initiator.value = false;
+
+            if (i===0){
+                time = "1st";
+            }
+            if (i===1){
+                time = "2nd";
+            }
+            if (i===2){
+                time = "3rd";
+            }
+            msg = $scope.corner[side].name.toTitleCase() + " does the " + time + " strike of the Sewing Machine!";
+            $scope.record(msg);
             $scope.resolveInitiation();
+            $timeout(function(){$scope.endAnimationsGeneral();}, 1050);
 
         }
     };
@@ -1023,6 +1044,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var otherSide = $scope.otherSide(side);
         var msg = "";
         if (tech){
+
             //range check 
             if (!$scope.rangeCheck(tech)){
                 $scope.corner[side].feint = false;
@@ -1049,7 +1071,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
             $scope.resolvefeint(side, otherSide);
 
-            return 'taunt';
+            return 'feint';
         } else {
             return false;
         }
@@ -1059,13 +1081,16 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.resolvefeint = function(feinter, feinted){
         var reflexScore = $scope.getReflexScore(feinted);
         var msg ="";
-        if (reflexScore < 50){
+        var bar = 50*Math.random();
+        if (reflexScore < bar){
             $scope.initiator = feinted;
             $scope.defender = feinter;
             msg = $scope.corner[feinted].name.toTitleCase() + " tried to counter the feint and initiated instead";
             $scope.record(msg);
             $scope.resolveInitiation();
             $scope.checklist[feinter].feintResolved = true;
+
+            $timeout(function(){$scope.endAnimationsGeneral();}, 1050);
         }
     };
 
@@ -1272,6 +1297,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var tech = $scope.checkTechActive(side, 'blood_lust');
 
         if(tech){
+
             //check if significant bloodied damage
             if (!$scope.checkListBloodiedDMGdone(side)){
                 $scope.corner[side].blood_lust = false;
@@ -1283,9 +1309,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 return;
             }
 
+
             $scope.animations[side].blood_lust.value = true;
 
             $scope.corner[side].blood_lust = 100; // bloodlust is reset when an attack is dodged
+            $scope.corner[side].blood_lust_mod = true;
             var msg = $scope.corner[side].name.toTitleCase() + " enters Blood Lust!";
             $scope.record(msg);
         } else {
@@ -1294,66 +1322,46 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
     };
 
-    $scope.checkTechUnstoppableFrenzy = function (target, targeter, bloodiedDMG){
-        //check if target () has applicable technique
-        for(var i=0; i<$scope.allSlots.length; i++){
-            var tech = $scope.getTech($scope.activeTechniques[target][$scope.allSlots[i]].id);
+    $scope.resolveUnstoppableFrenzy = function (side, bloodiedDMG){
+        var tech = $scope.checkTechActive(side, 'unstoppable_frenzy');
+        if (tech){
             var msg = "";
             var maxCardio = 0;
             var oldCardio = 0;
-            if(tech.name==='unstoppable_frenzy'){
-                //check if blood_rage is active
-                if(!$scope.corner[target].blood_rage){
-                    return;
-                }
-
-                //check if significant bloodied damage
-                if (bloodiedDMG < $scope.highBloodReq){
-                    return;
-                }
-                //conditioning check
-                if (!$scope.conditionCheck(target, tech, $scope.activeTechniques[target][$scope.allSlots[i]].exp)){
-                    return;
-                }
-
-                $scope.animations[target].unstoppable_frenzy.value = true;
-                $scope.corner[target].unstoppable_frenzy = 20;
-                oldCardio = $scope.vitals[target].cardio;
-                maxCardio = 100 + $scope.getSkill(target, 'endurance')*10;
-                $scope.vitals[target].cardio = maxCardio;
-
-                msg = $scope.corner[target].name.toTitleCase() + " recovers " + (maxCardio - oldCardio) + 
-                    " cardio and enters an Unstoppable Frenzy!";
-                $scope.record(msg);
+            
+            //check if blood_rage or blood_lust is active
+            if(!$scope.corner[side].blood_rage_mod && !$scope.corner[side].blood_lust_mod){
+                return;
             }
 
-            tech = $scope.getTech($scope.activeTechniques[targeter][$scope.allSlots[i]].id);
-            if(tech.name==='unstoppable_frenzy'){
-                //check if blood_rage is active
-                if(!$scope.corner[targeter].blood_rage){
-                    return;
-                }
-
-                //check if significant bloodied damage
-                if (bloodiedDMG < 10){
-                    return;
-                }
-                //conditioning check
-                if (!$scope.conditionCheck(targeter, tech, $scope.activeTechniques[targeter][$scope.allSlots[i]].exp)){
-                    return;
-                }
-
-                $scope.animations[targeter].unstoppable_frenzy.value = true;
-                $scope.corner[targeter].unstoppable_frenzy = 20;
-                oldCardio = $scope.vitals[targeter].cardio;
-                maxCardio = 100 + $scope.getSkill(targeter, 'endurance')*10;
-                $scope.vitals[targeter].cardio = maxCardio;
-
-                msg = $scope.corner[targeter].name.toTitleCase() + " recovers " + (maxCardio - oldCardio) + 
-                    " cardio and enters an Unstoppable Frenzy!";
-                $scope.record(msg);
+            //check if significant bloodied damage
+            if (bloodiedDMG < $scope.highBloodReq){
+                return;
             }
+            //conditioning check
+            if (!$scope.conditionCheck(side, tech, tech.exp)){
+                return;
+            }
+            
+
+            $scope.animations[side].unstoppable_frenzy.value = true;
+            $scope.corner[side].unstoppable_frenzy = 20;
+            $scope.corner[side].unstoppable_frenzy_mod = true;
+
+            oldCardio = $scope.vitals[side].cardio;
+            maxCardio = 100 + $scope.getSkill(side, 'endurance')*10;
+            $scope.vitals[side].cardio = maxCardio;
+
+            msg = $scope.corner[side].name.toTitleCase() + " recovers " + (maxCardio - oldCardio) + 
+                " cardio and enters an Unstoppable Frenzy!";
+            $scope.record(msg);
         }
+    };
+
+    $scope.checkTechUnstoppableFrenzy = function (target, targeter, bloodiedDMG){
+        $scope.resolveUnstoppableFrenzy(target, bloodiedDMG);
+        $scope.resolveUnstoppableFrenzy(targeter, bloodiedDMG);
+        
     };
 
     /**
@@ -1365,25 +1373,29 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         if(tech){
             //check if significant bloodied damage
+            
             if (!$scope.checkListBloodiedDMGtaken(side)){
                 $scope.corner[side].blood_rage = false;
+                $scope.corner[side].blood_rage_mod = false;
                 return;
             }
             //conditioning check
             if (!$scope.conditionCheck(side, tech, tech.exp)){
                 $scope.corner[side].blood_rage = false;
+                $scope.corner[side].blood_rage_mod = false;
                 return;
             }
+            
 
             $scope.animations[side].blood_rage.value = true;
 
             $scope.corner[side].blood_rage = 15;
+            $scope.corner[side].blood_rage_mod = true;
             var msg = $scope.corner[side].name.toTitleCase() + " enters Blood Rage!";
             $scope.record(msg);
         } else {
             return false;
         }
-        
     };
 
     $scope.vulnerableCheck = function (side){
@@ -1400,6 +1412,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var tech = $scope.checkTechActive(side, 'cobra_strike');
 
         if (tech){
+            
             //range check 
             if (!$scope.rangeCheck(tech)){
                 $scope.corner[side].cobra_strike = false;
@@ -1422,6 +1435,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             } else {
                 $scope.vitals[side].cardio -= parseInt(33*tech.cardio_cost);
             }
+        
             $scope.animations[side].cobra_strike.value = true;
             $scope.corner[side].cobra_strike = 2;
             $scope.changeDistance(1);
@@ -1487,6 +1501,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var tech = $scope.checkTechActive(side, 'venom_spit');
 
         if (tech){
+            
             //range check 
             if (!$scope.rangeCheck(tech)){
                 $scope.corner[side].venom_spit = false;
@@ -1504,6 +1519,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             } else {
                 $scope.vitals[side].cardio -= parseInt(33*tech.cardio_cost);
             }
+            
             $scope.animations[side].venom_spit.value = true;
             $scope.corner[side].venom_spit = 2;
 
@@ -1558,7 +1574,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var tech = $scope.checkTechActive(side, 'turtle');
 
         if (tech){
-
+            
             //range check 
             if (!$scope.rangeCheck(tech)){
                 $scope.corner[side].turtle = false;
@@ -1575,7 +1591,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 $scope.corner[side].turtle = false;
                 return false;
             }
-
+            
             $scope.animations[side].turtle.value = true;
             $scope.corner[side].turtle = 2;
 
@@ -1659,6 +1675,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                         var msg = $scope.corner[side].name.toTitleCase() + " loses " + cardio + 
                         " cardio when leaving an Unstoppable Frenzy";
                         $scope.record(msg);
+                        $scope.corner[side].unstoppable_frenzy_mod = false;
                     }
                 } else if ($scope.corner[side][$scope.activeTechniques[side][slot].name]){
                     $scope.corner[side][$scope.activeTechniques[side][slot].name]--;
@@ -1881,6 +1898,10 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             $scope.corner[$scope.sides[i]].poison_catalyst = false;
             $scope.corner[$scope.sides[i]].mezmorized = false;
             $scope.corner[$scope.sides[i]].blinded = false;
+            $scope.corner[$scope.sides[i]].unstoppable_frenzy_mod = false;
+            $scope.corner[$scope.sides[i]].blood_lust = false;
+            $scope.corner[$scope.sides[i]].blood_rage = false;
+
 
             $scope.corner[$scope.sides[i]].dodged = false; //evasion vs accuracy
             $scope.corner[$scope.sides[i]].blocked = false; // reflex vs speed
@@ -2060,7 +2081,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         var regen = parseInt(Math.random()*base*injuryMod);
 
-        if($scope.corner[side].blood_rage){
+        if($scope.corner[side].blood_rage_mod){
             var oldRegen = regen;
             regen += parseInt(regen*1.5);
 
@@ -2120,8 +2141,11 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         if ($scope.initiator){
             msg = $scope.corner[$scope.initiator].name + " initiates";
             $scope.record(msg);
-            $scope.checklist[$scope.initiator].repeatInits++; 
+            $scope.checklist[$scope.initiator].repeatInits++;
             $scope.checklist[$scope.defender].repeatInits = 0;
+
+            $scope.corner[$scope.initiator].feint = false;
+            $scope.animations[$scope.initiator].feint.value = false;
         } else {
         }
         return;
@@ -2163,7 +2187,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var msg ="";
         var oldBase = null;
         //tech Blood Lust
-        if($scope.corner[side].blood_lust){
+        if($scope.corner[side].blood_lust_mod){
             var oldStrength = strength;
             strength = parseInt(strength*1.5);
 
@@ -2416,6 +2440,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 var counterSpeedScore = $scope.getSpeedScore($scope.defender);
                 if(counterReflexScore > counterSpeedScore){
                     $scope.checklist[$scope.initiator].blocks++;
+                    msg = $scope.corner[$scope.initiator].name.toTitleCase() + " blocks the counter attack to the Sewing Machine!";
+                    $scope.record(msg);
                 } else {
                     $scope.evaluateCounter($scope.defender, reflexScore, speedScore);
                 }
@@ -2438,6 +2464,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var result = [];
         if ($scope.corner[side].blood_lust){
             $scope.corner[$scope.initiator].blood_lust = false;
+            $scope.corner[$scope.initiator].blood_lust_mod = false;
+
         }
         if ($scope.corner[side].burning_strike){
             $scope.corner[$scope.initiator].burning_strike = false;
@@ -2458,6 +2486,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var result = [];
         if ($scope.corner[$scope.initiator].blood_lust){
             $scope.corner[$scope.initiator].blood_lust = false;
+            $scope.corner[$scope.initiator].blood_lust_mod = false;
+
         }
         if ($scope.corner[$scope.initiator].jumping_strike){
             $scope.corner[$scope.initiator].jumping_strike = false;
@@ -2700,6 +2730,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         positioningDMG + " positioning damage!";
 
         $scope.animations[side].advancing_wall.value = true;
+        $scope.animations[side].block.value = false;
         $scope.changeDistance(1);
 
         $scope.record(msg);
@@ -2743,6 +2774,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
             if (counterDMG > 0){
                 $scope.corner[counterer].counter = true;
+                $scope.corner[counterer].feint = false;
+                $scope.animations[counterer].feint.value = false
             }
 
             if($scope.corner[otherSide].evasive_strikes){
@@ -2960,7 +2993,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         var maxCardio = 100+$scope.getSkill(side, 'endurance')*10;
 
-        if($scope.corner[side].blood_rage){
+        if($scope.corner[side].blood_rage_mod){
             var oldRegen = regen;
             regen = parseInt(regen*1.5);
             if(regen > oldRegen){
@@ -3084,7 +3117,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
             var bloodiedDMG = $scope.getBloodiedDamage(target, consciousnessDMG);
             var msg = "";
-            if($scope.corner[target].unstoppable_frenzy){
+            if($scope.corner[target].unstoppable_frenzy_mod){
                 msg = $scope.corner[target].name.toTitleCase() + 
                 " has consciousness damage reduced to 0 due to being in an Unstoppable Frenzy";
                 $scope.record(msg);
@@ -3209,7 +3242,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.checkQuit = function (target){
         var targeter = $scope.otherSide(target);
 
-        if($scope.corner[target].unstoppable_frenzy){
+        if($scope.corner[target].unstoppable_frenzy_mod){
             return;
         }
         var msg = "";
@@ -3624,7 +3657,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
 
         //blood_lust active or blood_rage active
         if (tech.name==='unstoppable_frenzy'){
-            if ($scope.corner[side].blood_lust || $scope.corner[side].blood_rage){
+            if ($scope.corner[side].blood_lust_mod || $scope.corner[side].blood_rage_mod){
                 msg +="<i class='glyphicon glyphicon-ok' style='color: green'></i> ";
             } else {
                 msg +="<i class='glyphicon glyphicon-remove' style='color: red'></i> ";
@@ -3878,6 +3911,20 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         $scope.selectedTech = $scope.techniques[index];
     };
 
+
+    $scope.endAnimationsGeneral = function (){
+        for (var i=0; i<$scope.sides.length; i++){
+            for (var j=0; j<$scope.fastEffects.length; j++){
+                $scope.animations[$scope.sides[i]][$scope.fastEffects[j]].value = false;
+            }
+
+            for ( j=0; j<$scope.techAnimations.length; j++){
+                $scope.animations[$scope.sides[i]][$scope.techAnimations[j]].value = false;
+            }
+
+            $scope.animations[$scope.sides[i]].blood.value = false;
+        }
+    };
 
     $scope.endAnimations = function (){
         for (var i=0; i<$scope.sides.length; i++){

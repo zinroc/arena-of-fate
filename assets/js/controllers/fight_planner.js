@@ -2793,7 +2793,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             if (counterDMG > 0){
                 $scope.corner[counterer].counter = true;
                 $scope.corner[counterer].feint = false;
-                $scope.animations[counterer].feint.value = false
+                $scope.animations[counterer].feint.value = false;
             }
 
             if($scope.corner[otherSide].evasive_strikes){

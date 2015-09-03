@@ -575,6 +575,30 @@
 	overflow: none;
 }
 /* ---------- Technique Animations START -----------*/
+#embarrassred {
+	position: absolute;
+	opacity: 0;
+	left: 100px;
+	top: 60px;
+	animation: appear 0.9s 0s linear;
+}
+
+#embarrassblue {
+	position: absolute;
+	opacity: 0;
+	left: -90px;
+	top: 60px;
+	transform: scaleX(-1);
+
+	animation: appear 0.9s 0s linear;
+}
+
+
+#effectArtembarrass {
+	z-index: 100;
+	height: 150px;
+	overflow: none;
+}
 
 #mezmorizered {
 	position: absolute;

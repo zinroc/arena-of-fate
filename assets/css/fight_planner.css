@@ -39,11 +39,19 @@
 	border-radius: 20%;
 }
 
+#inFightUlt {
+	height: 90px;
+	border-radius: 20%;
+}
+
 .animationOn {
 	opacity: 0;
 	animation: twinkle 1s 0s linear alternate infinite;
 }
-
+.traitAnimationOn {
+	opacity: 0;
+	animation: traitTwinkle 1s 0s linear alternate infinite;
+}
 #techSlotArt {
 	height: 50px;
 	border-radius: 20%
@@ -472,7 +480,7 @@
 		height: 70px;
 	}
 	50%{
-		height: 80px;
+		height: 90px;
 		margin-left: -5px;
 		margin-top: -5px;
 	}
@@ -481,6 +489,28 @@
 		filter: invert(100%);
 		height: 70px;
 
+	}
+}
+
+@keyframes traitTwinkle {
+	0% {
+		opacity: 1;
+		height: 25%;
+		width: 30%;
+	}
+	50%{
+		opacity: 1;
+		height: 30%;
+		width: 35%;
+		left: -2%;
+		margin-top: -2%;
+	}
+	100% {
+		left: -5%;
+		margin-top: -5%;
+		height: 35%;
+		width: 40%;
+		opacity: 0.3;
 	}
 }
 
@@ -1501,7 +1531,7 @@
 
 	left: 0%;
 
-	height:30%;
+	height:25%;
 	width: 30%;
 }
 

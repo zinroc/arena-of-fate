@@ -110,7 +110,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
     $scope.techAnimations = ['blood_lust', 'blood_rage', 'unstoppable_frenzy', 'flying', 'shield_smash', 
     'jumping_strike', 'maul', 'burning_strike', 'suffication', 'venom_spit', 'cobra_strike', 'mezmorizing_gaze', 
     'prayer_of_fortitude', 'turtle', 'embarrass', 'overwhelm', 'brilliant_aura', 'evasive_strikes', 'taunt', 
-    'advancing_wall', 'feint', 'divine_intervention', 'sewing_machine', 'divine_shield'];
+    'advancing_wall', 'feint', 'divine_intervention', 'sewing_machine', 'divine_shield', 'naga', 'diciplined', 
+    'showman', 'barbarian', 'holy', 'orcish'];
 
     $scope.barValue = {};
 
@@ -1972,6 +1973,8 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         }
         var barbMod = 1;
         if($scope.activeTraits[side].name ==='barbarian' && $scope.checklist[side].repeatInits > 0){
+            
+            $scope.animations[side].barbarian.value = true;
             barbMod += $scope.checklist[side].repeatInits/10;
             var msg = $scope.corner[side].name.toTitleCase() + " accelorates initiation rate by " + barbMod + "x!";
             $scope.record(msg);
@@ -2130,6 +2133,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                     $scope.vitals[side].positioning -= 5;
                     msg = $scope.corner[side].name.toTitleCase() + " compromises positioning to initiate!";
                     $scope.record(msg);
+                    $scope.animations[side].orcish.value = true;
                 }
             } else {
 
@@ -2694,7 +2698,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
         var msg = "";
         var blockScore = parseInt($scope.getPowerScore(blocker)*windowSize);
         if (blockScore < power){
-            if ($scope.activeTechniques[blocker].name==='holy' && $scope.checklist[blocker].holyShield > 0){
+            if ($scope.activeTraits[blocker].name==='holy' && $scope.checklist[blocker].holyShield > 0){
                 var difference = power - blockScore;
                 var reduction = Math.min(difference, $scope.checklist[blocker].holyShield*10);
 
@@ -2705,6 +2709,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 " damage";
                 $scope.record(msg);
                 $scope.animations[blocker].divine_shield = true;
+                $scope.animations[blocker].holy = true;
            }
         }
         if (blockScore > power){
@@ -2784,6 +2789,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
                 var multiplier = 1 + ($scope.checklist[counterer].blocks/10);
                 counterDMG = parseInt(counterDMG*multiplier);
                 if (multiplier > 1){
+                    $scope.animations[counterer].diciplined.value = true;
                     msg = $scope.corner[counterer].name.toTitleCase() + "'s diciplined blocks increases counter damage by " + 
                     multiplier + "x";
                     $scope.record(msg);
@@ -3145,7 +3151,7 @@ angular.module('App.controllers').controller('fightPlannerController', function 
             if ($scope.activeTraits[targeter].name === 'naga' && $scope.checklist[target].poison){
                 var multiplier = 1 + $scope.checklist[target].poison/100;
                 consciousnessDMG = parseInt(consciousnessDMG*multiplier);
-            
+                $scope.animations[targeter].naga.value = true;
                 msg = $scope.corner[target].name.toTitleCase() + " is poisoned and  " + multiplier + 
                 "x more vulnerable to Naga attacks!";
                 $scope.record(msg);

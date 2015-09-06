@@ -718,8 +718,8 @@
 #prayer_of_fortitudered {
 	z-index: 101;
 
-	left: 50px;
-	top: 50px;
+	left: 80px;
+	top: 100px;
 	opacity: 0;
 	position: absolute;
 	animation: appear 0.9s 0s linear;
@@ -729,8 +729,8 @@
 #prayer_of_fortitudeblue {
 	z-index: 101;
 
-	left: 50px;
-	top: 50px;
+	left: 80px;
+	top: 100px;
 	opacity: 0;
 	position: absolute;
 
@@ -740,7 +740,7 @@
 #effectArtprayer_of_fortitude {
 	z-index: 101;
 
-	height: 100px;
+	height: 50px;
 }
 
 #evasive_strikesred {

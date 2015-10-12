@@ -422,6 +422,55 @@ module.exports = function (knex) {
                 });
             });
         },
+        recordTie: function (matchID, red, blue){
+            var match = {};
+
+            var arena_fighter = {};
+            var player_fighter = {};
+            var email = "";
+
+            return knex("fighters")
+            .where("id", red)
+            .then(function (redArr){
+                player_fighter = redArr[0];
+                email = player_fighter.email;
+
+                return knex("fighters")
+                .where("id", blue);
+            }).then (function (blueArr){
+
+                arena_fighter = loserArr[0];
+
+                player_fighter.num_ties++;
+                arena_fighter.num_ties++;
+
+                return knex("arena_challenges")
+                .where({id: matchID, status: 'accepted'});
+            }).then(function (matchArr) {
+                if (matchArr.length === 0) {
+                    return null;
+                } else {
+                    match = matchArr[0];
+
+                    match.status = "resolved";
+                    match.winner = null;
+                    return challengeStore.update(match)
+                    .then(function (){
+                        return fighterStore.update(player_fighter);
+                    }).then(function (){
+                        return fighterStore.update(arena_fighter);
+                    }).then(function (){
+                        return playerStore.get(email);
+                    }).then(function (playerState){
+                        playerState.num_fights++;
+
+                        playerState.money += match.winner_prize/2;
+                        // and return a promise
+                        return playerStore.update(playerState.email, playerState);
+                    });
+                }
+            });
+        },
         record: function (matchID, winner_id, loser_id) {
             var match = {};
 

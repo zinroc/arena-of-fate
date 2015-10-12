@@ -17,6 +17,11 @@ app.factory("gameAPIservice", function gameAPIservice ($http) {
             {winner_id: winner_id, loser_id: loser_id, email: email});
     };
 
+    this.updateTie = function (red_id, blue_id, match_id, email){
+        return this.postJSON("/api/matches/" + match_id +"/recordTie",
+            {red_id: red_id, blue_id: blue_id, email: email});
+    };
+
     this.updateRecords = function (match_id, attendance, gate, email){
         return this.postJSON("/api/matches/" + match_id + "/fight_records", 
             {attendance: attendance, gate: gate, email: email});
@@ -751,27 +756,46 @@ app.controller('fightPlannerController', function ($scope, gameAPIservice, $time
     };
 
     $scope.updateWinner = function (){
-        var otherSide = $scope.otherSide($scope.victor.side);
-        console.log($scope.victor.side, $scope.corner[$scope.victor.side].id, "WINNER");
-        $scope.loaded.updateWinner = false;
+        if($scope.victor.side==='tie'){
+            $scope.loaded.updateWinner = false;
 
+            gameAPIservice.updateTie($scope.corner['red'].id, $scope.corner['blue'].id, 
+                $scope.matchID, $scope.email)
+            .then(function (response){
+                console.log("Tried to update tie");
+                console.log(response.data);
+
+                if (response.data.hasOwnProperty('status') && response.data.status === 'error') {
+                    console.log("error");
+                } else {
+                    $scope.loaded.updateWinner = true;
+                    console.log("fight result updated");
+                }
+            });
+        } else {
+            var otherSide = $scope.otherSide($scope.victor.side);
+            console.log($scope.victor.side, $scope.corner[$scope.victor.side].id, "WINNER");
+            $scope.loaded.updateWinner = false;
+
+            gameAPIservice.updateWinner($scope.corner[$scope.victor.side].id, 
+                $scope.corner[otherSide].id, $scope.matchID, $scope.email)
+            .then(function (response) {
+                console.log("Tried to update fighter winner");
+                console.log(response.data);
+
+                if (response.data.hasOwnProperty('status') && response.data.status === 'error') {
+                    console.log("error");
+                } else {
+                    $scope.loaded.updateWinner = true;
+                    console.log("fight result updated");
+                }
+            });
+        }
+        
         var attendance = parseInt($scope.getAttendance($scope.match.winner_prize, $scope.arena.ticket_price));
         //TODO give only a portion of gate to winner, the rest give to arena
         var gate = parseInt($scope.match.winner_prize);
-
-        gameAPIservice.updateWinner($scope.corner[$scope.victor.side].id, $scope.corner[otherSide].id, $scope.matchID, $scope.email)
-        .then(function (response) {
-            console.log("Tried to update fighter winner");
-            console.log(response.data);
-
-            if (response.data.hasOwnProperty('status') && response.data.status === 'error') {
-                console.log("error");
-            } else {
-                $scope.loaded.updateWinner = true;
-                console.log("fight result updated");
-            }
-        });
-
+        
         gameAPIservice.updateRecords($scope.matchID, attendance, gate, $scope.email)
         .then(function (response){
             console.log("Tried to update records for arena");

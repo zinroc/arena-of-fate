@@ -269,6 +269,7 @@ module.exports = function (knex) {
                         table.integer("num_wins").notNullable().defaultTo(0);
                         table.string("status");
                         table.integer("num_losses").notNullable().defaultTo(0);
+                        table.integer("num_ties").notNullable().defaultTo(0);
                         table.boolean("bot").defaultTo(false);
                         table.integer("trust").defaultTo(1);
                         table.integer("misery").defaultTo(0);

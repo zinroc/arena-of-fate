@@ -228,9 +228,18 @@ app.get("/api/matches", function (req, res) {
         res.status(400).send("Email is required");
     }
 });
+
 app.post("/api/matches/:matchID/record", function (req, res) {
     if (req.body.email){
         challenges.record(req.params.matchID, req.body.email, req.body.winner_id, req.body.loser_id, res);
+    } else {
+        res.status(400).send("Email is required");
+    }
+});
+
+app.post("/api/matches/:matchID/recordTie", function (req, res) {
+    if (req.body.email){
+        challenges.recordTie(req.params.matchID, req.body.email, req.body.red_id, req.body.blue_id, res);
     } else {
         res.status(400).send("Email is required");
     }

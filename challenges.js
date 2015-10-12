@@ -220,6 +220,11 @@ module.exports = challenges = {
             res.send("ok");
         });
     }, 
+    recordTie: function(matchID, email, red, blue, res) {
+        challengeUtils.recordTie(matchID, red, blue).then(function () {
+            res.send("ok");
+        });
+    }, 
     fight_record: function(matchID, email, attendance, gate, res) {
         challengeUtils.fight_record(matchID, attendance, gate).then(function (){
             res.send("ok");

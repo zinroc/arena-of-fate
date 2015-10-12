@@ -128,11 +128,12 @@ module.exports = function (knex) {
                     return knex.schema.createTable("players", function (table) {
                         table.increments("id");
                         table.string("name").notNullable();
-                        table.string("email").notNullable();
+                        table.string("email").notNullable().unique();
                         table.integer("money").notNullable().defaultTo(0);
                         table.integer("num_fights").notNullable().defaultTo(0);
                         table.float("fame").notNullable();
                         table.boolean("admin").notNullable().defaultTo(false);
+                        table.integer("gym_level").defaultTo(1);
                     });
                 }
             });
@@ -155,7 +156,38 @@ module.exports = function (knex) {
             });
 
         },
-        createTraitsTable: function createTraitsTable () {
+        createRoomsTable: function(){
+            return knex.schema.hasTable("rooms")
+            .then(function (exists){
+                if(!exists){
+                    return knex.schema.createTable("rooms", function (table){
+                        table.increments("id");
+                        table.string("name").unique();
+                        table.string("art");
+
+                    });
+                }
+            });
+        },
+        createPlayerRoomsTable: function (){
+            return knex.schema.hasTable("player_rooms")
+            .then(function (exists){
+                if (!exists){
+                    return knex.schema.createTable("player_rooms", function (table){
+                        table.increments("id");
+                        table.string("room"); //there are more rooms than those listed in rooms table
+                        table.string("owner").references("email").inTable("players");
+                        table.integer("occupant").references("id").inTable("fighters");
+                        table.integer("rent").defaultTo(0);
+                        table.boolean("rent_open").defaultTo(false);
+                        table.integer("index");
+                        table.integer("level");
+
+                    });
+                }
+            });
+        },
+        createTraitsTable: function  () {
             return knex.schema.hasTable("traits")
             .then(function (exists){
                 if (!exists) {
@@ -206,7 +238,7 @@ module.exports = function (knex) {
                 if (rows.length === 0) {
                     return knex("techniques").insert({id: 0, name: 'bot_dummy'});
                 }
-            })
+            });
         },
         createCharacterArtTable: function (){
             return knex.schema.hasTable("character_art")
@@ -220,7 +252,7 @@ module.exports = function (knex) {
                 }
             });
         },
-        createFightersTable: function createFightersTable () {
+        createFightersTable: function () {
             return knex.schema.hasTable("fighters")
             .then(function (exists){
                 if (!exists) {
@@ -238,6 +270,51 @@ module.exports = function (knex) {
                         table.string("status");
                         table.integer("num_losses").notNullable().defaultTo(0);
                         table.boolean("bot").defaultTo(false);
+                        table.integer("trust").defaultTo(1);
+                        table.integer("misery").defaultTo(0);
+                        table.integer("age").defaultTo(2);
+                    });
+                }
+            });
+        },
+        createPersonalitiesTable: function (){
+            return knex.schema.hasTable("personalities")
+            .then(function (exists){
+                if(!exists){
+                    return knex.schema.createTable("personalities", function (table){
+                        table.increments("id");
+                        table.string("name").unique();
+                        table.string("color").unique();
+                        table.integer("train");
+                        table.integer("feast");
+                        table.integer("pray");
+                        table.integer("entertainment");
+                        table.integer("family");
+                    });
+                }
+            });
+        },
+        createCharacterPersonalitiesTable: function (){
+            return knex.schema.hasTable("character_personalities")
+            .then(function (exists){
+                if(!exists){
+                    return knex.schema.createTable("character_personalities", function (table){
+                        table.increments("id");
+                        table.integer("character").references("id").inTable("fighters");
+                        table.integer("index");
+                        table.string("personality_trait").references("name").inTable("personalities");
+                    });
+                }
+            });
+        },
+        createCharacterModifiersTable: function (){
+            return knex.schema.hasTable("character_modifiers")
+            .then(function (exists){
+                if(!exists){
+                    return knex.schema.createTable("character_modifiers", function (table){
+                        table.increments("id");
+                        table.integer("character_id").references("id").inTable("fighters");
+                        table.string("modifier");
                     });
                 }
             });

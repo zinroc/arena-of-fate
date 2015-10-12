@@ -166,7 +166,9 @@ module.exports = function (knex) {
                 fighter = fighterList[r];
             } else {
                 // create a new fighter
+                
                 fighter = fighterFactory.create();
+
             }
             return fighter;
         },

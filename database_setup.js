@@ -27,6 +27,9 @@ module.exports = {
              //then fighters table
             .then(schema.createFightersTable)
             // then all tables which reference fighters
+            .then(schema.createPersonalitiesTable)
+            .then(schema.createCharacterModifiersTable)
+            .then(schema.createCharacterPersonalitiesTable)
             .then(schema.createArenaChallengesTable)
             .then(schema.createCharacterArtTable)
             .then(schema.createSpectatorTable)
@@ -38,6 +41,8 @@ module.exports = {
             .then(schema.createPlanTechniquesTable)
             .then(schema.createStrategyBonusesTable)
             .then(schema.createTechniqueConditioningTable)
+            .then(schema.createRoomsTable)
+            .then(schema.createPlayerRoomsTable)
             .then(schema.createGameState)
         .error(function (e) {
             console.error("There was an error creating some tables");

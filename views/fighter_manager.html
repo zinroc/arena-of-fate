@@ -1,239 +1,282 @@
-<div ng-controller="fighterManagerController">
-	<h1> Fighter Manager </h1>
-	<div class="container-fluid">
-		<div class="row">
-			<div ng-if="!managedFighter">
-				<h3> Available Fighters: </h3>
-				<div class="col-md-3">
-					<div  ng-repeat="fighter in fighters">
-						<span id="hover" class="glyphicon glyphicon-user" ng-click="selectFighter(fighter.id)"></span>
-						{{fighter.name.toTitleCase()}}
-						</p>
-					</div>
-				</div>
-			</div>
-			<div ng-if="managedFighter" class="col-md-3">
-				<div id="techniqueBox" ng-if="selectedPlan">
-					<h4> Techniques </h4>
-					<div id="techBook">
-						<h5> Basic Abilities</h5>
-						<div id="techBox" ng-repeat="tech in techniques" ng-if="(tech.trait===managedFighter.trait || tech.strategy===selectedPlan.strategy) && tech.ultimate==='f'">
-							<div id="{{tech.name}}" class="col-md-3 " data-toggle="tooltip" data-placement="top" title="{{traits[tech.trait].name.toTitleCase()}} {{strats[tech.strategy].name.toTitleCase()}} {{masteryConverter(tech.level).toTitleCase()}} Ability" ng-mouseOver="activateTooltip(tech.name)">
-								<div   style="cursor: pointer" ng-click="selectTech(tech.id)" data-toggle="modal"  data-target="#techModal" ng-mouseOver="setTechAnimation(tech.name)"
-								ng-mouseLeave="unsetTechAnimation()">
-									<img  id="techBookArt" ng-src="{{ getAssetImg(tech.id+'tech') }}" />
+<!DOCTYPE html>
+<html lang="en" ng-app="ArenaApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-signin-client_id" content="172057761375-d4gfv2qjur6mv4j8vf7k12ec66vj7hn0.apps.googleusercontent.com">
+    <title>Arena | Fighter Manager</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/fighter_manager.css" />
+</head>
+<body>
+	<div ng-controller="fighterManagerController">
+		<div ng-if="managedFighter">
+			<p  id="backButton" class="btn btn-warning" ng-click="home()">
+				<t class="glyphicon glyphicon-home">
+				</t>
+			</p>
+			<h1> Strategy Center </h1>
 
-								</div>
-							</div>
-							<div id="techBookText" class="col-md-9">
-								{{tech.name.split('_').join(' ').toTitleCase()}}
-								<div class="progress">
-									
-									<div class="progress-bar {{getExpBarColor(techConditioning[tech.id])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{techConditioning[tech.id]}}%;">
-									<span style="color: black; position: absolute; text-align: left;">  {{getRustWord(techConditioning[tech.id])}}</span>
+		</div>
+		<div class="container-fluid">
+			<div class="row">
+				<div ng-if="managedFighter" class="col-md-3">
+					<div id="techniqueBox" ng-if="selectedPlan">
+						<h4> Techniques </h4>
+						<div id="techBook">
+							<h5> Basic Abilities</h5>
+							<div id="techBox" ng-repeat="tech in techniques" ng-if="(tech.trait===managedFighter.trait || tech.strategy===selectedPlan.strategy) && !tech.ultimate">
+								<div id="{{tech.name}}" class="col-md-3 " data-toggle="tooltip" data-placement="top" title="{{traits[tech.trait].name.toTitleCase()}} {{strats[tech.strategy].name.toTitleCase()}} {{masteryConverter(tech.level).toTitleCase()}} Ability" ng-mouseOver="activateTooltip(tech.name)">
+									<div   style="cursor: pointer" ng-click="selectTech(tech.id)" data-toggle="modal"  data-target="#techModal" ng-mouseOver="setTechAnimation(tech.name)"
+									ng-mouseLeave="unsetTechAnimation()">
+										<img  id="techBookArt" ng-src="{{ getAssetImg(tech.id+'tech') }}" />
+
 									</div>
-
 								</div>
-							</div>
-						</div>
-						<h5> Ultimate Abilities </h5>
-						<div id="techBox" ng-repeat="tech in techniques" ng-if="(tech.trait===managedFighter.trait || tech.strategy===selectedPlan.strategy) && tech.ultimate==='t'">
-							<div id="{{tech.name}}" class="col-md-3 " data-toggle="tooltip" data-placement="top" title="{{traits[tech.trait].name.toTitleCase()}} {{strats[tech.strategy].name.toTitleCase()}} {{masteryConverter(tech.level).toTitleCase()}} Ability" ng-mouseOver="activateTooltip(tech.name)">
-								<div   style="cursor: pointer" ng-click="selectTech(tech.id)" data-toggle="modal"  data-target="#techModal" ng-mouseOver="setTechAnimation(tech.name)"
-								ng-mouseLeave="unsetTechAnimation()">
-
-									<img  id="techBookArt" ng-src="{{ getAssetImg(tech.id+'tech') }}" />
-
-								</div>
-							</div>
-							<div id="techBookText" class="col-md-9">
-								{{tech.name.split('_').join(' ').toTitleCase()}}
-								<div class="progress">
-									
-									<div class="progress-bar {{getExpBarColor(techConditioning[tech.id])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{techConditioning[tech.id]}}%;">
-									<span style="color: black; position: absolute; text-align: left;">  {{getRustWord(techConditioning[tech.id])}}</span>
-									</div>
-
-								</div>
-							</div>
-						</div>
-					</div>
-					<div ng-repeat="slot in techSlots" data-toggle="tooltip" data-placement="top" title="{{getTech(slots[selectedPlan.strategy][slot]).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip(slot)" class="col-md-3 {{slot}}"><!-- TODO tooltip -->
-						<div id="techSlots"  ng-if="slots[selectedPlan.strategy][slot]" style="cursor: pointer" ng-click="selectTech(slots[selectedPlan.strategy][slot])"
-						data-toggle="modal" data-target="#techModal">
-							<img id="techSlotArt" ng-src="{{ getAssetImg(slots[selectedPlan.strategy][slot]+'tech') }}" />
-						</div>
-					</div><!-- TODO empty slot if !slot -->
-
-					<div id="ultSlot" class="col-md-3" ng-if="slots[selectedPlan.strategy].ultimate" style="cursor: pointer" ng-click="selectTech(slots[selectedPlan.strategy].ultimate)" data-toggle="modal" data-target="#techModal">
-						<img id="ultSlotArt" ng-src="{{ getAssetImg(slots[selectedPlan.strategy].ultimate+'tech') }}" data-toggle="tooltip" data-placement="top" title="{{getTech(slots[selectedPlan.strategy].ultimate).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip('ultimate')" class="ultimate"/>
-					</div><!-- TODO empty slot if no ultimate -->
-
-				</div>
-			</div>
-			<div ng-if="loaded.fighters" class="col-md-9">
-				<div ng-if="!managedFighter">
-					<div id="prevFighterBox" class="col-md-2">
-						<h4>{{prevFighter.name.toTitleCase()}} </h4>
-						<img id="prevFighterArt" ng-src="{{ getAssetImg(prevFighter.art) }}" />
-					</div>
-					<div id="selectedFighterBox" class="col-md-4">
-						<h3>{{selectedFighter.name.toTitleCase()}} </h3>
-						<img id="selectedFighterArt" ng-src="{{ getAssetImg(selectedFighter.art) }}" />
-					</div>
-					<div id="nextFighterBox" class="col-md-2">
-						<h4>{{nextFighter.name.toTitleCase()}} </h4>
-						<img id="nextFighterArt" ng-src="{{ getAssetImg(nextFighter.art) }}" />
-					</div><br>
-				</div>
-				<div ng-if="managedFighter">
-					<div class="col-md-9" id="managedFighterBox">
-						<div class="col-md-3">
-							<h4>{{managedFighter.name.toTitleCase()}}</h4>
-							<img id="managedFighterArt" ng-src="{{ getAssetImg(managedFighter.art)}}"><br>
-							<h4>Trait</h4>
-							<t class="{{managedFighter.trait}}" data-toggle="tooltip" data-placement="bottom" title="
-							{{traits[managedFighter.trait].description}}">
-								<t class="{{managedFighter.trait}}" data-toggle="tooltip" data-placement="top" title="{{traits[managedFighter.trait].name.toTitleCase()}}" ng-mouseOver="activateClassTooltip(managedFighter.trait)">
-									<img id="traitArt"  ng-src="{{getAssetImg(managedFighter.trait+'trait')}}">
-								</t>
-							</t><br><br><br>
-						</div>
-						<div class="col-md-2">
-
-							<div ng-repeat="plan in plans" ng-if="loaded.plans && loaded.techConditioning && loaded.slots">
-								Plan {{plan.index}} <br>
-								<div id="{{plan.name}}" data-toggle="tooltip" data-placement="top" title="{{plan.name.toTitleCase()}}" ng-mouseOver="activateTooltip(plan.name)">
-									<img id="planArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(plan.index)">
-								</div>
-							</div>
-						</div>
-						<div id="stratDesc" class="col-md-7" ng-if="selectedPlan">
-							<h4> 
-								{{traits[managedFighter.trait].name.toTitleCase()}} {{selectedPlan.name.toTitleCase()}}
-							</h4>
-							<div id="stratParamButtons" class="col-md-3" ng-repeat="param in stratParams" ng-mouseOver="activeAnimation(param)" ng-mouseLeave="deactivateAnimation()" ng-style="{'background-color': stratParamBackground(param)}">
-
-
-								<div id="{{param+'tooltip'}}" data-toggle="tooltip" data-placement="top" data-original-title="{{getStratParamHeight(param)}}" ng-mouseOver="activateTooltip(param+'tooltip')" style="width: 100%; height: 100%;">
-									{{param.split('_').join(' ').toTitleCase()}}
-								</div>
-							</div><br><br><br>
-							<div id="animationBox">
-								<h5> &nbsp {{activeAnimationName.split('_').join(' ').toTitleCase()}} <b ng-if="getStratParamHeight(activeAnimationName)">: {{getStratParamHeight(activeAnimationName).toTitleCase()}}</b> </h5>
-								<div>
-									<img id="activeBodyArt" class="col-md-3" ng-src="{{ getAssetImg(managedFighter.body_art) }}" />
-									<img id="activeBodyArt" class="col-md-3" ng-src="{{ getAssetImg('13') }}" style="position: absolute; left 100px;" />
-									<div id="activeAnimation" ng-if="activeAnimationName" class="col-md-1">
-										<img id="{{activeAnimationName}}" ng-src="{{ getAssetImg(activeAnimationName) }}" ng-if="activeAnimationName !=='initiation_cardio_cost'"/>
-										
-										<img id="{{activeAnimationName+'sword'}}" ng-src="{{ getAssetImg('initiation_frequency') }}" ng-if="activeAnimationName ==='initiation_cardio_cost'"/>
-
-										<img id="{{activeAnimationName+'gas'}}" ng-src="{{ getAssetImg('base_cardio_cost') }}" ng-if="activeAnimationName ==='initiation_cardio_cost'"/>
-									</div>
-									<div id="techAnimation" ng-if="techAnimationName">
-										<img id="{{techAnimationName}}Anim" ng-src="{{ getAssetImg(techAnimationName) }}"/>
-									</div>
-
-								</div>
-
-							</div>
-							<div id="bonusBox" class="col-md-9" >
-								<h5> Bonuses </h5>
-								<div class="col-md-6" ng-repeat="skill in skills" ng-if="checkBonusDefined(skill.id)">
-									<div class="col-md-8" >{{skill.name.toTitleCase()}}</div>
-									<div class="col-md-2"><b>+{{stratBonuses[selectedPlan.strategy][skill.id]}}% </b></div>
-									 
-								</div>
-							</div>
-							<div id="rangeBox" class="col-md-3">
-								Optimal Range:<br>
-								<b>{{strats[selectedPlan.strategy].range.toTitleCase()}}</b>
-							</div>
-
-							<div>
-								<h5> Conditioning &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-								&nbsp &nbsp &nbsp Mastery</h5>
-								<div id="experienceAsBox" class="col-md-5">
+								<div id="techBookText" class="col-md-9">
+									{{tech.name.split('_').join(' ').toTitleCase()}}
 									<div class="progress">
-										<div class="progress-bar {{getExpBarColor(selectedPlan.experience_as)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{selectedPlan.experience_as}}%;">
-										<span style="color: black; position: absolute; text-align: left;"> {{getRustWord(selectedPlan.experience_as)}}</span>
+										
+										<div class="progress-bar {{getExpBarColor(techConditioning[tech.id])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{techConditioning[tech.id]}}%;">
+										<span style="color: black; position: absolute; text-align: left;">  {{getRustWord(techConditioning[tech.id])}}</span>
 										</div>
 
 									</div>
 								</div>
-								<div id="masteryBox" class="col-md-2">
+							</div>
+							<h5> Ultimate Abilities </h5>
+							<div id="techBox" ng-repeat="tech in techniques" ng-if="(tech.trait===managedFighter.trait || tech.strategy===selectedPlan.strategy) && tech.ultimate">
+								<div id="{{tech.name}}" class="col-md-3 " data-toggle="tooltip" data-placement="top" title="{{traits[tech.trait].name.toTitleCase()}} {{strats[tech.strategy].name.toTitleCase()}} {{masteryConverter(tech.level).toTitleCase()}} Ability" ng-mouseOver="activateTooltip(tech.name)">
+									<div   style="cursor: pointer" ng-click="selectTech(tech.id)" data-toggle="modal"  data-target="#techModal" ng-mouseOver="setTechAnimation(tech.name)"
+									ng-mouseLeave="unsetTechAnimation()">
+
+										<img  id="techBookArt" ng-src="{{ getAssetImg(tech.id+'tech') }}" />
+
+									</div>
+								</div>
+								<div id="techBookText" class="col-md-9">
+									{{tech.name.split('_').join(' ').toTitleCase()}}
+									<div class="progress">
+										
+										<div class="progress-bar {{getExpBarColor(techConditioning[tech.id])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{techConditioning[tech.id]}}%;">
+										<span style="color: black; position: absolute; text-align: left;">  {{getRustWord(techConditioning[tech.id])}}</span>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+						<div ng-repeat="slot in techSlots" data-toggle="tooltip" data-placement="top" title="{{getTech(slots[selectedPlan.strategy][slot]).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip(slot)" class="col-md-3 {{slot}}"><!-- TODO tooltip -->
+							<div id="techSlots"  ng-if="slots[selectedPlan.strategy][slot]" style="cursor: pointer" ng-click="selectTech(slots[selectedPlan.strategy][slot])"
+							data-toggle="modal" data-target="#techModal">
+								<img id="techSlotArt" ng-src="{{ getAssetImg(slots[selectedPlan.strategy][slot]+'tech') }}" />
+							</div>
+							<div id="techSlots" ng-if="!slots[selectedPlan.strategy][slot]">
+								<img id="techSlotArt" ng-src="{{ getAssetImg('0tech') }}"/>
+							</div>
+						</div>
+
+						<div id="ultSlot" class="col-md-3" ng-if="slots[selectedPlan.strategy].ultimate" style="cursor: pointer" ng-click="selectTech(slots[selectedPlan.strategy].ultimate)" data-toggle="modal" data-target="#techModal">
+							<img id="ultSlotArt" ng-src="{{ getAssetImg(slots[selectedPlan.strategy].ultimate+'tech') }}" data-toggle="tooltip" data-placement="top" title="{{getTech(slots[selectedPlan.strategy].ultimate).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip('ultimate')" class="ultimate"/>
+						</div>
+						<div id="ultSlot" class="col-md-3" ng-if="!slots[selectedPlan.strategy].ultimate">
+							<img id="ultSlotArt" ng-src="{{ getAssetImg('0tech') }}"/>
+							
+						</div>
+						<!-- TODO empty slot if no ultimate -->
+
+					</div>
+				</div>
+				<div ng-if="loaded.fighters" class="col-md-9">
+					<div ng-if="managedFighter">
+						<div class="col-md-9" id="managedFighterBox">
+							<div class="col-md-3">
+								<h4>{{managedFighter.name.toTitleCase()}}</h4>
+								<img id="managedFighterArt" ng-src="{{ getAssetImg(managedFighter.art)}}"><br>
+								<h4>Trait</h4>
+								<div class="{{managedFighter.trait}}" data-toggle="tooltip" data-placement="top" title="{{traits[managedFighter.trait].name.toTitleCase()}}" ng-mouseOver="activateClassTooltip(managedFighter.trait)">
+									<img id="traitArt"  ng-src="{{getAssetImg(managedFighter.trait+'trait')}}" style="cursor: pointer;" ng-click="selectTrait(managedFighter.trait)" data-toggle="modal"  data-target="#traitModal" >
+								</div>
+								<br><br><br>
+							</div>
+							<div class="col-md-2">
+
+								<div ng-repeat="plan in plans" ng-if="loaded.plans && loaded.techConditioning && loaded.slots">
+									Plan {{plan.index}} <br>
+									<div id="{{plan.name}}" data-toggle="tooltip" data-placement="top" title="{{plan.name.toTitleCase()}}" ng-mouseOver="activateTooltip(plan.name)" style="width: 105px;">
+										<img id="planArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(plan.index)">
+									</div>
+								</div>
+							</div>
+							<div id="stratDesc" class="col-md-7" ng-if="selectedPlan">
+								<h4> 
+									{{traits[managedFighter.trait].name.toTitleCase()}} {{selectedPlan.name.toTitleCase()}}
+								</h4>
+								<div id="stratParamButtons" class="col-md-3" ng-repeat="param in stratParams" ng-mouseOver="activeAnimation(param)" ng-mouseLeave="deactivateAnimation()" ng-style="{'background-color': stratParamBackground(param)}" ng-click="selectFiPara(param)" data-toggle="modal"  data-target="#fiParaModal">
+
+									<div id="{{param+'tooltip'}}" data-toggle="tooltip" data-placement="top" data-original-title="{{getStratParamHeight(param).toTitleCase()}}" ng-mouseOver="activateTooltip(param+'tooltip')" style="width: 100%; height: 100%;" >
+										{{param.split('_').join(' ').toTitleCase()}}
+									</div>
+								</div><br><br><br>
+								<div id="animationBox">
+									<h5> &nbsp {{activeAnimationName.split('_').join(' ').toTitleCase()}} <b ng-if="getStratParamHeight(activeAnimationName)">: {{getStratParamHeight(activeAnimationName).toTitleCase()}}</b> </h5>
+									<div>
+										<img id="activeBodyArt" class="col-md-3" ng-src="{{ getAssetImg(managedFighter.body_art) }}" />
+
+										<div id="activeAnimation" ng-if="activeAnimationName" class="col-md-1">
+											<img id="{{activeAnimationName}}" ng-src="{{ getAssetImg(activeAnimationName) }}" ng-if="activeAnimationName !=='initiation_cardio_cost'"/>
+											
+											<img id="{{activeAnimationName+'sword'}}" ng-src="{{ getAssetImg('initiation_frequency') }}" ng-if="activeAnimationName ==='initiation_cardio_cost'"/>
+
+											<img id="{{activeAnimationName+'gas'}}" ng-src="{{ getAssetImg('base_cardio_cost') }}" ng-if="activeAnimationName ==='initiation_cardio_cost'"/>
+										</div>
+										<div id="techAnimation" ng-if="techAnimationName">
+											<img id="{{techAnimationName}}Anim" ng-src="{{ getAssetImg(techAnimationName) }}"/>
+										</div>
+										<img id="activeBodyArt" class="col-md-3" ng-src="{{ getAssetImg('bot') }}" style="position: absolute; left 100px;" />
+									</div>
+
+								</div>
+								<div id="bonusBox" class="col-md-9" >
+									<h5> Bonuses </h5>
+									<div class="col-md-6" ng-repeat="skill in skills" ng-if="checkBonusDefined(skill.id)">
+										<div class="col-md-8" >{{skill.name.toTitleCase()}}</div>
+										<div class="col-md-2"><b>+{{stratBonuses[selectedPlan.strategy][skill.id]}}% </b></div>
+										 
+									</div>
+								</div>
+								<div id="rangeBox" class="col-md-3">
+									Optimal Range:<br>
+									<b>{{strats[selectedPlan.strategy].range.toTitleCase()}}</b>
+								</div>
+
+								<div>
+									<h5> Conditioning &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+									&nbsp &nbsp &nbsp Mastery</h5>
+									<div id="experienceAsBox" class="col-md-5">
+										<div class="progress">
+											<div class="progress-bar {{getExpBarColor(selectedPlan.experience_as)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{selectedPlan.experience_as}}%;">
+											<span style="color: black; position: absolute; text-align: left;"> {{getRustWord(selectedPlan.experience_as)}}</span>
+											</div>
+
+										</div>
+
+									</div>
+									<div id="masteryBox" class="col-md-2">
+										TBA
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div id="carouselButtons" ng-if="!managedFighter">
-				<p class="btn btn-default" ng-click="cycleLeft()">
-					<t class="glyphicon glyphicon-arrow-left">
-					</t>
-				</p>
-				<p class="btn btn-primary" ng-click="manageFighter()">
-					<t class="glyphicon glyphicon-comment">
-					</t>
-				</p>
-				<p class="btn btn-default" ng-click="cycleRight()">
-					<t class="glyphicon glyphicon-arrow-right">
-					</t>
-				</p>
-			</div>
-			<div ng-if="managedFighter">
-				<p  id="backButton" class="btn btn-warning" ng-click="backToSelector()">
-					<t class="glyphicon glyphicon-home">
-					</t>
-				</p>
+
 			</div>
 		</div>
-	</div>
 
-	<!-- Modal -->
-	<div ng-if="selectedTech">
-		<div class="modal fade" id="techModal" tabindex="-1" role="dialog" aria-labelledby="techModalLabel">
+		<!-- Modal -->
+		<div ng-if="selectedTech">
+			<div class="modal fade" id="techModal" tabindex="-1" role="dialog" aria-labelledby="techModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title" id="myModalLabel">{{selectedTech.name.split('_').join(' ').toTitleCase()}} </h4> <h5> {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}} {{masteryConverter(selectedTech.level).toTitleCase()}} Ability </h5>
+						</div>
+						<div id="modalBody" class="modal-body">
+							<img id="techInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTech.id+'tech') }}" />
+							<div id="techEffectText" class="col-md-9">
+								<b>Effect: </b><br>
+								{{selectedTech.effect_description}}
+							</div>
+							<br>
+							<div id="techPreconditionText" class="col-md-9">
+								<b>Preconditions: </b><br>
+								{{selectedTech.preconditions}}
+							</div>
+							<div id="techInfoBoxes" class="col-md-12">
+								<div class="col-md-3">
+									Required Range
+									<b>{{distanceConverter(selectedTech.range).toTitleCase()}}</b>
+								</div>
+								<div class="col-md-3">
+									Cardio Cost: <b>{{heightConverter(selectedTech.cardio_cost).toTitleCase()}}</b>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<div id="slotModalButtons" ng-if="!selectedTech.ultimate">
+								<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="techInSlot('slot_1', selectedTech, selectedPlan.id)">Slot 1</button>
+								<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="
+								techInSlot('slot_2', selectedTech, selectedPlan.id)">Slot 2</button>
+								<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="
+								techInSlot('slot_3', selectedTech, selectedPlan.id)">Slot 3</button>
+							</div>
+							<div id="slotModalButtons" ng-if="selectedTech.ultimate">
+								<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="
+								techInSlot('ultimate', selectedTech, selectedPlan.id)">Ultimate</button>
+							</div>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div ng-if="selectedTrait">
+			<div class="modal fade" id="traitModal" tabindex="-1" role="dialog" aria-labelledby="traitModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title" id="myModalLabel">{{selectedTrait.name.split('_').join(' ').toTitleCase()}} </h4>
+						</div>
+						<div id="modalBody" class="modal-body">
+							<img id="traitInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTrait.id+'trait') }}" />
+							<div id="traitEffectText" class="col-md-9">
+								<b>Effect: </b><br>
+								{{selectedTrait.description}}
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="fiParaModal" tabindex="-1" role="dialog" aria-labelledby="fiParaModalLabel">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h4 class="modal-title" id="myModalLabel">{{selectedTech.name.split('_').join(' ').toTitleCase()}} </h4> <h5> {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}} {{masteryConverter(selectedTech.level).toTitleCase()}} Ability </h5>
+						<h4 class="modal-title" id="myModalLabel"> {{selectedFiPara.level.split('_').join(' ').toTitleCase()}} {{selectedFiPara.name.split('_').join(' ').toTitleCase()}} </h4>
 					</div>
 					<div id="modalBody" class="modal-body">
-						<img id="techInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTech.id+'tech') }}" />
-						<div id="techEffectText" class="col-md-9">
-							<b>Effect: </b><br>
-							{{selectedTech.effect_description}}
+						<div id="fiParaEffectText">
+							<b>Description: </b><br>
+							{{selectedFiPara.description}}
+						</div> <br>
+						<div ng-if="selectedFiPara.name==='initiation_cardio_cost' || selectedFiPara.name==='base_cardio_cost'">
+							When a fighter runs out of cardio they become gassed. While gassed they cannot attack and are more vulnerable. <br>
+							<img id="fiParaInfoArt" ng-src="{{ getAssetImg('base_cardio_cost') }}" /><br>
+							<b style="text-align: center;">Gassed</b>
 						</div>
-						<br>
-						<div id="techPreconditionText" class="col-md-9">
-							<b>Preconditions: </b><br>
-							{{selectedTech.preconditions}}
+						<div ng-if="selectedFiPara.name==='difficulty'">
+							<img id="fiParaInfoArt" ng-src="{{ getAssetImg('fumble') }}" />
+							<img id="fiParaInfoArt" ng-src="{{ getAssetImg('predict') }}" /><br>
+							<b style="text-align:center;">Fumble &nbsp Predict </b>
 						</div>
-						<div id="techInfoBoxes" class="col-md-12">
-							<div class="col-md-3">
-								Required Range
-								<b>{{distanceConverter(selectedTech.range).toTitleCase()}}</b>
-							</div>
-							<div class="col-md-3">
-								Cardio Cost: <b>{{heightConverter(selectedTech.cardio_cost).toTitleCase()}}</b>
-							</div>
-						</div>
+
+
 					</div>
 					<div class="modal-footer">
-						<div id="slotModalButtons" ng-if="selectedTech.ultimate==='f'">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Slot 1</button>
-							<button type="button" class="btn btn-default" data-dismiss="modal">Slot 2</button>
-							<button type="button" class="btn btn-default" data-dismiss="modal">Slot 3</button>
-						</div>
-						<div id="slotModalButtons" ng-if="selectedTech.ultimate==='t'">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Ultimate</button>
-						</div>
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/fighter_manager.js"></script>
+</body>
+</html>

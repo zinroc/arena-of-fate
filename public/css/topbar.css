@@ -1,0 +1,46 @@
+#info-bar {
+    /* positioning */
+    margin-bottom: 1em;
+    padding-bottom: 0.3em;
+    padding-top: 0.3em;
+
+    /* flexbox stuff */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#info-bar {
+    font-size: 1.3em;
+    border-bottom: 1px solid black;
+    background-color: rgb(18, 18, 18);
+    color: #fff;
+
+    cursor: default;
+}
+
+#info-bar .glyphicon {
+    margin: 0;
+    margin-left: 1em;
+    padding: 0;
+    z-index: 6;
+    color: #fff;
+}
+
+#info-bar .glyphicon:hover {
+    color: #1D8FB5;
+}
+
+#info-bar .badge {
+    margin-left: -0.6em;
+    z-index: 7;
+}
+
+#info-bar img {
+    max-height: 1em;
+    margin-right: 0.5em;
+}
+
+#info-bar .tooltip-inner {
+    background-color: #2A94B8;
+}

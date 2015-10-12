@@ -1,0 +1,31 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    font-size: 1em;
+    background-color: #ddd;
+}
+
+#login-container {
+    background-color: #fff;
+    height: 100%;
+    max-width: 500px;
+    border: 1px solid #000;
+    padding: 10% 5% 5% 5%;
+    margin: 1em auto;
+    border-radius: 5px;
+}
+
+label {
+    display: block;
+}
+
+button[type=submit] {
+    display: block;
+    text-align: center;
+    margin: 1em auto;
+}
+
+#login-instructions {
+    margin-bottom: 1em;
+    text-align: center;
+}

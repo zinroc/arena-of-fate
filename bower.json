@@ -1,12 +1,15 @@
 {
-    "name": "project-titan",
-    "description": "menu-driven MMO in HTML5",
-    "version": "0.0.1",
-    "private": true,
-    "dependencies": {
-        "angular": "1.2.x",
-        "jquery": "1.10.x",
-        "bootstrap": "3.1.x",
-        "underscore": "1.6.x"
-    }
+  "name": "y",
+  "version": "y",
+  "authors": [
+    "Daniel Kats <dbkats@cs.toronto.edu>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.4.2",
+    "bootstrap": "~3.3.5",
+    "jquery": "~2.1.4",
+    "seedrandom": "~2.4.2"
+  }
 }

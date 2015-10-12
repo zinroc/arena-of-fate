@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="ArenaApp">
+    <head>
+        <title>Arena</title>
+        <meta charset="utf-8" />
+
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/settings.css" />
+        <link rel="stylesheet" href="css/game.css" />
+        <link rel="stylesheet" href="css/match_calendar.css" />
+        <link rel="stylesheet" href="/css/topbar.css" />
+        <link rel="stylesheet" href="/css/fighters.css" />
+    </head>
+    <body ng-controller="ArenaCtrl">
+        <div id="info-bar">
+            <div id="money-container" class="stat-container">
+                <img src="/icons/coin-2.png" data-placement="bottom" data-toggle="tooltip" data-title="Money"/>
+                <span id="money">{{ money }}</span>
+            </div>
+            <div class="stat-container">
+                Day {{ timestep }}
+            </div>
+            <div class="icon-container">
+
+                <span data-placement="bottom" data-toggle="tooltip" data-title="Active matches">
+                    <span class="glyphicon glyphicon-fire" role="button" data-toggle="modal" data-target="#active-matches-modal">
+                    </span>
+                    <span class="badge">{{ matches.length }}</span>
+                </span>
+                <span data-placement="bottom" data-toggle="tooltip" data-title="Pending challenges">
+                    <span class="glyphicon glyphicon-envelope" role="button" data-toggle="modal" data-target="#pending-challenges-modal">
+                    </span>
+                    <span class="badge">{{ challenges.length }}</span>
+                </span>
+                <span data-placement="bottom" data-toggle="tooltip" data-title="Arenas">
+                    <span class="glyphicon glyphicon-globe" role="button" data-toggle="modal" data-target="#arenas-modal">
+                    </span>
+                    <span class="badge" ng-if="arenaRewardsLoaded"> {{getNumPendingRecords()}}</span>
+                </span>
+                <span data-placement="bottom" data-toggle="tooltip" data-title="Rankings">
+                    <span class="glyphicon glyphicon-list" role="button" data-toggle="modal" data-target="#rankings-modal">
+                    </span>
+                </span>
+                <!--
+                <span data-placement="bottom" data-toggle="tooltip" data-title="Settings">
+                    <span class="glyphicon glyphicon-cog" role="button" data-toggle="modal" data-target="#settings-modal">
+                    </span>
+                </span>
+                -->
+            </div>
+        </div>
+        <div id="arenas-modal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h3 class="modal-title">Arenas</h3>
+                    </div>
+                    <div id="arenas-modal" class="modal-body">
+                        <div ng-repeat="arena in arenas">
+                            <div class="container-fluid row" style="cursor: pointer;" type="button" data-toggle="collapse" data-target="#{{arena.id}}arenaInfo" aria-expanded="false" aria-controls="test">
+                                <div class="col-md-4" >
+                                    <span>{{arena.name.toTitleCase()}} </span>
+                                </div>
+                                <div class="col-md-2">
+                                    <span data-placement="bottom" data-toggle="tooltip" data-title="Capacity" ng-mouseOver="activateClassTooltip(arena.id+'cap')" mouseLeave="deactivateClassTooltip(arena.id+'cap')" class="glyphicon glyphicon-eye-open {{arena.id}}cap">
+                                        {{arena.capacity}}
+                                    </span>
+
+                                </div>
+                                <div class="col-md-2">
+                                    <span data-placement="bottom" data-toggle="tooltip" data-title="Ticket Price"  ng-mouseOver="activateClassTooltip(arena.id+'tic')" mouseLeave="deactivateClassTooltip(arena.id+'tic')" class="glyphicon glyphicon-tags {{arena.id}}tic">
+                                        {{arena.ticket_price}} gold
+                                    </span>
+                                </div>
+                                <div class="col-md-2">
+                                    <span data-placement="bottom" data-toggle="tooltip" data-title="Local Fans"  ng-mouseOver="activateClassTooltip(arena.id+'fan')" mouseLeave="deactivateClassTooltip(arena.id+'fan')" class="glyphicon glyphicon-user {{arena.id}}fan">
+                                        {{arena.fans}}
+                                    </span>
+                                </div>
+                                <div class="collapse col-md-12" id="{{arena.id}}arenaInfo">
+                                    <div class="well">
+                                        <div ng-if="arenaRecords[arena.id]">
+                                            <h4>Day {{timestep - 1}}:</h4>
+                                            <h5> Attendance Record: </h5>
+
+                                             {{arenaRecords[arena.id].player_fighter.name.toTitleCase()}} VS {{arenaRecords[arena.id].arena_fighter.name.toTitleCase()}} : {{arenaRecords[arena.id].value}} Spectators 
+                                        </div>
+                                        <div ng-if="!arenaRecords[arena.id]">
+                                            <h4>Day {{timestep - 1}}:</h4>
+                                            No fights happened.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <br>
+                            </div>
+                        </div>
+                        <br>
+                        <div ng-repeat="fighter in fighters" >
+                            <div ng-if="arenaRewards[fighter.id] && loadedArenas && reward.timestep < timestep && reward.status==='offered'" ng-repeat="reward in arenaRewards[fighter.id]">
+                                <br>
+                                <p class="btn btn-lg btn-warning" ng-click="acceptReward(reward)">
+                                    <img ng-src="/icons/Rewards_MedalRibbon.png" style="height: 25px;"/>
+                                </p>
+                                {{getFighterById(reward.holder).name.toTitleCase()}}'s Fight had the Highest {{reward.name.toTitleCase()}} at {{getArenaById(reward.arena).name.toTitleCase()}} on day {{reward.timestep}}!
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="pending-challenges-modal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h3 class="modal-title">Pending Challenges</h3>
+                    </div>
+                    <div id="pending-challenges" class="modal-body">
+                        <div ng-repeat="challenge in challenges" class="challenge" role="button" ng-click="selectChallenge(challenge)">
+                            <span ng-repeat="i in getStars(challenge.fighter_fame)">
+                                <img ng-src="/icons/gold_star.png" />
+                            </span>
+                            <span>{{ challenge.fighter_name }} at {{ challenge.arena_name }}</span>
+                        </div>
+                        <div ng-if="challenges.length === 0">You have no pending challenges</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="active-matches-modal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h3 class="modal-title">Active Matches</h3>
+                    </div>
+                    <div id="active-matches" class="modal-body">
+                        <div ng-repeat="match in matches" class="challenge" role="button" ng-click="goToMatch(match)">
+                            <span class="player-fighter-details">
+                                <span class="player-fighter-name">{{ getFighterById(match.player_fighter).name }}</span>
+                                <span>(
+                                    <span class="fame-star" ng-repeat="i in getStars(getFighterById(match.player_fighter).fame)">
+                                        <img ng-src="/icons/gold_star.png" />
+                                    </span>
+                                )</span>
+                            </span>
+                            vs
+                            <span class="opponent-fighter-details">
+                                <span class="opponent-fighter-name">{{ getArenaFighterById(match.arena_fighter).name }}</span>
+                                <span>(
+                                    <span class="fame-star" ng-repeat="i in getStars(getArenaFighterById(match.arena_fighter).fame)">
+                                        <img ng-src="/icons/gold_star.png" />
+                                    </span>
+                                )</span>
+                            </span>
+                            at
+                            <span class="arena-name">{{ match.arena.name }}</span>
+                        </div>
+                        <div ng-if="matches.length === 0">You have no active matches</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="rankings-modal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h3 class="modal-title">Global Rankings</h3>
+                    </div>
+                    <div class="modal-body" id="rankings">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Player</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="player in rankings" class="player" ng-class="{ 'warning': player.id == player_id }">
+                                    <td class="player-rank">{{ $index + 1 }}</td>
+                                    <td class="player-name">{{ player.name }}</td>
+                                    <td class="player-fame">{{ player.money }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-modal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h3 class="modal-title">Settings</h3>
+                    </div>
+                    <div class="modal-body" id="rankings">
+                        <button class="btn btn-primary" ng-click="advanceTimestep()">Advance Timestep</button>
+                        <button class="btn btn-warning" ng-click="requestChallenge()">Request New Challenge</button>
+                        <button class="btn btn-danger" ng-click="resetGame()">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="main-container" class="column-container">
+            <div id="fighters" class="column-left">
+                <h2>Fighters</h2> 
+                <div id="fighter-container" class="fighter-list" role="tablist">
+                    <div ng-repeat="fighter in fighters" >
+                        <div class="fighter" draggable="true"
+                        ng-class="{'selected-fighter': fighter === selectedFighter }"
+                        ng-click="toggleSelectFighter(fighter)"
+                        data-toggle="collapse" 
+                        data-parent="#fighter-container"
+                        href="#collapse{{fighter.id}}"
+                        aria-controls="collapse{{fighter.id}}"
+                        >
+                            <span class="fighter-headshot">
+                                <img ng-src="{{ getAssetImg(fighter.art+'eyes')}}" ><br>
+                            </span>
+                            <span class="fighter-stats">
+                                <div class="fighter-name">{{ fighter.name }}</div>
+
+                                    <span class="fame-star" ng-repeat="i in getStars(fighter.fame)">
+                                        <img ng-src="/icons/gold_star.png" />
+                                    </span>
+                                <div>{{ fighter.num_wins }} W / {{ fighter.num_losses }} L</div>
+                            </span>
+
+                        </div>
+                        <div id="collapse{{fighter.id}}" class="panel-collapse collapse" role="tabpanel">
+                            Hellow world {{fighter.id}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="fighter-options" class="container-fluid">
+                <h2>Gym [Work in progress]</h2>
+                <div class="row">
+                    <div id="strategyCenter" class="col-md-6" > 
+                        <h4> Strategy Center </h4>
+
+                        <span id="gymButton" ng-if="selectedFighter" class="btn btn-success btn-block glyphicon glyphicon-king" ng-click="redirectToFighterManager(selectedFighter.id)" ng-disabled="lockedInChallenge(selectedFighter.id)"></span>
+                        <span id="gymSelectFighter" ng-if="!selectedFighter" class="btn btn-danger btn-block" ng-disabled="1">
+                            <br> Select <br> a Fighter
+                        </span>
+
+                    </div>
+                    <div id="strategyCenter" class="col-md-6" >
+                        <h4> Lounge</h4>
+                    </div>
+                    <div id="strategyCenter" class="col-md-6" >
+                        <h4> Excercise Room </h4>
+                    </div>
+                    <div id="strategyCenter" class="col-md-6" >
+                        <h4> Sparring Room </h4>
+                    </div>
+                </div>
+            </div>
+            <div id="pending-challenge-details" >
+                <div ng-if="selectedChallenge" class="column-right panel panel-default">
+                    <div class="panel-heading">
+                        <button type="button" class="close" ng-click="deselectChallenge()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h3>Challenge {{ selectedChallenge.fighter_name }} at {{selectedChallenge.arena_name}}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div>Entry Fee: 
+                            <img ng-src="/icons/coin-2.png" class="coin-img" />
+                            <span>{{ selectedChallenge.entry_fee }}</span>
+                        </div><br>
+
+                        <div>
+                            <span><b>{{ selectedChallenge.fighter_name }} </b></span>
+                            <span class="fame-star" ng-repeat="i in getStars(selectedChallenge.fighter_fame)">
+                                <img ng-src="/icons/gold_star.png" />
+                            </span>
+                        </div>
+                        <div>{{ selectedChallenge.fighter_num_wins }} W / {{ selectedChallenge.fighter_num_losses }} L</div>
+
+                        <div ng-if="challengeError" class="alert alert-danger">
+                            {{ challengeError }}
+                        </div>
+
+                        <button class="btn btn-primary" id="accept-challenge-btn" ng-disabled="selectedFighter == null"
+                            ng-click="acceptChallenge(selectedChallenge)">
+                            {{ selectedFighter ? "Accept Challenge" : "Select your fighter" }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="bower_components/angular/angular.js"></script>
+        <script src="js/utils.js"></script>
+        <script src="js/arena.js"></script>
+        <script src="js/api_service.js"></script>
+        <script src="js/arena_ctrl.js"></script>
+    </body>
+</html>

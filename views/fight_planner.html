@@ -1,320 +1,408 @@
-<div ng-controller="fightPlannerController">
-<h1> Arena </h1>
+<!DOCTYPE html>
+<html lang="en" ng-app="ArenaApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-signin-client_id" content="172057761375-d4gfv2qjur6mv4j8vf7k12ec66vj7hn0.apps.googleusercontent.com">
+    <title>Arena | Fight Planner</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/fight_planner.css" />
+</head>
+<body>
+    <div ng-controller="fightPlannerController">
+
+    <span><p class="btn btn-warning" ng-click="home()" style="width: 33%; margin-left: 33%;"> <t class="glyphicon glyphicon-home"></t></p></span>
+    <h1 style="text-align: center;" ng-if="fight.started"> Round {{fight.round}} <t ng-if="recording"> - Replay</t> 
+    <t ng-if="!recording">- Live!</t></h1>
+        <div class="container-fluid">
+            <div class="row">
+                <div ng-if="!fight.started" class="col-md-3">
+                </div>
+                <!--<h3 ng-if="fight.started">Fight Started!</h3>-->
+                <div ng-if="fight.started" style="height: 50px;">
+                    <h4> Techniques </h4> 
+                    <div ng-repeat="side in sides" class="col-md-6">
+
+                        <div ng-repeat="slot in allSlots" class="col-md-2 {{activeTechniques[side][slot].name}}{{side}}" data-container="body" data-toggle="popover" data-placement="bottom" data-content='{{getPopoverContent(side, activeTechniques[side][slot] )}}' style="height:80px">
+                            <div ng-if="slot!=='ultimate'">
+                                <img id="inFightTech" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="!animations[side][activeTechniques[side][slot].name].value"/>
+                                <img id="inFightTech" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" class="animationOn" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="animations[side][activeTechniques[side][slot].name].value"/>
+                            </div>
+                            <div ng-if="slot==='ultimate'">
+                                <img id="inFightUlt" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="!animations[side][activeTechniques[side][slot].name].value"/>
+                                <img id="inFightUlt" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" class="animationOn" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="animations[side][activeTechniques[side][slot].name].value"/>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
 
-	<div class="container-fluid">
-		<div class="row">
-			<div ng-if="!fight.started">
-				<h3> Available Fighters: </h3>
-				<div class="col-md-3">
-					<div  ng-repeat="fighter in fighters">
-						<span id="hover" class="glyphicon glyphicon-user" ng-click="selectFighter(fighter.id)"></span>
-						{{fighter.name.toTitleCase()}}
-
-						<p ng-if="selectedFighter===fighter.id" class="btn btn-danger" ng-click="placeInCorner(fighter.id, 'red')">Red Corner </p>
-						<p ng-if="selectedFighter===fighter.id" class="btn btn-primary"
-						ng-click="placeInCorner(fighter.id, 'blue')"> Blue Corner </p>
-						</p>
-					</div>
-				</div>
-			</div>
-			<!--<h3 ng-if="fight.started">Fight Started!</h3>-->
-			<div ng-if="fight.started" style="height: 50px;">
-				<h4> Techniques </h4> 
-				<div ng-repeat="side in sides" class="col-md-6">
-
-					<div ng-repeat="slot in allSlots" class="col-md-2 {{activeTechniques[side][slot].name}}{{side}}" data-container="body" data-toggle="popover" data-placement="bottom" data-content='{{getPopoverContent(side, activeTechniques[side][slot] )}}' style="height:80px">
-						<div ng-if="slot!=='ultimate'">
-							<img id="inFightTech" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="!animations[side][activeTechniques[side][slot].name].value"/>
-							<img id="inFightTech" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" class="animationOn" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="animations[side][activeTechniques[side][slot].name].value"/>
-						</div>
-						<div ng-if="slot==='ultimate'">
-							<img id="inFightUlt" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="!animations[side][activeTechniques[side][slot].name].value"/>
-							<img id="inFightUlt" ng-src="{{ getAssetImg(activeTechniques[side][slot].id+'tech') }}" class="animationOn" ng-mouseover="activatePopover(side, activeTechniques[side][slot])" ng-mouseleave="deactivatePopover(side, activeTechniques[side][slot])" ng-if="animations[side][activeTechniques[side][slot].name].value"/>
-						</div>
-					</div>
-
-				</div>
-			</div>
 
 
+                <div ng-repeat="side in sides">
+
+                    <div class="col-md-2" ng-if="fight.started && side==='blue'">
+
+                        <div ng-if="!animations[side]['dodge'].value">
+                            <div id="bodyOverlay">
+                                <div ng-if="animations[side]['blood'].value">
+                                    <img id="fighterBodyArtDamage" ng-src="{{ getAssetImg(corner[side].body_art+'dmg') }}" />
+                                </div>
+
+                                <img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+
+                            </div>
+                        </div>
+                        <div ng-if="animations[side]['dodge'].value">
+                            <img id="fighterBodyArtDodging{{side}}" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+                        </div>
+
+                        <div id="portraitOverlay">
+                            <div ng-repeat="effect in fastEffects" ng-if="animations[side][effect].value">
+                                <div id="{{effect}}{{side}}" >
+                                    <div ng-if="effect!=='dodge'">
+                                        <img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="animations[side][damage].value">
+                                <div id="{{damage}}{{side}}">
+                                    
+                                </div>
+                            </div>
+                            <div ng-repeat="animation in techAnimations" ng-if="animations[side][animation].value">
+                                <div id="{{animation}}{{side}}">
+                                    <img id="effectArt{{animation}}" ng-src="{{ getAssetImg(animation) }} " />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div id="fighter_box" class="col-md-3" >
+                        <div ng-if="corner[side].status!=='strategy'">
+                            <div ng-if="corner[side].name!=='empty'">   
+                                <h4>
+                                    {{corner[side].name.toTitleCase()}}
+                                </h4>
+                            </div>
+                            <div ng-if="corner[side].name==='empty'">
+                                <h4>
+                                    {{side.toTitleCase()}} Corner: Empty
+                                </h4>
+                            </div>
+                        </div>
+                        <div ng-if="corner[side].status==='strategy'">
+                            <h4>
+                                {{traits[corner[side].trait].name.toTitleCase()}} {{strats[corner[side].selectedPlan.strategy].name.toTitleCase()}} 
+                            </h4>
+                        </div>
+                        <img id="fighterArt" ng-if="corner[side].status==='art' && !fight.started" ng-src="{{ getAssetImg(corner[side].art) }}" />
+                        <div ng-if="corner[side].status==='art' && fight.started">
+                            <div style="cursor: pointer;" ng-click="selectTrait(corner[side].trait)" data-toggle="modal"  data-target="#traitModal">
+                                <img id="fighterArtStarted" ng-src="{{ getAssetImg(corner[side].trait+'trait') }}" ng-if="!animations[side][activeTraits[side].name].value" />
+                                <img id="fighterArtStarted" ng-src="{{ getAssetImg(corner[side].trait+'trait') }}" class="traitAnimationOn" ng-if="animations[side][activeTraits[side].name].value" />
+                            </div>
+                            <div id="fightBars" ng-repeat="bar in fightBars">
+                                <div class="progress">
+
+                                    <div class="progress-bar {{getBarColor(bar, side)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{getBarPercent(bar, side)}}%;">
+                                    <span style="color: black; position: absolute; text-align: left;"> {{bar.toTitleCase()}} </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div id="roundBars" ng-repeat="bar in roundBars">
+                                <div class="progress">
+
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{getBarPercent(bar, side)}}%;">
+                                    <span style="color: black; position: absolute; text-align: left;"> {{bar.toTitleCase()}}</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div id="fightRange" style="color: {{getRangeColor(side)}};">
+                                {{getRangeWord()}} Range
+                            </div>
+                            <div id="modifierBox">
+                                <h4>Status Effects</h4>
+                                <t ng-repeat="modifier in modifiers" ng-if="getModifierValue(side, modifier)">
+                                    <t id="{{modifier}}{{side}}mod" data-toggle="tooltip" data-placement="top" title="{{modifier.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateTooltip(modifier+side+'mod')">
+                                        <img id="modifierArt" ng-src="{{ getAssetImg(modifier) }}" />
+                                    </t>
+                                </t>
+                                <t ng-repeat="location in injuryLocations" ng-if="corner[side][location]">
+                                    <t id="{{location}}" data-toggle="tooltip" data-placement="top" title="{{corner[side][location].toTitleCase()}}" ng-mouseOver="activateTooltip(location)">
+                                        <img id="modifierArt" ng-src="{{ getAssetImg(location) }}" />
+                                    </t>
+                                </t>
+                            </div>
+                        </div>
+                        <div ng-if="corner[side].status==='stats'">
+                            <h5><t ng-if="!show[side].skills"> Noteworthy</t> Skills </h5>
+                            <div id="allSkillBars">
+                                <div id="skillBars" ng-repeat="skill in skills" class="col-md-6" ng-if="getSkillColor(cSkills[side][skill.name]) !== 'progress-bar-info' || show[side].skills">
+                                    <div class="progress" >
+                                        <div class="progress-bar {{getSkillColor(cSkills[side][skill.name])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{cSkills[side][skill.name]}}%;">
+                                            <div style="color: black;">{{skill.name.toTitleCase()}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <p class="btn btn-primary "ng-if="!show[side].skills" ng-click="showAllSkills(side)"> Show All </p>  
+                                    <p class="btn btn-primary" ng-if="show[side].skills" ng-click="hideAllSkills(side)"> Show Noteworthy Skills</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-if="corner[side].status==='strategy'">
+                            <div id="planList">
+                                <div ng-repeat="plan in corner[side].plans" ng-if="plan.rank===1 || side==='red'" class="col-md-4" >
+                                    Plan {{plan.rank}} <br>
+
+                                    <img id="planArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(side, plan)" class="{{plan.name}}{{side}}" ng-mouseOver="activateClassTooltip(plan.name+side)" title="{{plan.name.toTitleCase()}}" data-toggle="tooltip" data-placement="top"   ng-if="plan.rank !== corner[side].selectedPlan.rank">
+                                
+                                    <img id="planSelectedArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(side, plan)" class="{{plan.name}}{{side}}" ng-mouseOver="activateClassTooltip(plan.name+side)" title="{{plan.name.toTitleCase()}}" data-toggle="tooltip" data-placement="top" ng-if="plan.rank === corner[side].selectedPlan.rank">
+                                </div>
+                            </div>
+                            <div ng-if="corner[side].selectedPlan">
+                                
+                                <div class="col-md-12">
+                                    <div class="col-md-6">
+                                        Conditioning <br>
+                                        <div class="progress">
+                                            <div class="progress-bar {{getExpBarColor(corner[side].selectedPlan.experience_as)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{corner[side].selectedPlan.experience_as}}%;">
+                                                <t style="color: black; position: absolute; text-align: left;">
+                                                    {{getRustWord(corner[side].selectedPlan.experience_as)}}
+                                                </t>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        Opt. Range<br>
+                                        <b>{{strat[side].range.toTitleCase()}} </b>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div style="height: 50px;">
+                                <div id="stratParamButtons" class="col-md-6" ng-repeat="param in stratParams"  ng-style="{'background-color': stratParamBackground(side, param)}" ng-if="corner[side].selectedPlan" ng-click="selectFiPara(param, side)" data-toggle="modal"  data-target="#fiParaModal">
+                                    <div id="{{param+side+'tooltip'}}" data-toggle="tooltip" data-placement="top" data-original-title="{{getStratParamHeight(side, param).toTitleCase()}}" ng-mouseOver="activateTooltip(param+side+'tooltip')" style="height: 25px">
+                                        {{getShortParamName(param)}}
+                                    </div>
+                                </div>
+                            </div>
+                            <h5>Techniques</h5>
+                            <div style="height: 80px;">
+                                <div id="techSlots" ng-repeat="slot in techSlots" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip(slot+side)" class="col-md-3 {{slot+side}}" ><!-- TODO tooltip -->
+                                    <div style="cursor: pointer" ng-click="selectTech(getTech(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]).id)" data-toggle="modal"  data-target="#techModal" >
+                                        <img id="techSlotArt" ng-if="corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy][slot]" ng-src="{{ getAssetImg(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]+'tech') }}" style="cursor: pointer;" />
+                                    </div>
+                                    <img id="techSlotArt" ng-if="!(corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy][slot])" ng-src=" {{ getAssetImg('0tech')}}"/>
+
+                                </div>
+                                <!-- TODO empty slot if !slot -->
+
+                                <div id="ultSlot" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip('ultimate'+side)"  class="col-md-3 ultimate{{side}}"><!-- TODO tooltip -->
+                                    <div style="cursor: pointer" ng-click="selectTech(getTech(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']).id)" data-toggle="modal"  data-target="#techModal" >
+                                        <img id="ultSlotArt" ng-if="corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']" ng-src="{{ getAssetImg(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']+'tech') }}" style="cursor: pointer;" />
+                                    </div>
+                                    <img id="ultSlotArt" ng-if="!(corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate'])"  ng-src=" {{ getAssetImg('0tech')}}"/>
+                                </div><!-- TODO empty slot if !slot -->
+                            </div>
+
+                        </div>
+                        <span ng-if="corner[side].selected && (!fight.started || fight.paused)">
+                            <p class="btn btn-primary" ng-click="artStatus(side)">Art</p>
+                            <p class="btn btn-primary" ng-click="statsStatus(side)">Stats</p>
+                            <p class="btn btn-primary" ng-click="strategyStatus(side)">Strategy</p>
+                        </span>
+                    </div>
+                    <div class="col-md-2" ng-if="fight.started && side==='red'">
+
+                        <div ng-if="!animations[side]['dodge'].value">
+                            <div id="bodyOverlay">
+                                <div ng-if="animations[side]['blood'].value">
+                                    <img id="fighterBodyArtDamage" ng-src="{{ getAssetImg(corner[side].body_art+'dmg') }}" />
+                                </div>
+
+                                <img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+
+                            </div>
+                        </div>
+                        <div ng-if="animations[side]['dodge'].value">
+                            <img id="fighterBodyArtDodging{{side}}" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
+                        </div>
+
+                        <div id="portraitOverlay">
+                            <div ng-repeat="effect in fastEffects" ng-if="animations[side][effect].value">
+                                <div id="{{effect}}{{side}}" >
+                                    <div ng-if="effect!=='dodge'">
+                                        <img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="animations[side][damage].value">
+                                <div id="{{damage}}{{side}}">
+                                    
+                                </div>
+                            </div>
+                            <div ng-repeat="animation in techAnimations" ng-if="animations[side][animation].value">
+                                <div id="{{animation}}{{side}}">
+                                    <img id="effectArt{{animation}}" ng-src="{{ getAssetImg(animation) }} " />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="row">
+                <div id="fightButton">
+                    <p class="btn btn-danger" ng-if="corner['blue'].selected && corner['red'].selected && !fight.started" ng-click="evaluateFight()"> Fight! </p>
+                    <!--
+                    <span><p class="btn btn-primary" ng-click="reset()" ng-if="fight.stopped"> Reset </p></span> -->
+
+                    <span><p class="btn btn-primary" ng-click="startNextRound()" ng-if="!fight.stopped && fight.paused"> Start Next Round</p></span><br>
+
+                </div>
+
+            </div>
+            <div class="row" ng-if="fight.started">
+                <div class="col-md-4"></div>
+                <div  id="transcript" class="col-md-4">
+                    <h3 ng-if="victor.side && victor.side !=='tie' && fight.stopped">{{corner[victor.side].name.toTitleCase()}} Wins!</h3>
+                    <h3 ng-if="victor.side==='tie' && fight.stopped">Tie!</h3>
+                    <b>{{winningRounds['red']}} - {{winningRounds['blue']}}</b> <br>
+                    <b> Round {{fight.round}} Transcript </b><br>
+                    <div id="overflow">
+                        <div ng-repeat="msg in transcript track by $index">
+                            <t ng-if="msg">{{$index}} - {{msg.toTitleCase()}} </t>
+                        </div>
+                    </div><br>
+
+                </div>
+            </div>
+        </div>
+
+        <!--- Modal -->
+        <div ng-if="selectedTech">
+            <div class="modal fade" id="techModal" tabindex="-1" role="dialog" aria-labelledby="techModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">{{selectedTech.name.split('_').join(' ').toTitleCase()}} </h4> <h5> {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}} {{masteryConverter(selectedTech.level).toTitleCase()}} Ability </h5>
+                        </div>
+                        <div id="modalBody" class="modal-body">
+                            <img id="techInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTech.id+'tech') }}" />
+                            <div id="techEffectText" class="col-md-9">
+                                <b>Effect: </b><br>
+                                {{selectedTech.effect_description}}
+                            </div>
+                            <br>
+                            <div id="techPreconditionText" class="col-md-9">
+                                <b>Preconditions: </b><br>
+                                {{selectedTech.preconditions}}
+                            </div>
+                            <div id="techInfoBoxes" class="col-md-12">
+                                <div class="col-md-3">
+                                    Required Range
+                                    <b>{{distanceConverter(selectedTech.range).toTitleCase()}}</b>
+                                </div>
+                                <div class="col-md-3">
+                                    Cardio Cost: <b>{{heightConverter(selectedTech.cardio_cost).toTitleCase()}}</b>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="prizeModal" tabindex="-1" role="dialog" aria-labelledby="traitModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">Match Information</h4>
+                        </div>
+                        <div id="modalBody" class="modal-body">
+                            Arena: <b>{{arena.name.toTitleCase()}}</b><br>
+                            Prize pool: <b>{{match.winner_prize}} gold </b><br>
+                            Attendance: <b>{{getAttendance(match.winner_prize, arena.ticket_price)}} Fans, {{getAttendancePercent(match.winner_prize, arena.ticket_price, arena.capacity)}}% of arena capacity</b><br>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
-			<div ng-repeat="side in sides">
+        <div ng-if="selectedTrait">
+            <div class="modal fade" id="traitModal" tabindex="-1" role="dialog" aria-labelledby="traitModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">{{selectedTrait.name.split('_').join(' ').toTitleCase()}} </h4>
+                        </div>
+                        <div id="modalBody" class="modal-body">
+                            <img id="techInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTrait.id+'trait') }}" />
+                            <div id="techEffectText" class="col-md-9">
+                                <b>Effect: </b><br>
+                                {{selectedTrait.description}}
+                            </div>
+                            <br>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="fiParaModal" tabindex="-1" role="dialog" aria-labelledby="fiParaModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel"> {{selectedFiPara.level.split('_').join(' ').toTitleCase()}} {{selectedFiPara.name.split('_').join(' ').toTitleCase()}} </h4>
+                    </div>
+                    <div id="modalBody" class="modal-body">
+                        <div id="fiParaEffectText">
+                            <b>Description: </b><br>
+                            {{selectedFiPara.description}}
+                        </div> <br>
+                        <div ng-if="selectedFiPara.name==='initiation_cardio_cost' || selectedFiPara.name==='base_cardio_cost'">
+                            When a fighter runs out of cardio they become gassed. While gassed they cannot attack and are more vulnerable. <br>
+                            <img id="fiParaInfoArt" ng-src="{{ getAssetImg('base_cardio_cost') }}" /><br>
+                            <b style="text-align: center;">Gassed</b>
+                        </div>
+                        <div ng-if="selectedFiPara.name==='difficulty'">
+                            <img id="fiParaInfoArt" ng-src="{{ getAssetImg('fumble') }}" />
+                            <img id="fiParaInfoArt" ng-src="{{ getAssetImg('predict') }}" /><br>
+                            <b style="text-align:center;">Fumble &nbsp Predict </b>
+                        </div>
 
-				<div class="col-md-2" ng-if="fight.started && side==='blue'">
 
-					<div ng-if="!animations[side]['dodge'].value">
-						<div id="bodyOverlay">
-							<div ng-if="animations[side]['blood'].value">
-								<img id="fighterBodyArtDamage" ng-src="{{ getAssetImg(corner[side].body_art+'dmg') }}" />
-							</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-							<img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
 
-						</div>
-					</div>
-					<div ng-if="animations[side]['dodge'].value">
-						<img id="fighterBodyArtDodging{{side}}" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
-					</div>
-
-					<div id="portraitOverlay">
-						<div ng-repeat="effect in fastEffects" ng-if="animations[side][effect].value">
-							<div id="{{effect}}{{side}}" >
-								<div ng-if="effect!=='dodge'">
-									<img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
-
-								</div>
-							</div>
-						</div>
-						<div ng-if="animations[side][damage].value">
-							<div id="{{damage}}{{side}}">
-								
-							</div>
-						</div>
-						<div ng-repeat="animation in techAnimations" ng-if="animations[side][animation].value">
-							<div id="{{animation}}{{side}}">
-								<img id="effectArt{{animation}}" ng-src="{{ getAssetImg(animation) }} " />
-							</div>
-						</div>
-					</div>
-				</div>
-			
-				<div id="fighter_box" class="col-md-3" >
-					<div ng-if="corner[side].status!=='strategy'">
-						<div ng-if="corner[side].name!=='empty'">	
-							<h4>
-								{{corner[side].name.toTitleCase()}}
-							</h4>
-						</div>
-						<div ng-if="corner[side].name==='empty'">
-							<h4>
-								{{side.toTitleCase()}} Corner: Empty
- 							</h4>
-						</div>
-					</div>
-					<div ng-if="corner[side].status==='strategy'">
-						<h4>
-							{{traits[corner[side].trait].name.toTitleCase()}} {{strats[corner[side].selectedPlan.strategy].name.toTitleCase()}} 
-						</h4>
-					</div>
-					<img id="fighterArt" ng-if="corner[side].status==='art' && !fight.started" ng-src="{{ getAssetImg(corner[side].art) }}" />
-					<div ng-if="corner[side].status==='art' && fight.started">
-						<img id="fighterArtStarted" ng-src="{{ getAssetImg(corner[side].trait+'trait') }}" ng-if="!animations[side][activeTraits[side].name].value" />
-						<img id="fighterArtStarted" ng-src="{{ getAssetImg(corner[side].trait+'trait') }}" class="traitAnimationOn" ng-if="animations[side][activeTraits[side].name].value" />
-
-						<div id="fightBars" ng-repeat="bar in fightBars">
-							<div class="progress">
-
-								<div class="progress-bar {{getBarColor(bar, side)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{getBarPercent(bar, side)}}%;">
-								<span style="color: black; position: absolute; text-align: left;"> {{bar.toTitleCase()}} </span>
-								</div>
-
-							</div>
-						</div>
-						<div id="roundBars" ng-repeat="bar in roundBars">
-							<div class="progress">
-
-								<div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{getBarPercent(bar, side)}}%;">
-								<span style="color: black; position: absolute; text-align: left;"> {{bar.toTitleCase()}}</span>
-								</div>
-
-							</div>
-						</div>
-						<div id="fightRange" style="color: {{getRangeColor(side)}};">
-							{{getRangeWord()}} Range
-						</div>
-						<div id="modifierBox">
-							<h4>Status Effects</h4>
-							<t ng-repeat="modifier in modifiers" ng-if="getModifierValue(side, modifier)">
-								<t id="{{modifier}}{{side}}mod" data-toggle="tooltip" data-placement="top" title="{{modifier.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateTooltip(modifier+side+'mod')">
-									<img id="modifierArt" ng-src="{{ getAssetImg(modifier) }}" />
-								</t>
-							</t>
-							<t ng-repeat="location in injuryLocations" ng-if="corner[side][location]">
-								<t id="{{location}}" data-toggle="tooltip" data-placement="top" title="{{corner[side][location].toTitleCase()}}" ng-mouseOver="activateTooltip(location)">
-									<img id="modifierArt" ng-src="{{ getAssetImg(location) }}" />
-								</t>
-							</t>
-						</div>
-					</div>
-					<div ng-if="corner[side].status==='stats'">
-						<h5><t ng-if="!show[side].skills"> Noteworthy</t> Skills </h5>
-						<div id="allSkillBars">
-							<div id="skillBars" ng-repeat="skill in skills" class="col-md-6" ng-if="getSkillColor(cSkills[side][skill.name]) !== 'progress-bar-info' || show[side].skills">
-								<div class="progress" >
-									<div class="progress-bar {{getSkillColor(cSkills[side][skill.name])}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{cSkills[side][skill.name]}}%;">
-									 	<t style="color: black;">{{skill.name.toTitleCase()}}</t>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-12">
-								<p class="btn btn-primary "ng-if="!show[side].skills" ng-click="showAllSkills(side)"> Show All </p>  
-								<p class="btn btn-primary" ng-if="show[side].skills" ng-click="hideAllSkills(side)"> Show Noteworthy Skills</p>
-							</div>
-						</div>
-					</div>
-					<div ng-if="corner[side].status==='strategy'">
-						<div id="planList">
-							<div ng-repeat="plan in corner[side].plans" class="col-md-4" >
-								Plan {{plan.rank}} <br>
-
-								<img id="planArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(side, plan)" class="{{plan.name}}{{side}}" ng-mouseOver="activateClassTooltip(plan.name+side)" title="{{plan.name.toTitleCase()}}" data-toggle="tooltip" data-placement="top"   ng-if="plan.rank !== corner[side].selectedPlan.rank">
-							
-								<img id="planSelectedArt" ng-src="{{getAssetImg(plan.strategy+'strat')}} " ng-click="selectPlan(side, plan)" class="{{plan.name}}{{side}}" ng-mouseOver="activateClassTooltip(plan.name+side)" title="{{plan.name.toTitleCase()}}" data-toggle="tooltip" data-placement="top" ng-if="plan.rank === corner[side].selectedPlan.rank">
-							</div>
-						</div>
-						<div ng-if="corner[side].selectedPlan">
-							
-							<div class="col-md-12">
-								<div class="col-md-6">
-									Conditioning <br>
-									<div class="progress">
-										<div class="progress-bar {{getExpBarColor(corner[side].selectedPlan.experience_as)}}" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: {{corner[side].selectedPlan.experience_as}}%;">
-											<t style="color: black; position: absolute; text-align: left;">
-												{{getRustWord(corner[side].selectedPlan.experience_as)}}
-											</t>
-										</div>
-
-									</div>
-								</div>
-								<div class="col-md-6">
-									Opt. Range<br>
-									<b>{{strat[side].range.toTitleCase()}} </b>
-								</div>
-							</div>
-
-						</div>
-						<div style="height: 50px;">
-							<div id="stratParamButtons" class="col-md-6" ng-repeat="param in stratParams"  ng-style="{'background-color': stratParamBackground(side, param)}" ng-if="corner[side].selectedPlan">
-								<div id="{{param+side+'tooltip'}}" data-toggle="tooltip" data-placement="top" data-original-title="{{getStratParamHeight(side, param)}}" ng-mouseOver="activateTooltip(param+side+'tooltip')" style="height: 25px">
-									{{getShortParamName(param)}}
-								</div>
-							</div>
-						</div>
-						<h5>Techniques</h5>
-						<div style="height: 80px;">
-							<div id="techSlots" ng-repeat="slot in techSlots" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip(slot+side)" class="col-md-3 {{slot+side}}" ><!-- TODO tooltip -->
-								<div style="cursor: pointer" ng-click="selectTech(getTech(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]).id)" data-toggle="modal"  data-target="#techModal" >
-									<img id="techSlotArt" ng-if="corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy][slot]" ng-src="{{ getAssetImg(corner[side]['slots'][corner[side].selectedPlan.strategy][slot]+'tech') }}" style="cursor: pointer;" />
-								</div>
-							</div><!-- TODO empty slot if !slot -->
-
-							<div id="ultSlot" data-toggle="tooltip" data-placement="top" data-original-title="{{getTech(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']).name.split('_').join(' ').toTitleCase()}}" ng-mouseOver="activateClassTooltip('ultimate'+side)"  class="col-md-3 ultimate{{side}}"><!-- TODO tooltip -->
-								<div style="cursor: pointer" ng-click="selectTech(getTech(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']).id)" data-toggle="modal"  data-target="#techModal" >
-									<img id="ultSlotArt" ng-if="corner[side]['slots'] && corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']" ng-src="{{ getAssetImg(corner[side]['slots'][corner[side].selectedPlan.strategy]['ultimate']+'tech') }}" style="cursor: pointer;" />
-								</div>
-							</div><!-- TODO empty slot if !slot -->
-						</div>
-
-					</div>
-					<span ng-if="corner[side].selected && (!fight.started || fight.paused)">
-						<p class="btn btn-primary" ng-click="artStatus(side)">Art</p>
-						<p class="btn btn-primary" ng-click="statsStatus(side)">Stats</p>
-						<p class="btn btn-primary" ng-click="strategyStatus(side)">Strategy</p>
-					</span>
-				</div>
-				<div class="col-md-2" ng-if="fight.started && side==='red'">
-
-					<div ng-if="!animations[side]['dodge'].value">
-						<div id="bodyOverlay">
-							<div ng-if="animations[side]['blood'].value">
-								<img id="fighterBodyArtDamage" ng-src="{{ getAssetImg(corner[side].body_art+'dmg') }}" />
-							</div>
-
-							<img id="fighterBodyArt" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
-
-						</div>
-					</div>
-					<div ng-if="animations[side]['dodge'].value">
-						<img id="fighterBodyArtDodging{{side}}" ng-src="{{ getAssetImg(corner[side].body_art) }}" />
-					</div>
-
-					<div id="portraitOverlay">
-						<div ng-repeat="effect in fastEffects" ng-if="animations[side][effect].value">
-							<div id="{{effect}}{{side}}" >
-								<div ng-if="effect!=='dodge'">
-									<img id="effectArt{{effect}}" ng-src="{{ getAssetImg(effect) }} " />
-
-								</div>
-							</div>
-						</div>
-						<div ng-if="animations[side][damage].value">
-							<div id="{{damage}}{{side}}">
-								
-							</div>
-						</div>
-						<div ng-repeat="animation in techAnimations" ng-if="animations[side][animation].value">
-							<div id="{{animation}}{{side}}">
-								<img id="effectArt{{animation}}" ng-src="{{ getAssetImg(animation) }} " />
-							</div>
-						</div>
-					</div>
-				</div>
-
-			</div>
-
-		</div>
-		<div class="row">
-			<div id="fightButton">
-				<p class="btn btn-danger" ng-if="corner['blue'].selected && corner['red'].selected && !fight.started" ng-click="evaluateFight()"> Fight! </p>
-				<span><p class="btn btn-primary" ng-click="reset()" ng-if="fight.stopped"> Reset </p></span>
-				<spam><p class="btn btn-primary" ng-click="startNextRound()" ng-if="!fight.stopped && fight.paused"> Start Next Round</p></spam>
-			</div>
-
-		</div>
-		<div class="row" ng-if="fight.started">
-			<div class="col-md-4"></div>
-			<div  id="transcript" class="col-md-4">
-				<h3 ng-if="victor.side && victor.side !=='tie' && fight.stopped">{{corner[victor.side].name.toTitleCase()}} Wins!</h3>
-				<h3 ng-if="victor.side==='tie' && fight.stopped">Tie!</h3>
-				<b>{{winningRounds['red']}} - {{winningRounds['blue']}}</b> <br>
-				<b> Round {{fight.round}} Transcript </b><br>
-				<div id="overflow">
-					<div ng-repeat="msg in transcript track by $index">
-						<t ng-if="msg">{{$index}} - {{msg.toTitleCase()}} </t>
-					</div>
-				</div><br>
-
-			</div>
-		</div>
-	</div>
-
-	<!--- Modal -->
-	<div ng-if="selectedTech">
-		<div class="modal fade" id="techModal" tabindex="-1" role="dialog" aria-labelledby="techModalLabel">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title" id="myModalLabel">{{selectedTech.name.split('_').join(' ').toTitleCase()}} </h4> <h5> {{traits[selectedTech.trait].name.toTitleCase()}} {{strats[selectedTech.strategy].name.toTitleCase()}} {{masteryConverter(selectedTech.level).toTitleCase()}} Ability </h5>
-					</div>
-					<div id="modalBody" class="modal-body">
-						<img id="techInfoArt" class="col-md-3" ng-src="{{ getAssetImg(selectedTech.id+'tech') }}" />
-						<div id="techEffectText" class="col-md-9">
-							<b>Effect: </b><br>
-							{{selectedTech.effect_description}}
-						</div>
-						<br>
-						<div id="techPreconditionText" class="col-md-9">
-							<b>Preconditions: </b><br>
-							{{selectedTech.preconditions}}
-						</div>
-						<div id="techInfoBoxes" class="col-md-12">
-							<div class="col-md-3">
-								Required Range
-								<b>{{distanceConverter(selectedTech.range).toTitleCase()}}</b>
-							</div>
-							<div class="col-md-3">
-								Cardio Cost: <b>{{heightConverter(selectedTech.cardio_cost).toTitleCase()}}</b>
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-</div>
+    </div>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/seedrandom/seedrandom.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/fight_planner.js"></script>
+</body>
+</html>

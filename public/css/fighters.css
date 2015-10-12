@@ -1,0 +1,147 @@
+#fighter-container, #champion-container {
+    display: flex;
+    flex-direction: column;
+}
+
+@media(max-width: 799px) {
+    #fighter-container{
+        width: 220px;
+    }
+}
+
+
+@media(min-width: 800px) {
+    #fighter-container{
+        width: 247px;
+    }
+}
+
+@media(min-width: 1000px) {
+    #fighter-container {
+        width: 313px;
+    }
+}
+
+
+@media(max-width: 799px) {
+    #champion-container, #shipment-container {
+        width: 350px;
+    }
+}
+
+@media(min-width: 800px) {
+    #champion-container, #shipment-container {
+        width: 400px;
+    }
+}
+
+@media(min-width: 1000px) {
+    #champion-container, #shipment-container {
+        width: 500px;
+    }
+}
+
+.fighter {
+    background-color: #fff;
+    font-size: 1.1em;
+    border: 1px solid #000;
+    border-radius: 5px;
+    margin-bottom: .5em;
+    margin-right: .1em;
+    display: flex;
+    cursor: pointer;
+    align-content: space-between;
+    -webkit-align-content: space-between;
+    -moz-align-content: space-between;
+}
+
+.fighter-headshot img {
+    left: 0px;
+    height: 4.29em;
+    border: medium solid black;
+
+}
+
+
+.fighter-headshot {
+
+}
+
+#fighter-container .fighter, #champion-container .fighter {
+    min-height: -webkit-min-content;
+    min-height: -moz-min-content;
+    min-height: min-content;
+}
+
+.fighter-stats {
+    margin-left: 1em;
+}
+
+.fighter.selected-fighter {
+    color: #fff;
+    background-color: #D68904;
+}
+
+.fighter.no-fighter {
+    border-style: dashed;
+}
+
+@media(min-width:801px) {
+    .fighter.no-fighter {
+        min-width: 210px;
+    }
+}
+
+@media(max-width:800px) {
+    .fighter.no-fighter {
+        min-width: 150px;
+    }
+}
+
+.fighter.selected-match-slot {
+    background-color: #2CBF4E;
+}
+
+.fighter-list {
+    max-height: 900px;
+    overflow: auto;
+}
+
+.fame-star img {
+    max-height: 1em;
+}
+
+.fighter-name {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+#fighter-options {
+    width: 500px;
+}
+
+#fighter-options .row {
+    background-image: url("/img/pavement/blackTiles.png");
+    background-size: 200px 200px;
+    background-color: beige;
+    border: 5px solid transparent;
+    border-image: url("/img/pavement/scales.png") 30 30 repeat;
+}
+
+#strategyCenter {
+    border: 5px solid transparent;
+    border-image: url("/img/pavement/blackTiles.png") 30 30 repeat;
+    height: 300px;
+}
+
+#gymButton {
+    height: 200px; 
+    font-size: 8em;
+}
+
+#gymSelectFighter{
+    height: 200px; 
+    font-size: 2em;
+    vertical-align: middle;
+    margin-top: 
+}

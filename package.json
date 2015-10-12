@@ -1,0 +1,39 @@
+{
+  "name": "arena",
+  "version": "0.0.1",
+  "description": "OK, so you own this arena. You can challenge the existing champions of the arena, or NOT.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/.bin/mocha",
+    "start": "node index.js",
+    "postinstall": "bower install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boompig/arena.git"
+  },
+  "author": "Daniel Kats <dbkats@cs.toronto.edu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/boompig/arena/issues"
+  },
+  "homepage": "https://github.com/boompig/arena#readme",
+  "private": true,
+  "dependencies": {
+    "bluebird": "^2.9.34",
+    "body-parser": "^1.13.2",
+    "bookshelf": "^0.8.2",
+    "bower": "^1.4.1",
+    "express": "^4.13.1",
+    "knex": "^0.8.6",
+    "nodemon": "^1.3.7",
+    "pg": "^4.4.0"
+  },
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "istanbul": "^0.3.17",
+    "mocha": "^2.2.5",
+    "mock-knex": "^0.2.2",
+    "sqlite3": "^3.0.9"
+  }
+}

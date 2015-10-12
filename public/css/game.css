@@ -1,0 +1,70 @@
+html, body {
+    font-size: 1em;
+    width: 100%;
+    background-color: #eee;
+}
+
+#main-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.column-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#arenas-modal .glyphicon:hover{
+    color: #1D8FB5;
+    cursor: default;
+}
+
+.column-center{
+    border: black thick solid;
+    text-align: left;
+    margin-left: 0px;
+}
+
+.column-left, .column-right{
+    display: inline-block;
+}
+
+#pending-challenge-details {
+    border-color: #000;
+    width: 333px;
+}
+
+#pending-challenge-details .alert {
+    margin-top: 1em;
+}
+
+#pending-challenges img {
+    height: 1em;
+}
+
+.challenge {
+    border: 1px solid #999;
+    border-radius: 3px;
+    padding: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.challenge:hover {
+    background-color: #1D8FB5;
+    color: white;
+}
+
+#pending-challenge-details .coin-img {
+    height: 1em;
+}
+
+#accept-challenge-btn {
+    margin-top: 1em;
+}
+
+/*************** Rankings CSS *****************/
+#rankings {
+    padding: 1em;
+}
+/*************** Rankings CSS *****************/
